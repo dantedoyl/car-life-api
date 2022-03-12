@@ -76,6 +76,9 @@ func (eh *EventsHandler) GetEvents(w http.ResponseWriter, r *http.Request) {
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
 		return
 	}
+	if len(event) == 0 {
+		event = []*models.Event{}
+	}
 
 	body, err := json.Marshal(event)
 	if err != nil {
