@@ -25,21 +25,20 @@ import (
 // @host      localhost:8080
 // @BasePath  /api/v1
 func main() {
-	postgresDB, err := database.NewPostgres("host=localhost port=5432 user=postgres password=ysnpkoyapassword dbname=car-life-api sslmode=disable")
+	postgresDB, err := database.NewPostgres("host=localhost port=5432 user=postgres password=postgres dbname=car_life_api sslmode=disable")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer postgresDB.Close()
 
-	eventsRepo := events_repository.NewProductRepository(nil)
+	eventsRepo := events_repository.NewProductRepository(postgresDB.GetDatabase())
 	eventsUcase := usecase.NewEventsUsecase(eventsRepo)
 	eventHandler := delivery.NewEventsHandler(eventsUcase)
 
 	router := mux.NewRouter()
 
-	router.Use(middleware.CorsControlMiddleware)
-
 	api := router.PathPrefix("/api/v1").Subrouter()
+	api.Use(middleware.CorsControlMiddleware)
 	eventHandler.Configure(api)
 
 	router.HandleFunc("/swagger/*", httpSwagger.Handler(
