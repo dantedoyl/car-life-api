@@ -49,7 +49,7 @@ func (er *EventsRepository) GetEventByID(id int64) (*models.Event, error) {
 
 func (er *EventsRepository) GetEvents() ([]*models.Event, error) {
 	var events []*models.Event
-	rows, err := er.dbConn.Query(`SELECT  id, name, club_id, description, event_date, latitude, longitude, avatar from events`)
+	rows, err := er.dbConn.Query(`SELECT  id, name, club_id, description, event_date, latitude, longitude, avatar from events ORDER BY created_at desc`)
 	if err != nil {
 		return nil, err
 	}
