@@ -1,0 +1,17 @@
+version: '3'
+# docker rm $(docker ps -a -q) && docker volume prune -f
+services:
+  postgres:
+    image: postgis/postgis
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: car-life-api
+      POSTGRES_MULTIPLE_EXTENSIONS: postgis,hstore,postgis_topology,postgis_raster,pgrouting
+      SHARED_PRELOAD_LIBRARIES: pg_cron
+    ports:
+      - '5432:5432'
+    volumes:
+      - './configs/sql/:/docker-entrypoint-initdb.d/'
