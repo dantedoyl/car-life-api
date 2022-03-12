@@ -1,4 +1,4 @@
-create database car-life-api
+create database car_life_api
 	with owner postgres
 	encoding 'utf8'
 	LC_COLLATE = 'ru_RU.UTF-8'
@@ -11,8 +11,8 @@ CREATE EXTENSION postgis;
 CREATE EXTENSION postgis_topology;
 
 
-GRANT ALL PRIVILEGES ON database car-life-api TO postgres;
-ALTER USER postgres WITH PASSWORD 'ysnpkoyapassword';
+-- GRANT ALL PRIVILEGES ON database car_life_api TO postgres;
+-- ALTER USER postgres WITH PASSWORD 'ysnpkoyapassword';
 
 create table if not exists events
 (
