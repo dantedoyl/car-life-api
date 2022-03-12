@@ -38,9 +38,9 @@ func (er *EventsRepository) InsertEvent(event *models.Event) error {
 func (er *EventsRepository) GetEventByID(id int64) (*models.Event, error) {
 	event := &models.Event{}
 	err := er.dbConn.QueryRow(
-		`SELECT  id, name, club_id, description, event_date, latitude, longitude from events
+		`SELECT  id, name, club_id, description, event_date, latitude, longitude, avatar from events
 				WHERE id = $1`, id).Scan(&event.ID, &event.Name, &event.Club.ID, &event.Description, &event.EventDate,
-					&event.Latitude, &event.Longitude)
+					&event.Latitude, &event.Longitude, &event.AvatarUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func (er *EventsRepository) GetEventByID(id int64) (*models.Event, error) {
 
 func (er *EventsRepository) GetEvents() ([]*models.Event, error) {
 	var events []*models.Event
-	rows, err := er.dbConn.Query(`SELECT  id, name, club_id, description, event_date, latitude, longitude from events`)
+	rows, err := er.dbConn.Query(`SELECT  id, name, club_id, description, event_date, latitude, longitude, avatar from events`)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +59,7 @@ func (er *EventsRepository) GetEvents() ([]*models.Event, error) {
 	for rows.Next() {
 		event := &models.Event{}
 		err = rows.Scan(&event.ID, &event.Name, &event.Club.ID, &event.Description, &event.EventDate,
-			&event.Latitude, &event.Longitude)
+			&event.Latitude, &event.Longitude, &event.AvatarUrl)
 		if err != nil {
 			return nil, err
 		}
