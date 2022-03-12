@@ -5,6 +5,7 @@ import (
 	delivery "github.com/dantedoyl/car-life-api/internal/app/events/delivery/http"
 	events_repository "github.com/dantedoyl/car-life-api/internal/app/events/repository/postgres"
 	"github.com/dantedoyl/car-life-api/internal/app/events/usecase"
+	"github.com/dantedoyl/car-life-api/internal/app/middleware"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"log"
 	"net/http"
@@ -36,7 +37,7 @@ func main() {
 
 	router := mux.NewRouter()
 
-
+	router.Use(middleware.CorsControlMiddleware)
 
 	api := router.PathPrefix("/api/v1").Subrouter()
 	eventHandler.Configure(api)
