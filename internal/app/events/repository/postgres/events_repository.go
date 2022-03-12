@@ -20,7 +20,7 @@ func (er *EventsRepository) InsertEvent(event *models.Event) error {
 	err := er.dbConn.QueryRow(
 		`INSERT INTO events
                 (name, club_id, description, event_date, latitude, longitude)
-                VALUES ($1, $2, $3, $4, $5) 
+                VALUES ($1, $2, $3, $4, $5, $6) 
                 RETURNING id`,
 		event.Name,
 		event.Club.ID,
