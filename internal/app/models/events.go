@@ -12,7 +12,3 @@ type Event struct {
 	Longitude float32 `json:"longitude"`
 	AvatarUrl    string `json:"avatar"`
 }
-
-type Club struct {
-	ID             uint64    `json:"id"`
-}
