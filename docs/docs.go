@@ -412,6 +412,14 @@ const docTemplate = `{
     "definitions": {
         "models.Club": {
             "type": "object",
+            "required": [
+                "avatar",
+                "description",
+                "events_count",
+                "id",
+                "name",
+                "participants_count"
+            ],
             "properties": {
                 "avatar": {
                     "type": "string"
