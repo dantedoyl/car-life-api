@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/dantedoyl/car-life-api/internal/app/clients/database"
 	delivery "github.com/dantedoyl/car-life-api/internal/app/events/delivery/http"
 	events_repository "github.com/dantedoyl/car-life-api/internal/app/events/repository/postgres"
 	"github.com/dantedoyl/car-life-api/internal/app/events/usecase"
@@ -20,13 +21,13 @@ import (
 // @host      localhost:8080
 // @BasePath  /api/v1
 func main() {
-	//postgresDB, err := database.NewPostgres("host=localhost port=5432 user=postgres password=postgres dbname=car_life_api sslmode=disable")
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//defer postgresDB.Close()
+	postgresDB, err := database.NewPostgres("host=localhost port=5432 user=postgres password=postgres dbname=car_life_api sslmode=disable")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer postgresDB.Close()
 
-	eventsRepo := events_repository.NewProductRepository(/*postgresDB.GetDatabase()*/nil)
+	eventsRepo := events_repository.NewProductRepository(postgresDB.GetDatabase())
 	eventsUcase := usecase.NewEventsUsecase(eventsRepo)
 	eventHandler := delivery.NewEventsHandler(eventsUcase)
 
@@ -45,7 +46,7 @@ func main() {
 		WriteTimeout: 60 * time.Second,
 	}
 
-	err := server.ListenAndServe()
+	err = server.ListenAndServe()
 	if err != nil {
 		log.Fatal(err)
 	}
