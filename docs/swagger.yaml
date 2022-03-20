@@ -33,6 +33,15 @@ definitions:
         type: number
       name:
         type: string
+    required:
+    - avatar
+    - club
+    - description
+    - event_date
+    - id
+    - latitude
+    - longitude
+    - name
     type: object
   utils.Error:
     properties:

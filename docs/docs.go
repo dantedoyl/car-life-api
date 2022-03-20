@@ -435,6 +435,16 @@ const docTemplate = `{
         },
         "models.Event": {
             "type": "object",
+            "required": [
+                "avatar",
+                "club",
+                "description",
+                "event_date",
+                "id",
+                "latitude",
+                "longitude",
+                "name"
+            ],
             "properties": {
                 "avatar": {
                     "type": "string"
