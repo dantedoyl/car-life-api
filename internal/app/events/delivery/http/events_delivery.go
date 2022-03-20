@@ -33,7 +33,7 @@ func (eh *EventsHandler) Configure(r *mux.Router) {
 // @Tags         Events
 // @Accept       json
 // @Produce      json
-// @Param        body body models.Event true "Event"
+// @Param        body body models.CreateEventRequest true "Event"
 // @Success      200  {object}  models.Event
 // @Failure      400  {object}  utils.Error
 // @Failure      404  {object}  utils.Error
@@ -42,12 +42,22 @@ func (eh *EventsHandler) Configure(r *mux.Router) {
 func (eh *EventsHandler) CreateEvent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
-	eventsData := &models.Event{}
-	err := json.NewDecoder(r.Body).Decode(&eventsData)
+	event := &models.CreateEventRequest{}
+	err := json.NewDecoder(r.Body).Decode(&event)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write(utils.JSONError(&utils.Error{Message: "can't unmarshal data"}))
 		return
+	}
+
+	eventsData  := &models.Event{
+		Name: event.Name,
+		Club: models.Club{ID: event.ClubID},
+		Description: event.Description,
+		EventDate: event.EventDate,
+		Latitude: event.Latitude,
+		Longitude: event.Longitude,
+		AvatarUrl: event.AvatarUrl,
 	}
 
 	err = eh.eventsUcase.CreateEvent(eventsData)
@@ -150,7 +160,7 @@ func (eh *EventsHandler) GetEventByID(w http.ResponseWriter, r *http.Request) {
 // @Failure      400  {object}  utils.Error
 // @Failure      404  {object}  utils.Error
 // @Failure      500  {object}  utils.Error
-// @Router       /events/{id}/upload} [post]
+// @Router       /events/{id}/upload [post]
 func (eh *EventsHandler) UploadAvatarHandler(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 

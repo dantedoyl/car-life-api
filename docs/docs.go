@@ -232,7 +232,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Event"
+                            "$ref": "#/definitions/models.CreateEventRequest"
                         }
                     }
                 ],
@@ -358,7 +358,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/events/{id}/upload}": {
+        "/events/{id}/upload": {
             "post": {
                 "description": "Handler for creating an event",
                 "consumes": [
@@ -438,6 +438,41 @@ const docTemplate = `{
                 },
                 "participants_count": {
                     "type": "integer"
+                }
+            }
+        },
+        "models.CreateEventRequest": {
+            "type": "object",
+            "required": [
+                "avatar",
+                "club_id",
+                "description",
+                "event_date",
+                "latitude",
+                "longitude",
+                "name"
+            ],
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "club_id": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "event_date": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         },
