@@ -24,7 +24,7 @@ create table if not exists clubs
     id        bigserial primary key,
     name      text not null,
     description text null,
-    tags []text,
+    tags text[],
     events_count int,
     participants_count int,
     created_at timestamp default CURRENT_TIMESTAMP,
@@ -37,3 +37,18 @@ create table if not exists tags
     name      text not null,
     usage_count int default 0
 );
+
+INSERT INTO tags (name, usage_count)
+VALUES ('jdm', 0),
+       ('vintage', 0),
+       ('4x4', 0),
+       ('racing', 0),
+       ('cars&coffee', 0),
+       ('exclusive car clubs', 0),
+       ('photography', 0),
+       ('motosports', 0),
+       ('supercar', 0),
+       ('local', 0),
+       ('drift', 0),
+       ('brand specific', 0),
+       ('trip', 0)

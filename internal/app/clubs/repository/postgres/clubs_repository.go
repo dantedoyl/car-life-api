@@ -52,7 +52,7 @@ func (cr *ClubsRepository) GetClubByID(id int64) (*models.Club, error) {
 	return club, nil
 }
 
-func (cr *ClubsRepository) GetClubs(idGt  *uint64, idLte *uint64, limit *uint64, query *string) ([]*models.Club, error) {
+func (cr *ClubsRepository) GetClubs(idGt *uint64, idLte *uint64, limit *uint64, query *string) ([]*models.Club, error) {
 	var clubs []*models.Club
 	ind := 1
 	var values []interface{}
@@ -71,7 +71,7 @@ func (cr *ClubsRepository) GetClubs(idGt  *uint64, idLte *uint64, limit *uint64,
 	}
 
 	if query != nil {
-		q += ` AND (name like '%' || $`+strconv.Itoa(ind)+` || '%' OR '%' || $`+strconv.Itoa(ind)+` || '%' like any(tags)`
+		q += ` AND (name like '%' || $` + strconv.Itoa(ind) + ` || '%' OR '%' || $` + strconv.Itoa(ind) + ` || '%' like any(tags)`
 		values = append(values, idLte)
 		ind++
 	}
@@ -105,7 +105,7 @@ func (cr *ClubsRepository) UpdateClub(club *models.Club) (*models.Club, error) {
 		`UPDATE clubs SET name = $1, description = $2, avatar = $3 from events
 				WHERE id = $1
 				RETURNING id, name, description, events_count, participants_count, avatar`,
-				club.Name, club.Description, club.AvatarUrl).Scan(&club.ID, &club.Name, &club.EventsCount, &club.ParticipantsCount, &club.AvatarUrl)
+		club.Name, club.Description, club.AvatarUrl).Scan(&club.ID, &club.Name, &club.EventsCount, &club.ParticipantsCount, &club.AvatarUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +114,7 @@ func (cr *ClubsRepository) UpdateClub(club *models.Club) (*models.Club, error) {
 
 func (cr *ClubsRepository) GetTags() ([]models.Tag, error) {
 	var tags []models.Tag
-	rows, err := cr.dbConn.Query(`SELECT name from tags ORDER BY usage_count desc`)
+	rows, err := cr.dbConn.Query(`SELECT id, name from tags ORDER BY usage_count desc`)
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +123,7 @@ func (cr *ClubsRepository) GetTags() ([]models.Tag, error) {
 
 	for rows.Next() {
 		var tag models.Tag
-		err = rows.Scan(&tag)
+		err = rows.Scan(&tag.ID, &tag.Name)
 		if err != nil {
 			return nil, err
 		}
@@ -131,4 +131,3 @@ func (cr *ClubsRepository) GetTags() ([]models.Tag, error) {
 	}
 	return tags, nil
 }
-
