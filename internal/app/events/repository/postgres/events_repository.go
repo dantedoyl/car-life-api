@@ -48,7 +48,7 @@ func (er *EventsRepository) GetEventByID(id int64) (*models.Event, error) {
 	return event, nil
 }
 
-func (er *EventsRepository) GetEvents(idGt  *uint64, idLte *uint64, limit *uint64, query *string) ([]*models.Event, error) {
+func (er *EventsRepository) GetEvents(idGt *uint64, idLte *uint64, limit *uint64, query *string) ([]*models.Event, error) {
 	var events []*models.Event
 	ind := 1
 	var values []interface{}
@@ -67,8 +67,8 @@ func (er *EventsRepository) GetEvents(idGt  *uint64, idLte *uint64, limit *uint6
 	}
 
 	if query != nil {
-		q += ` AND name like '%' || $`+strconv.Itoa(ind)+` || '%'`
-		values = append(values, idLte)
+		q += ` AND name like '%' || $` + strconv.Itoa(ind) + ` || '%'`
+		values = append(values, query)
 		ind++
 	}
 

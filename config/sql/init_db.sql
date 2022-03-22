@@ -25,10 +25,10 @@ create table if not exists clubs
     name      text not null,
     description text null,
     tags text[],
-    events_count int,
-    participants_count int,
+    events_count int default 0,
+    participants_count int default 0,
     created_at timestamp default CURRENT_TIMESTAMP,
-    avatar    varchar(512) NOT NULL DEFAULT '/static/events/default.jpeg'
+    avatar    varchar(512) NOT NULL DEFAULT '/static/clubs/default.jpeg'
     );
 
 create table if not exists tags
@@ -51,4 +51,14 @@ VALUES ('jdm', 0),
        ('local', 0),
        ('drift', 0),
        ('brand specific', 0),
-       ('trip', 0)
+       ('Янгтаймер', 0),
+       ('Олдтаймер', 0),
+       ('Edm', 0),
+       ('Stance', 0),
+       ('Racecar', 0),
+       ('Offroad', 0),
+       ('Traveler', 0),
+       ('Street warrior', 0),
+       ('Coupe', 0),
+       ('Suv', 0),
+       ('Usdm', 0)

@@ -26,7 +26,7 @@ func (ch *ClubsHandler) Configure(r *mux.Router) {
 	r.HandleFunc("/clubs/{id:[0-9]+}", ch.GetClubByID).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/clubs", ch.GetClubs).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/clubs/tags", ch.GetTags).Methods(http.MethodGet, http.MethodOptions)
-	r.HandleFunc("/clubs/{id:[0-9]+}/upload}", ch.UploadAvatarHandler).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/clubs/{id:[0-9]+}/upload", ch.UploadAvatarHandler).Methods(http.MethodPost, http.MethodOptions)
 }
 
 // CreateClub godoc
@@ -53,10 +53,10 @@ func (ch *ClubsHandler) CreateClub(w http.ResponseWriter, r *http.Request) {
 	}
 
 	clubsData := &models.Club{
-		Name:              club.Name,
-		Description:       club.Description,
-		AvatarUrl:         club.AvatarUrl,
-		Tags:              club.Tags,
+		Name:        club.Name,
+		Description: club.Description,
+		AvatarUrl:   club.AvatarUrl,
+		Tags:        club.Tags,
 	}
 
 	err = ch.clubsUcase.CreateClub(clubsData)
@@ -195,8 +195,8 @@ func (ch *ClubsHandler) UploadAvatarHandler(w http.ResponseWriter, r *http.Reque
 	}
 
 	file := r.MultipartForm.File["file-upload"][0]
-	club, errE := ch.clubsUcase.UpdateAvatar(clubID, file)
-	if errE != nil {
+	club, err := ch.clubsUcase.UpdateAvatar(clubID, file)
+	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
 		return

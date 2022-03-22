@@ -25,7 +25,7 @@ func (cu *ClubsUsecase) GetClubByID(id uint64) (*models.Club, error) {
 	return cu.clubsRepo.GetClubByID(int64(id))
 }
 
-func (cu *ClubsUsecase) GetClubs(idGt  *uint64, idLte *uint64, limit *uint64, query *string) ([]*models.Club, error) {
+func (cu *ClubsUsecase) GetClubs(idGt *uint64, idLte *uint64, limit *uint64, query *string) ([]*models.Club, error) {
 	return cu.clubsRepo.GetClubs(idGt, idLte, limit, query)
 }
 
@@ -35,7 +35,7 @@ func (cu *ClubsUsecase) UpdateAvatar(clubID int64, fileHeader *multipart.FileHea
 		return nil, err
 	}
 
-	imgUrl, err := filesystem.InsertPhoto(fileHeader, "static/avatar/")
+	imgUrl, err := filesystem.InsertPhoto(fileHeader, "static/clubs/")
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func (cu *ClubsUsecase) UpdateAvatar(clubID int64, fileHeader *multipart.FileHea
 		return nil, err
 	}
 
-	if oldAvatar == "" {
+	if oldAvatar == "/static/clubs/default.jpeg" {
 		return club, nil
 	}
 

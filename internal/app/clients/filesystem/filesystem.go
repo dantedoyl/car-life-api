@@ -7,8 +7,8 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"time"
 )
-
 
 func InsertPhoto(fileHeader *multipart.FileHeader, photoPath string) (string, error) {
 	file, err := fileHeader.Open()
@@ -24,6 +24,7 @@ func InsertPhoto(fileHeader *multipart.FileHeader, photoPath string) (string, er
 
 	os.Chdir(photoPath)
 
+	rand.Seed(time.Now().UTC().UnixNano())
 	photoID := rand.Uint64()
 	photoIDStr := strconv.FormatUint(photoID, 10)
 

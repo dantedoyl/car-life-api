@@ -45,7 +45,7 @@ func (cr *ClubsRepository) GetClubByID(id int64) (*models.Club, error) {
 	club := &models.Club{}
 	err := cr.dbConn.QueryRow(
 		`SELECT  id, name, description, tags, events_count, participants_count, avatar from clubs
-				WHERE id = $1`, id).Scan(&club.ID, &club.Name, pq.Array(&club.Tags), &club.EventsCount, &club.ParticipantsCount, &club.AvatarUrl)
+				WHERE id = $1`, id).Scan(&club.ID, &club.Name, &club.Description, pq.Array(&club.Tags), &club.EventsCount, &club.ParticipantsCount, &club.AvatarUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -71,8 +71,8 @@ func (cr *ClubsRepository) GetClubs(idGt *uint64, idLte *uint64, limit *uint64, 
 	}
 
 	if query != nil {
-		q += ` AND (name like '%' || $` + strconv.Itoa(ind) + ` || '%' OR '%' || $` + strconv.Itoa(ind) + ` || '%' like any(tags)`
-		values = append(values, idLte)
+		q += ` AND (name like '%' || $` + strconv.Itoa(ind) + ` || '%' OR '%' || $` + strconv.Itoa(ind) + ` || '%' like any(tags))`
+		values = append(values, query)
 		ind++
 	}
 
@@ -91,7 +91,7 @@ func (cr *ClubsRepository) GetClubs(idGt *uint64, idLte *uint64, limit *uint64, 
 
 	for rows.Next() {
 		club := &models.Club{}
-		err = rows.Scan(&club.ID, &club.Name, pq.Array(&club.Tags), &club.EventsCount, &club.ParticipantsCount, &club.AvatarUrl)
+		err = rows.Scan(&club.ID, &club.Name, &club.Description, pq.Array(&club.Tags), &club.EventsCount, &club.ParticipantsCount, &club.AvatarUrl)
 		if err != nil {
 			return nil, err
 		}
@@ -102,10 +102,10 @@ func (cr *ClubsRepository) GetClubs(idGt *uint64, idLte *uint64, limit *uint64, 
 
 func (cr *ClubsRepository) UpdateClub(club *models.Club) (*models.Club, error) {
 	err := cr.dbConn.QueryRow(
-		`UPDATE clubs SET name = $1, description = $2, avatar = $3 from events
-				WHERE id = $1
+		`UPDATE clubs SET name = $1, description = $2, avatar = $3
+				WHERE id = $4
 				RETURNING id, name, description, events_count, participants_count, avatar`,
-		club.Name, club.Description, club.AvatarUrl).Scan(&club.ID, &club.Name, &club.EventsCount, &club.ParticipantsCount, &club.AvatarUrl)
+		club.Name, club.Description, club.AvatarUrl, club.ID).Scan(&club.ID, &club.Name, &club.Description, &club.EventsCount, &club.ParticipantsCount, &club.AvatarUrl)
 	if err != nil {
 		return nil, err
 	}
