@@ -35,7 +35,7 @@ func (eu *EventsUsecase) UpdateAvatar(eventID int64, fileHeader *multipart.FileH
 		return nil, err
 	}
 
-	imgUrl, err := filesystem.InsertPhoto(fileHeader, "static/avatar/")
+	imgUrl, err := filesystem.InsertPhoto(fileHeader, "static/events/")
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func (eu *EventsUsecase) UpdateAvatar(eventID int64, fileHeader *multipart.FileH
 		return nil, err
 	}
 
-	if oldAvatar == "" {
+	if oldAvatar == "/static/events/default.jpeg" {
 		return event, nil
 	}
 

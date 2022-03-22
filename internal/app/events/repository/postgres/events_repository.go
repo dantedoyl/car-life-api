@@ -40,7 +40,7 @@ func (er *EventsRepository) GetEventByID(id int64) (*models.Event, error) {
 	err := er.dbConn.QueryRow(
 		`SELECT  id, name, club_id, description, event_date, latitude, longitude, avatar from events
 				WHERE id = $1`, id).Scan(&event.ID, &event.Name, &event.Club.ID, &event.Description, &event.EventDate,
-					&event.Latitude, &event.Longitude, &event.AvatarUrl)
+		&event.Latitude, &event.Longitude, &event.AvatarUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -70,14 +70,13 @@ func (er *EventsRepository) GetEvents() ([]*models.Event, error) {
 
 func (er *EventsRepository) UpdateEvent(event *models.Event) (*models.Event, error) {
 	err := er.dbConn.QueryRow(
-		`UPDATE events SET name = $1, description = $2, event_date = $3, latitude = $4, longitude = $5, avatar = $6 from events
-				WHERE id = $1
+		`UPDATE events SET name = $1, description = $2, event_date = $3, latitude = $4, longitude = $5, avatar = $6
+				WHERE id = $7
 				RETURNING id, name, club_id, description, event_date, latitude, longitude, avatar`,
-				event.Name, event.Description, event.EventDate, event.Latitude, event.Longitude, event.AvatarUrl).Scan(&event.ID, &event.Name, &event.Club.ID, &event.Description, &event.EventDate,
+		event.Name, event.Description, event.EventDate, event.Latitude, event.Longitude, event.AvatarUrl, event.ID).Scan(&event.ID, &event.Name, &event.Club.ID, &event.Description, &event.EventDate,
 		&event.Latitude, &event.Longitude, &event.AvatarUrl)
 	if err != nil {
 		return nil, err
 	}
 	return event, nil
 }
-

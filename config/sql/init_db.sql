@@ -16,5 +16,5 @@ create table if not exists events
     created_at timestamp default CURRENT_TIMESTAMP,
     latitude  float                 DEFAULT 55.753808,
     longitude float                 DEFAULT 37.620017,
-    avatar    varchar(512) NOT NULL DEFAULT ''
+    avatar    varchar(512) NOT NULL DEFAULT '/static/events/default.jpeg'
 );

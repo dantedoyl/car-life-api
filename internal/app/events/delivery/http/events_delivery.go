@@ -24,7 +24,7 @@ func (eh *EventsHandler) Configure(r *mux.Router) {
 	r.HandleFunc("/event/create", eh.CreateEvent).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/events/{id:[0-9]+}", eh.GetEventByID).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/events", eh.GetEvents).Methods(http.MethodGet, http.MethodOptions)
-	r.HandleFunc("/events/{id:[0-9]+}/upload}", eh.UploadAvatarHandler).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/events/{id:[0-9]+}/upload", eh.UploadAvatarHandler).Methods(http.MethodPost, http.MethodOptions)
 }
 
 // CreateEvent godoc
@@ -50,14 +50,14 @@ func (eh *EventsHandler) CreateEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	eventsData  := &models.Event{
-		Name: event.Name,
-		Club: models.Club{ID: event.ClubID},
+	eventsData := &models.Event{
+		Name:        event.Name,
+		Club:        models.Club{ID: event.ClubID},
 		Description: event.Description,
-		EventDate: event.EventDate,
-		Latitude: event.Latitude,
-		Longitude: event.Longitude,
-		AvatarUrl: event.AvatarUrl,
+		EventDate:   event.EventDate,
+		Latitude:    event.Latitude,
+		Longitude:   event.Longitude,
+		AvatarUrl:   event.AvatarUrl,
 	}
 
 	err = eh.eventsUcase.CreateEvent(eventsData)
@@ -182,8 +182,8 @@ func (eh *EventsHandler) UploadAvatarHandler(w http.ResponseWriter, r *http.Requ
 	}
 
 	file := r.MultipartForm.File["file-upload"][0]
-	event, errE := eh.eventsUcase.UpdateAvatar(eventID, file)
-	if errE != nil {
+	event, err := eh.eventsUcase.UpdateAvatar(eventID, file)
+	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
 		return
