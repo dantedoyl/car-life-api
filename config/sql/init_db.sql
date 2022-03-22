@@ -18,3 +18,22 @@ create table if not exists events
     longitude float                 DEFAULT 37.620017,
     avatar    varchar(512) NOT NULL DEFAULT '/static/events/default.jpeg'
 );
+
+create table if not exists clubs
+(
+    id        bigserial primary key,
+    name      text not null,
+    description text null,
+    tags []text,
+    events_count int,
+    participants_count int,
+    created_at timestamp default CURRENT_TIMESTAMP,
+    avatar    varchar(512) NOT NULL DEFAULT '/static/events/default.jpeg'
+    );
+
+create table if not exists tags
+(
+    id        bigserial primary key,
+    name      text not null,
+    usage_count int default 0
+);

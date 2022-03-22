@@ -6,6 +6,7 @@ import (
 	"github.com/dantedoyl/car-life-api/internal/app/models"
 	"github.com/dantedoyl/car-life-api/internal/app/utils"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/schema"
 	"net/http"
 	"strconv"
 )
@@ -24,16 +25,17 @@ func (ch *ClubsHandler) Configure(r *mux.Router) {
 	r.HandleFunc("/club/create", ch.CreateClub).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/clubs/{id:[0-9]+}", ch.GetClubByID).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/clubs", ch.GetClubs).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc("/clubs/tags", ch.GetTags).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/clubs/{id:[0-9]+}/upload}", ch.UploadAvatarHandler).Methods(http.MethodPost, http.MethodOptions)
 }
 
-// CreateEvent godoc
+// CreateClub godoc
 // @Summary      create a club
 // @Description  Handler for creating a club
 // @Tags         Clubs
 // @Accept       json
 // @Produce      json
-// @Param        body body models.Club true "Club"
+// @Param        body body models.CreateClubRequest true "Club"
 // @Success      200  {object}  models.Club
 // @Failure      400  {object}  utils.Error
 // @Failure      404  {object}  utils.Error
@@ -42,12 +44,19 @@ func (ch *ClubsHandler) Configure(r *mux.Router) {
 func (ch *ClubsHandler) CreateClub(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
-	clubsData := &models.Club{}
-	err := json.NewDecoder(r.Body).Decode(&clubsData)
+	club := &models.CreateClubRequest{}
+	err := json.NewDecoder(r.Body).Decode(&club)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write(utils.JSONError(&utils.Error{Message: "can't unmarshal data"}))
 		return
+	}
+
+	clubsData := &models.Club{
+		Name:              club.Name,
+		Description:       club.Description,
+		AvatarUrl:         club.AvatarUrl,
+		Tags:              club.Tags,
 	}
 
 	err = ch.clubsUcase.CreateClub(clubsData)
@@ -76,23 +85,34 @@ func (ch *ClubsHandler) CreateClub(w http.ResponseWriter, r *http.Request) {
 // @Tags         Clubs
 // @Accept       json
 // @Produce      json
+// @Param        body query  true "Club"
 // @Success      200  {object}  []models.Club
 // @Failure      400  {object}  utils.Error
 // @Failure      404  {object}  utils.Error
 // @Failure      500  {object}  utils.Error
 // @Router       /clubs [get]
 func (ch *ClubsHandler) GetClubs(w http.ResponseWriter, r *http.Request) {
-	event, err := ch.clubsUcase.GetClubs()
+	query := &models.ClubQuery{}
+	decoder := schema.NewDecoder()
+	decoder.IgnoreUnknownKeys(true)
+	err := decoder.Decode(query, r.URL.Query())
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	clubs, err := ch.clubsUcase.GetClubs(query.IdGt, query.IdLte, query.Limit, query.Query)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
 		return
 	}
-	if len(event) == 0 {
-		event = []*models.Club{}
+	if len(clubs) == 0 {
+		clubs = []*models.Club{}
 	}
 
-	body, err := json.Marshal(event)
+	body, err := json.Marshal(clubs)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: "can't marshal data"}))
@@ -180,6 +200,40 @@ func (ch *ClubsHandler) UploadAvatarHandler(w http.ResponseWriter, r *http.Reque
 	}
 
 	body, err := json.Marshal(club)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: "can't marshal data"}))
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(body)
+}
+
+// GetTags godoc
+// @Summary      get tags list
+// @Description  Handler for getting tags list
+// @Tags         Clubs
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  []models.Tag
+// @Failure      400  {object}  utils.Error
+// @Failure      404  {object}  utils.Error
+// @Failure      500  {object}  utils.Error
+// @Router       /clubs/tags [get]
+func (ch *ClubsHandler) GetTags(w http.ResponseWriter, r *http.Request) {
+	tags, err := ch.clubsUcase.GetTags()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+	if len(tags) == 0 {
+		tags = []models.Tag{}
+	}
+
+	body, err := json.Marshal(tags)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: "can't marshal data"}))

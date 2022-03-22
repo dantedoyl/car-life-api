@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"github.com/dantedoyl/car-life-api/internal/app/events"
 	"github.com/dantedoyl/car-life-api/internal/app/models"
+	"strconv"
 )
 
 type EventsRepository struct {
@@ -47,9 +48,37 @@ func (er *EventsRepository) GetEventByID(id int64) (*models.Event, error) {
 	return event, nil
 }
 
-func (er *EventsRepository) GetEvents() ([]*models.Event, error) {
+func (er *EventsRepository) GetEvents(idGt  *uint64, idLte *uint64, limit *uint64, query *string) ([]*models.Event, error) {
 	var events []*models.Event
-	rows, err := er.dbConn.Query(`SELECT  id, name, club_id, description, event_date, latitude, longitude, avatar from events ORDER BY created_at desc`)
+	ind := 1
+	var values []interface{}
+	q := `SELECT  id, name, club_id, description, event_date, latitude, longitude, avatar from events WHERE true `
+
+	if idGt != nil {
+		q += ` AND id > $` + strconv.Itoa(ind)
+		values = append(values, idGt)
+		ind++
+	}
+
+	if idLte != nil {
+		q += ` AND id <= $` + strconv.Itoa(ind)
+		values = append(values, idLte)
+		ind++
+	}
+
+	if query != nil {
+		q += ` AND name like '%' || $`+strconv.Itoa(ind)+` || '%'`
+		values = append(values, idLte)
+		ind++
+	}
+
+	if limit != nil {
+		q += ` LIMIT $` + strconv.Itoa(ind)
+		values = append(values, limit)
+	}
+
+	q += ` ORDER BY created_at desc`
+	rows, err := er.dbConn.Query(q, values...)
 	if err != nil {
 		return nil, err
 	}

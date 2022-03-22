@@ -6,6 +6,7 @@ import (
 	"github.com/dantedoyl/car-life-api/internal/app/models"
 	"github.com/dantedoyl/car-life-api/internal/app/utils"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/schema"
 	"net/http"
 	"strconv"
 )
@@ -92,7 +93,17 @@ func (eh *EventsHandler) CreateEvent(w http.ResponseWriter, r *http.Request) {
 // @Failure      500  {object}  utils.Error
 // @Router       /events [get]
 func (eh *EventsHandler) GetEvents(w http.ResponseWriter, r *http.Request) {
-	event, err := eh.eventsUcase.GetEvents()
+	query := &models.EventQuery{}
+	decoder := schema.NewDecoder()
+	decoder.IgnoreUnknownKeys(true)
+	err := decoder.Decode(query, r.URL.Query())
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	event, err := eh.eventsUcase.GetEvents(query.IdGt, query.IdLte, query.Limit, query.Query)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))

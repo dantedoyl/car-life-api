@@ -25,8 +25,8 @@ func (cu *ClubsUsecase) GetClubByID(id uint64) (*models.Club, error) {
 	return cu.clubsRepo.GetClubByID(int64(id))
 }
 
-func (cu *ClubsUsecase) GetClubs() ([]*models.Club, error) {
-	return cu.clubsRepo.GetClubs()
+func (cu *ClubsUsecase) GetClubs(idGt  *uint64, idLte *uint64, limit *uint64, query *string) ([]*models.Club, error) {
+	return cu.clubsRepo.GetClubs(idGt, idLte, limit, query)
 }
 
 func (cu *ClubsUsecase) UpdateAvatar(clubID int64, fileHeader *multipart.FileHeader) (*models.Club, error) {
@@ -57,4 +57,8 @@ func (cu *ClubsUsecase) UpdateAvatar(clubID int64, fileHeader *multipart.FileHea
 	}
 
 	return club, nil
+}
+
+func (cu *ClubsUsecase) GetTags() ([]models.Tag, error) {
+	return cu.clubsRepo.GetTags()
 }

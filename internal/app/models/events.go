@@ -13,6 +13,13 @@ type Event struct {
 	AvatarUrl    string `json:"avatar" binding:"required"`
 }
 
+type EventQuery struct {
+	IdGt  *uint64
+	IdLte *uint64
+	Limit *uint64
+	Query *string
+}
+
 type CreateEventRequest struct {
 	Name     string `json:"name" binding:"required"`
 	Description string `json:"description" binding:"required"`
