@@ -16,7 +16,7 @@ definitions:
         type: integer
       tags:
         items:
-          $ref: '#/definitions/models.Tag'
+          type: string
         type: array
     required:
     - avatar
@@ -37,7 +37,7 @@ definitions:
         type: string
       tags:
         items:
-          $ref: '#/definitions/models.Tag'
+          type: string
         type: array
     required:
     - avatar
