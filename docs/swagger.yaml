@@ -16,7 +16,7 @@ definitions:
         type: integer
       tags:
         items:
-          type: string
+          $ref: '#/definitions/models.Tag'
         type: array
     required:
     - avatar
@@ -37,7 +37,7 @@ definitions:
         type: string
       tags:
         items:
-          type: string
+          $ref: '#/definitions/models.Tag'
         type: array
     required:
     - avatar
@@ -96,6 +96,16 @@ definitions:
     - id
     - latitude
     - longitude
+    - name
+    type: object
+  models.Tag:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    required:
+    - id
     - name
     type: object
   utils.Error:
@@ -268,7 +278,7 @@ paths:
           description: OK
           schema:
             items:
-              type: string
+              $ref: '#/definitions/models.Tag'
             type: array
         "400":
           description: Bad Request

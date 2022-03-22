@@ -2,9 +2,13 @@ package main
 
 import (
 	"github.com/dantedoyl/car-life-api/internal/app/clients/database"
-	delivery "github.com/dantedoyl/car-life-api/internal/app/events/delivery/http"
+	clubs_delivery "github.com/dantedoyl/car-life-api/internal/app/clubs/delivery/http"
+	clubs_repository "github.com/dantedoyl/car-life-api/internal/app/clubs/repository/postgres"
+	clubs_usecase "github.com/dantedoyl/car-life-api/internal/app/clubs/usecase"
+	events_delivery "github.com/dantedoyl/car-life-api/internal/app/events/delivery/http"
 	events_repository "github.com/dantedoyl/car-life-api/internal/app/events/repository/postgres"
-	"github.com/dantedoyl/car-life-api/internal/app/events/usecase"
+	events_usecase "github.com/dantedoyl/car-life-api/internal/app/events/usecase"
+
 	"github.com/dantedoyl/car-life-api/internal/app/middleware"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"log"
@@ -28,14 +32,19 @@ func main() {
 	defer postgresDB.Close()
 
 	eventsRepo := events_repository.NewProductRepository(postgresDB.GetDatabase())
-	eventsUcase := usecase.NewEventsUsecase(eventsRepo)
-	eventHandler := delivery.NewEventsHandler(eventsUcase)
+	eventsUcase := events_usecase.NewEventsUsecase(eventsRepo)
+	eventHandler := events_delivery.NewEventsHandler(eventsUcase)
+
+	clubsRepo := clubs_repository.NewClubRepository(postgresDB.GetDatabase())
+	clubsUcase := clubs_usecase.NewClubsUsecase(clubsRepo)
+	clubsHandler := clubs_delivery.NewClubsHandler(clubsUcase)
 
 	router := mux.NewRouter()
 
 	api := router.PathPrefix("/api/v1").Subrouter()
 	api.Use(middleware.CorsControlMiddleware)
 	eventHandler.Configure(api)
+	clubsHandler.Configure(api)
 	api.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
 
 

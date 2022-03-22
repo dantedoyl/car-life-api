@@ -157,7 +157,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "type": "string"
+                                "$ref": "#/definitions/models.Tag"
                             }
                         }
                     },
@@ -539,7 +539,7 @@ const docTemplate = `{
                 "tags": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/models.Tag"
                     }
                 }
             }
@@ -565,7 +565,7 @@ const docTemplate = `{
                 "tags": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/models.Tag"
                     }
                 }
             }
@@ -638,6 +638,21 @@ const docTemplate = `{
                 },
                 "longitude": {
                     "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Tag": {
+            "type": "object",
+            "required": [
+                "id",
+                "name"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
                 },
                 "name": {
                     "type": "string"
