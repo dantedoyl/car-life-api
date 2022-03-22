@@ -14,6 +14,10 @@ definitions:
         type: string
       participants_count:
         type: integer
+      tags:
+        items:
+          type: string
+        type: array
     required:
     - avatar
     - description
@@ -21,6 +25,25 @@ definitions:
     - id
     - name
     - participants_count
+    - tags
+    type: object
+  models.CreateClubRequest:
+    properties:
+      avatar:
+        type: string
+      description:
+        type: string
+      name:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+    required:
+    - avatar
+    - description
+    - name
+    - tags
     type: object
   models.CreateEventRequest:
     properties:
@@ -98,7 +121,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/models.Club'
+          $ref: '#/definitions/models.CreateClubRequest'
       produces:
       - application/json
       responses:
@@ -126,6 +149,23 @@ paths:
       consumes:
       - application/json
       description: Handler for getting clubs list
+      parameters:
+      - description: IdGt
+        in: query
+        name: IdGt
+        type: integer
+      - description: IdLte
+        in: query
+        name: IdLte
+        type: integer
+      - description: Limit
+        in: query
+        name: Limit
+        type: integer
+      - description: Query
+        in: query
+        name: Query
+        type: string
       produces:
       - application/json
       responses:
@@ -216,6 +256,35 @@ paths:
       summary: upload avatar for club
       tags:
       - Clubs
+  /clubs/tags:
+    get:
+      consumes:
+      - application/json
+      description: Handler for getting tags list
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: get tags list
+      tags:
+      - Clubs
   /event/create:
     post:
       consumes:
@@ -255,6 +324,23 @@ paths:
       consumes:
       - application/json
       description: Handler for getting events list
+      parameters:
+      - description: IdGt
+        in: query
+        name: IdGt
+        type: integer
+      - description: IdLte
+        in: query
+        name: IdLte
+        type: integer
+      - description: Limit
+        in: query
+        name: Limit
+        type: integer
+      - description: Query
+        in: query
+        name: Query
+        type: string
       produces:
       - application/json
       responses:

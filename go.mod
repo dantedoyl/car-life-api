@@ -4,11 +4,11 @@ go 1.17
 
 require (
 	github.com/gorilla/mux v1.8.0
+	github.com/gorilla/schema v1.2.0
 	github.com/jackc/pgx v3.6.2+incompatible
 	github.com/lib/pq v1.10.4
 	github.com/swaggo/http-swagger v1.2.5
 	github.com/swaggo/swag v1.8.0
-	github.com/gorilla/schema v1.2.0
 )
 
 require (

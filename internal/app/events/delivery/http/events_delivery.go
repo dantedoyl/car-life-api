@@ -87,6 +87,10 @@ func (eh *EventsHandler) CreateEvent(w http.ResponseWriter, r *http.Request) {
 // @Tags         Events
 // @Accept       json
 // @Produce      json
+// @Param        IdGt query integer false "IdGt"
+// @Param        IdLte query integer false "IdLte"
+// @Param        Limit query integer false "Limit"
+// @Param        Query query string false "Query"
 // @Success      200  {object}  []models.Event
 // @Failure      400  {object}  utils.Error
 // @Failure      404  {object}  utils.Error
