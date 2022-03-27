@@ -35,7 +35,7 @@ func (cu *ClubsUsecase) UpdateAvatar(clubID int64, fileHeader *multipart.FileHea
 		return nil, err
 	}
 
-	imgUrl, err := filesystem.InsertPhoto(fileHeader, "static/clubs/")
+	imgUrl, err := filesystem.InsertPhoto(fileHeader, "img/clubs/")
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func (cu *ClubsUsecase) UpdateAvatar(clubID int64, fileHeader *multipart.FileHea
 		return nil, err
 	}
 
-	if oldAvatar == "/static/clubs/default.jpeg" {
+	if oldAvatar == "/img/clubs/default.jpeg" {
 		return club, nil
 	}
 

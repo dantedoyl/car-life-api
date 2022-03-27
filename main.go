@@ -42,7 +42,7 @@ func main() {
 
 	router := mux.NewRouter()
 
-	static := router.PathPrefix("/static").Subrouter()
+	static := router.PathPrefix("/img").Subrouter()
 	static.Handle("/events/{key}", http.FileServer(http.Dir("."))).Methods(http.MethodGet)
 	static.Handle("/clubs/{key}", http.FileServer(http.Dir("."))).Methods(http.MethodGet)
 
