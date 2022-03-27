@@ -18,6 +18,7 @@ import (
 	_ "github.com/dantedoyl/car-life-api/docs"
 	"github.com/gorilla/mux"
 )
+
 // @title           Swagger Example API
 // @version         1.0
 // @description     API for CarLife application
@@ -41,16 +42,19 @@ func main() {
 
 	router := mux.NewRouter()
 
+	static := router.PathPrefix("/static").Subrouter()
+	static.Handle("/events/{key}", http.FileServer(http.Dir("."))).Methods(http.MethodGet)
+	static.Handle("/clubs/{key}", http.FileServer(http.Dir("."))).Methods(http.MethodGet)
+
 	api := router.PathPrefix("/api/v1").Subrouter()
 	api.Use(middleware.CorsControlMiddleware)
 	eventHandler.Configure(api)
 	clubsHandler.Configure(api)
 	api.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
 
-
 	server := http.Server{
 		Addr:         ":8080",
-		Handler:      api,
+		Handler:      router,
 		ReadTimeout:  60 * time.Second,
 		WriteTimeout: 60 * time.Second,
 	}
