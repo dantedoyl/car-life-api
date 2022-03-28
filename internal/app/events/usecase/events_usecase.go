@@ -25,7 +25,7 @@ func (eu *EventsUsecase) GetEventByID(id uint64) (*models.Event, error) {
 	return eu.eventsRepo.GetEventByID(int64(id))
 }
 
-func (eu *EventsUsecase) GetEvents(idGt  *uint64, idLte *uint64, limit *uint64, query *string) ([]*models.Event, error) {
+func (eu *EventsUsecase) GetEvents(idGt *uint64, idLte *uint64, limit *uint64, query *string) ([]*models.Event, error) {
 	return eu.eventsRepo.GetEvents(idGt, idLte, limit, query)
 }
 

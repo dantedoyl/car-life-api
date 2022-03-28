@@ -18,6 +18,7 @@ import (
 	_ "github.com/dantedoyl/car-life-api/docs"
 	"github.com/gorilla/mux"
 )
+
 // @title           Swagger Example API
 // @version         1.0
 // @description     API for CarLife application
@@ -46,7 +47,6 @@ func main() {
 	eventHandler.Configure(api)
 	clubsHandler.Configure(api)
 	api.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
-
 
 	server := http.Server{
 		Addr:         ":8080",
