@@ -91,7 +91,7 @@ func (eh *EventsHandler) CreateEvent(w http.ResponseWriter, r *http.Request) {
 // @Param        IdLte query integer false "IdLte"
 // @Param        Limit query integer false "Limit"
 // @Param        Query query string false "Query"
-// @Success      200  {object}  []models.Event
+// @Success      200  {object}  []models.EventCard
 // @Failure      400  {object}  utils.Error
 // @Failure      404  {object}  utils.Error
 // @Failure      500  {object}  utils.Error
@@ -107,17 +107,27 @@ func (eh *EventsHandler) GetEvents(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	event, err := eh.eventsUcase.GetEvents(query.IdGt, query.IdLte, query.Limit, query.Query)
+	events, err := eh.eventsUcase.GetEvents(query.IdGt, query.IdLte, query.Limit, query.Query)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
 		return
 	}
-	if len(event) == 0 {
-		event = []*models.Event{}
+	if len(events) == 0 {
+		events = []*models.Event{}
 	}
 
-	body, err := json.Marshal(event)
+	eventCards := make([]models.EventCard, 0, len(events))
+	for _, event := range events {
+		eventCards = append(eventCards, models.EventCard{
+			ID:        event.ID,
+			Name:      event.Name,
+			EventDate: event.EventDate,
+			AvatarUrl: event.AvatarUrl,
+		})
+	}
+
+	body, err := json.Marshal(eventCards)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: "can't marshal data"}))

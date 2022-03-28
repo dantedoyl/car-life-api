@@ -44,6 +44,14 @@ func (ch *ClubsHandler) Configure(r *mux.Router) {
 func (ch *ClubsHandler) CreateClub(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
+	// добавить проверку авторизации
+	userID, ok := r.Context().Value("user_id").(uint64)
+	if !ok {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write(utils.JSONError(&utils.Error{Message: "you're unauthorized"}))
+		return
+	}
+
 	club := &models.CreateClubRequest{}
 	err := json.NewDecoder(r.Body).Decode(&club)
 	if err != nil {
@@ -57,6 +65,7 @@ func (ch *ClubsHandler) CreateClub(w http.ResponseWriter, r *http.Request) {
 		Description: club.Description,
 		AvatarUrl:   club.AvatarUrl,
 		Tags:        club.Tags,
+		OwnerID:     userID,
 	}
 
 	err = ch.clubsUcase.CreateClub(clubsData)
@@ -89,7 +98,7 @@ func (ch *ClubsHandler) CreateClub(w http.ResponseWriter, r *http.Request) {
 // @Param        IdLte query integer false "IdLte"
 // @Param        Limit query integer false "Limit"
 // @Param        Query query string false "Query"
-// @Success      200  {object}  []models.Club
+// @Success      200  {object}  []models.ClubCard
 // @Failure      400  {object}  utils.Error
 // @Failure      404  {object}  utils.Error
 // @Failure      500  {object}  utils.Error
@@ -115,7 +124,17 @@ func (ch *ClubsHandler) GetClubs(w http.ResponseWriter, r *http.Request) {
 		clubs = []*models.Club{}
 	}
 
-	body, err := json.Marshal(clubs)
+	clubCards := make([]models.ClubCard, 0, len(clubs))
+	for _, club := range clubs {
+		clubCards = append(clubCards, models.ClubCard{
+			ID:        club.ID,
+			Name:      club.Name,
+			AvatarUrl: club.AvatarUrl,
+			Tags:      club.Tags,
+		})
+	}
+
+	body, err := json.Marshal(clubCards)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: "can't marshal data"}))
