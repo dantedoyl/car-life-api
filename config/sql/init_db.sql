@@ -38,6 +38,22 @@ create table if not exists tags
     usage_count int default 0
 );
 
+create table if not exists users
+(
+        vk_id bigint PRIMARY key,
+        name text not null,
+        surname text not null,
+        avatar    varchar(512) NOT NULL,
+    created_at timestamp default CURRENT_TIMESTAMP
+    );
+create table if not exists cars
+(
+    id bigserial primary key,
+    owner_id bigint not null,
+    name text not null,
+    avatar    varchar(512) NOT NULL
+);
+
 INSERT INTO tags (name, usage_count)
 VALUES ('jdm', 0),
        ('vintage', 0),

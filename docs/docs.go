@@ -113,7 +113,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Club"
+                                "$ref": "#/definitions/models.ClubCard"
                             }
                         }
                     },
@@ -379,7 +379,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Event"
+                                "$ref": "#/definitions/models.EventCard"
                             }
                         }
                     },
@@ -503,23 +503,203 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/garage/{id}/upload": {
+            "post": {
+                "description": "Handler for creating an event",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "upload avatar for car",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Car ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "description": "Handler for signing up new user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "login user",
+                "parameters": [
+                    {
+                        "description": "User",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/signup": {
+            "post": {
+                "description": "Handler for signing up new user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "sign uo new user",
+                "parameters": [
+                    {
+                        "description": "User",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SignUpRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "models.CarCard": {
+            "type": "object",
+            "properties": {
+                "avatarUrl": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "ownerID": {
+                    "type": "integer"
+                }
+            }
+        },
         "models.Club": {
             "type": "object",
             "required": [
                 "avatar",
+                "club_events",
+                "club_garage",
                 "description",
                 "events_count",
                 "id",
                 "name",
+                "owner_id",
                 "participants_count",
                 "tags"
             ],
             "properties": {
                 "avatar": {
                     "type": "string"
+                },
+                "club_events": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.EventCard"
+                    }
+                },
+                "club_garage": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.CarCard"
+                    }
                 },
                 "description": {
                     "type": "string"
@@ -533,8 +713,37 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "owner_id": {
+                    "type": "integer"
+                },
                 "participants_count": {
                     "type": "integer"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "models.ClubCard": {
+            "type": "object",
+            "required": [
+                "avatar",
+                "id",
+                "name",
+                "tags"
+            ],
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
                 },
                 "tags": {
                     "type": "array",
@@ -615,7 +824,8 @@ const docTemplate = `{
                 "id",
                 "latitude",
                 "longitude",
-                "name"
+                "name",
+                "participants_count"
             ],
             "properties": {
                 "avatar": {
@@ -641,6 +851,63 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "participants_count": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.EventCard": {
+            "type": "object",
+            "required": [
+                "avatar",
+                "event_date",
+                "id",
+                "name"
+            ],
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "event_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.LoginRequest": {
+            "type": "object",
+            "properties": {
+                "vkid": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.SignUpRequest": {
+            "type": "object",
+            "properties": {
+                "avatarUrl": {
+                    "type": "string"
+                },
+                "garage": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.CarCard"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "surname": {
+                    "type": "string"
+                },
+                "vkid": {
+                    "type": "integer"
                 }
             }
         },
@@ -656,6 +923,47 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "models.User": {
+            "type": "object",
+            "properties": {
+                "avatarUrl": {
+                    "type": "string"
+                },
+                "garage": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.CarCard"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "ownClubs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ClubCard"
+                    }
+                },
+                "participantClubs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ClubCard"
+                    }
+                },
+                "participantEvents": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.EventCard"
+                    }
+                },
+                "surname": {
+                    "type": "string"
+                },
+                "vkid": {
+                    "type": "integer"
                 }
             }
         },

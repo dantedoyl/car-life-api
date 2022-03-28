@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/dantedoyl/car-life-api/internal/app/clients/database"
 	clubs_delivery "github.com/dantedoyl/car-life-api/internal/app/clubs/delivery/http"
 	clubs_repository "github.com/dantedoyl/car-life-api/internal/app/clubs/repository/postgres"
@@ -8,6 +9,11 @@ import (
 	events_delivery "github.com/dantedoyl/car-life-api/internal/app/events/delivery/http"
 	events_repository "github.com/dantedoyl/car-life-api/internal/app/events/repository/postgres"
 	events_usecase "github.com/dantedoyl/car-life-api/internal/app/events/usecase"
+	users_delivery "github.com/dantedoyl/car-life-api/internal/app/users/delivery/http"
+	users_repository "github.com/dantedoyl/car-life-api/internal/app/users/repository/postgres"
+	users_usecase "github.com/dantedoyl/car-life-api/internal/app/users/usecase"
+
+	"github.com/tarantool/go-tarantool"
 
 	"github.com/dantedoyl/car-life-api/internal/app/middleware"
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -32,6 +38,20 @@ func main() {
 	}
 	defer postgresDB.Close()
 
+	opts := tarantool.Opts{
+		User: "admin",
+		Pass: "pass",
+	}
+	tarConn, err := tarantool.Connect("127.0.0.1:3301", opts)
+	if err != nil {
+		fmt.Println("baa: Connection refused:", err)
+		return
+	}
+
+	userRepo := users_repository.NewUserRepository(postgresDB.GetDatabase(), tarConn)
+	userUcase := users_usecase.NewUsersUsecase(userRepo)
+	userHandler := users_delivery.NewUserssHandler(userUcase)
+
 	eventsRepo := events_repository.NewProductRepository(postgresDB.GetDatabase())
 	eventsUcase := events_usecase.NewEventsUsecase(eventsRepo)
 	eventHandler := events_delivery.NewEventsHandler(eventsUcase)
@@ -50,6 +70,7 @@ func main() {
 	api.Use(middleware.CorsControlMiddleware)
 	eventHandler.Configure(api)
 	clubsHandler.Configure(api)
+	userHandler.Configure(api)
 	api.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
 
 	server := http.Server{

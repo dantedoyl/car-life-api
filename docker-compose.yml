@@ -16,3 +16,20 @@ services:
     volumes:
       - './config/sql/:/docker-entrypoint-initdb.d/'
       - './postgres-data:/var/lib/postgresql/data'
+  tarantool:
+    image: tarantool/tarantool
+    environment:
+      TARANTOOL_USER_NAME: admin
+      TARANTOOL_USER_PASSWORD: pass
+    command: tarantool /opt/tarantool/app.lua
+    ports:
+      - "3301:3301"
+    volumes:
+      - ./tarantool-data:/var/lib/tarantool
+      - $PWD/configs/lua/:/opt/tarantool/
+    restart: always
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://localhost:12201"
+        tag: "tarantool"
