@@ -91,7 +91,7 @@ func (uh *UsersHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		Value:    session.Value,
 		Expires:  session.ExpiresAt,
 		Secure:   true,
-		SameSite: http.SameSiteLaxMode,
+		SameSite: http.SameSiteNoneMode,
 		HttpOnly: true,
 	}
 
