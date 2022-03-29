@@ -55,7 +55,7 @@ create table if not exists cars
     model text not null,
     date timestamp not null,
     description text not null,
-    avatar    varchar(512) NOT NULL
+    avatar    varchar(512) NOT NULL DEFAULT '/img/cars/default.jpeg'
 );
 
 INSERT INTO tags (name, usage_count)

@@ -6,17 +6,18 @@ import (
 	"fmt"
 	"github.com/dantedoyl/car-life-api/internal/app/models"
 	"github.com/dantedoyl/car-life-api/internal/app/users"
+	"github.com/lib/pq"
 	"github.com/tarantool/go-tarantool"
 )
 
 type UsersRepository struct {
-	sqlConn *sql.DB
+	sqlConn       *sql.DB
 	tarantoolConn *tarantool.Connection
 }
 
 func NewUserRepository(connP *sql.DB, connT *tarantool.Connection) users.IUsersRepository {
 	return &UsersRepository{
-		sqlConn: connP,
+		sqlConn:       connP,
 		tarantoolConn: connT,
 	}
 }
@@ -24,12 +25,13 @@ func NewUserRepository(connP *sql.DB, connT *tarantool.Connection) users.IUsersR
 func (ur *UsersRepository) InsertUser(user *models.User) (*models.User, error) {
 	_, err := ur.sqlConn.Exec(
 		`INSERT INTO users
-                (vk_id, name, surname, avatar)
-                VALUES ($1, $2, $3, $4)`,
+                (vk_id, name, surname, avatar, tags)
+                VALUES ($1, $2, $3, $4, $5)`,
 		user.VKID,
 		user.Name,
 		user.Surname,
-		user.AvatarUrl)
+		user.AvatarUrl,
+		pq.Array(user.Tags))
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +41,7 @@ func (ur *UsersRepository) InsertUser(user *models.User) (*models.User, error) {
                 (owner_id, barnd, model,date,description)
                 VALUES ($1, $2, $3, $4, $5)
                 RETURNING id`,
-		user.VKID, user.Garage[0].Barnd, user.Garage[0].Model, user.Garage[0].Date, user.Garage[0].Description).Scan(&user.Garage[0].ID)
+		user.VKID, user.Garage[0].Brand, user.Garage[0].Model, user.Garage[0].Date, user.Garage[0].Description).Scan(&user.Garage[0].ID)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +70,7 @@ func (ur *UsersRepository) SelectByID(userID uint64) (*models.User, error) {
 
 	for rows.Next() {
 		car := &models.CarCard{}
-		err = rows.Scan(&car.ID, &car.OwnerID, &car.Barnd, &car.Model, &car.Date, &car.Description, &car.AvatarUrl)
+		err = rows.Scan(&car.ID, &car.OwnerID, &car.Brand, &car.Model, &car.Date, &car.Description, &car.AvatarUrl)
 		if err != nil {
 			return nil, err
 		}
@@ -139,11 +141,11 @@ func (ur *UsersRepository) DeleteByValue(sessionValue string) error {
 	return nil
 }
 
-func (ur *UsersRepository)SelectCarByID(carID uint64) (*models.CarCard, error) {
+func (ur *UsersRepository) SelectCarByID(carID uint64) (*models.CarCard, error) {
 	car := &models.CarCard{}
 	err := ur.sqlConn.QueryRow(
 		`SELECT id, owner_id, barnd, model,date,description, avatar FROM cars
-				WHERE id = $1`, carID).Scan(&car.ID, &car.OwnerID, &car.Barnd, &car.Model, &car.Date, &car.Description, &car.AvatarUrl)
+				WHERE id = $1`, carID).Scan(&car.ID, &car.OwnerID, &car.Brand, &car.Model, &car.Date, &car.Description, &car.AvatarUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -156,11 +158,11 @@ func (ur *UsersRepository) UpdateCar(car *models.CarCard) (*models.CarCard, erro
                 WHERE id = $1
                 RETURNING id, owner_id, barnd, model,date,description, avatar)`,
 		car.ID,
-		car.Barnd,
+		car.Brand,
 		car.AvatarUrl,
 		car.Model,
 		car.Description,
-		car.Date).Scan(&car.ID, &car.OwnerID, &car.Barnd, &car.Model, &car.Date, &car.Description, &car.AvatarUrl)
+		car.Date).Scan(&car.ID, &car.OwnerID, &car.Brand, &car.Model, &car.Date, &car.Description, &car.AvatarUrl)
 	if err != nil {
 		return nil, err
 	}

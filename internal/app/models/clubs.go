@@ -14,10 +14,11 @@ type Club struct {
 }
 
 type ClubCard struct {
-	ID        uint64   `json:"id" binding:"required"`
-	Name      string   `json:"name" binding:"required"`
-	AvatarUrl string   `json:"avatar" binding:"required"`
-	Tags      []string `json:"tags" binding:"required"`
+	ID                uint64   `json:"id" binding:"required"`
+	Name              string   `json:"name" binding:"required"`
+	AvatarUrl         string   `json:"avatar" binding:"required"`
+	Tags              []string `json:"tags" binding:"required"`
+	ParticipantsCount int      `json:"participants_count" binding:"required"`
 }
 
 type ClubQuery struct {

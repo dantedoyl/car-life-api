@@ -7,7 +7,7 @@ import (
 )
 
 type Middleware struct {
-	userUcase    users.IUsersUsecase
+	userUcase users.IUsersUsecase
 }
 
 func NewMiddleware(userUcase users.IUsersUsecase) *Middleware {

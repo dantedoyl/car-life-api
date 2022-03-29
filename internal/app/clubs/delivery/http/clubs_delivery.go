@@ -46,7 +46,7 @@ func (ch *ClubsHandler) CreateClub(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	// добавить проверку авторизации
-	userID, ok := r.Context().Value("user_id").(uint64)
+	userID, ok := r.Context().Value("userID").(uint64)
 	if !ok {
 		w.WriteHeader(http.StatusUnauthorized)
 		w.Write(utils.JSONError(&utils.Error{Message: "you're unauthorized"}))
@@ -128,10 +128,11 @@ func (ch *ClubsHandler) GetClubs(w http.ResponseWriter, r *http.Request) {
 	clubCards := make([]models.ClubCard, 0, len(clubs))
 	for _, club := range clubs {
 		clubCards = append(clubCards, models.ClubCard{
-			ID:        club.ID,
-			Name:      club.Name,
-			AvatarUrl: club.AvatarUrl,
-			Tags:      club.Tags,
+			ID:                club.ID,
+			Name:              club.Name,
+			AvatarUrl:         club.AvatarUrl,
+			Tags:              club.Tags,
+			ParticipantsCount: club.ParticipantsCount,
 		})
 	}
 

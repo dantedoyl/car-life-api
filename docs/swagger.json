@@ -625,7 +625,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
                     },
                     "400": {
                         "description": "Bad Request",
@@ -656,7 +659,7 @@
                 "avatarUrl": {
                     "type": "string"
                 },
-                "barnd": {
+                "brand": {
                     "type": "string"
                 },
                 "date": {
@@ -679,7 +682,7 @@
         "models.CarRequest": {
             "type": "object",
             "properties": {
-                "barnd": {
+                "brand": {
                     "type": "string"
                 },
                 "date": {
@@ -755,6 +758,7 @@
                 "avatar",
                 "id",
                 "name",
+                "participants_count",
                 "tags"
             ],
             "properties": {
@@ -766,6 +770,9 @@
                 },
                 "name": {
                     "type": "string"
+                },
+                "participants_count": {
+                    "type": "integer"
                 },
                 "tags": {
                     "type": "array",

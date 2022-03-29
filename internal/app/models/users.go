@@ -12,46 +12,46 @@ type Session struct {
 }
 
 type User struct {
-	VKID uint64
-	Name string
-	Surname string
-	AvatarUrl string
-	Garage []*CarCard
-	OwnClubs []ClubCard
-	Tags []string
-	ParticipantClubs []ClubCard
+	VKID              uint64
+	Name              string
+	Surname           string
+	AvatarUrl         string
+	Garage            []*CarCard
+	OwnClubs          []ClubCard
+	Tags              []string
+	ParticipantClubs  []ClubCard
 	ParticipantEvents []EventCard
 }
 
 type UserCard struct {
-	ID uint64
+	ID   uint64
 	Name string
 }
 
 type CarCard struct {
-	ID uint64
-	AvatarUrl string
-	Barnd string
-	Model string
-	Date time.Time
+	ID          uint64
+	AvatarUrl   string
+	Brand       string
+	Model       string
+	Date        time.Time
 	Description string
-	OwnerID uint64
+	OwnerID     uint64
 }
 
 type CarRequest struct {
-	Barnd string
-	Model string
-	Date time.Time
+	Brand       string
+	Model       string
+	Date        time.Time
 	Description string
 }
 
 type SignUpRequest struct {
-	VKID uint64
-	Name string
-	Surname string
+	VKID      uint64
+	Name      string
+	Surname   string
 	AvatarUrl string
-	Garage []CarRequest
-	Tags []string
+	Garage    []CarRequest
+	Tags      []string
 }
 
 type LoginRequest struct {

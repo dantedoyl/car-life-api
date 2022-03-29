@@ -632,7 +632,10 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
                     },
                     "400": {
                         "description": "Bad Request",
@@ -663,7 +666,7 @@ const docTemplate = `{
                 "avatarUrl": {
                     "type": "string"
                 },
-                "barnd": {
+                "brand": {
                     "type": "string"
                 },
                 "date": {
@@ -686,7 +689,7 @@ const docTemplate = `{
         "models.CarRequest": {
             "type": "object",
             "properties": {
-                "barnd": {
+                "brand": {
                     "type": "string"
                 },
                 "date": {
@@ -762,6 +765,7 @@ const docTemplate = `{
                 "avatar",
                 "id",
                 "name",
+                "participants_count",
                 "tags"
             ],
             "properties": {
@@ -773,6 +777,9 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "participants_count": {
+                    "type": "integer"
                 },
                 "tags": {
                     "type": "array",

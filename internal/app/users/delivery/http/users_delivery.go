@@ -2,6 +2,7 @@ package delivery
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/dantedoyl/car-life-api/internal/app/middleware"
 	"github.com/dantedoyl/car-life-api/internal/app/models"
 	"github.com/dantedoyl/car-life-api/internal/app/users"
@@ -34,7 +35,7 @@ func (uh *UsersHandler) Configure(r *mux.Router, mw *middleware.Middleware) {
 // @Accept       json
 // @Produce      json
 // @Param        body body models.SignUpRequest true "User"
-// @Success      200
+// @Success      200 {object} models.User
 // @Failure      400  {object}  utils.Error
 // @Failure      404  {object}  utils.Error
 // @Failure      500  {object}  utils.Error
@@ -50,12 +51,25 @@ func (uh *UsersHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Println(signUp)
+
 	user := &models.User{
-		VKID:       signUp.VKID,
-		Name:       signUp.Name,
-		Surname:    signUp.Surname,
-		AvatarUrl:  signUp.AvatarUrl,
+		VKID: signUp.VKID,
+		Garage: []*models.CarCard{
+			{
+				Brand:       signUp.Garage[0].Brand,
+				Model:       signUp.Garage[0].Model,
+				Date:        signUp.Garage[0].Date,
+				Description: signUp.Garage[0].Description,
+			},
+		},
+		Tags:      signUp.Tags,
+		Name:      signUp.Name,
+		Surname:   signUp.Surname,
+		AvatarUrl: signUp.AvatarUrl,
 	}
+
+	fmt.Println(user)
 
 	user, err = uh.usersUcase.Create(user)
 	if err != nil {
@@ -140,7 +154,7 @@ func (uh *UsersHandler) Login(w http.ResponseWriter, r *http.Request) {
 		Value:    session.Value,
 		Expires:  session.ExpiresAt,
 		Secure:   true,
-		SameSite: http.SameSiteLaxMode,
+		SameSite: http.SameSiteNoneMode,
 		HttpOnly: true,
 	}
 
@@ -199,5 +213,3 @@ func (uh *UsersHandler) UploadAvatarHandler(w http.ResponseWriter, r *http.Reque
 	w.WriteHeader(http.StatusOK)
 	w.Write(body)
 }
-
-
