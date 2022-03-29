@@ -3,6 +3,7 @@ package delivery
 import (
 	"encoding/json"
 	"github.com/dantedoyl/car-life-api/internal/app/events"
+	"github.com/dantedoyl/car-life-api/internal/app/middleware"
 	"github.com/dantedoyl/car-life-api/internal/app/models"
 	"github.com/dantedoyl/car-life-api/internal/app/utils"
 	"github.com/gorilla/mux"
@@ -21,11 +22,11 @@ func NewEventsHandler(eventsUcase events.IEventsUsecase) *EventsHandler {
 	}
 }
 
-func (eh *EventsHandler) Configure(r *mux.Router) {
-	r.HandleFunc("/event/create", eh.CreateEvent).Methods(http.MethodPost, http.MethodOptions)
-	r.HandleFunc("/events/{id:[0-9]+}", eh.GetEventByID).Methods(http.MethodGet, http.MethodOptions)
-	r.HandleFunc("/events", eh.GetEvents).Methods(http.MethodGet, http.MethodOptions)
-	r.HandleFunc("/events/{id:[0-9]+}/upload", eh.UploadAvatarHandler).Methods(http.MethodPost, http.MethodOptions)
+func (eh *EventsHandler) Configure(r *mux.Router, mw *middleware.Middleware) {
+	r.HandleFunc("/event/create", mw.CheckAuthMiddleware(eh.CreateEvent)).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/events/{id:[0-9]+}", mw.CheckAuthMiddleware(eh.GetEventByID)).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc("/events", mw.CheckAuthMiddleware(eh.GetEvents)).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc("/events/{id:[0-9]+}/upload", mw.CheckAuthMiddleware(eh.UploadAvatarHandler)).Methods(http.MethodPost, http.MethodOptions)
 }
 
 // CreateEvent godoc

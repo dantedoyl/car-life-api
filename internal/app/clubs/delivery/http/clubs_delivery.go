@@ -3,6 +3,7 @@ package delivery
 import (
 	"encoding/json"
 	clubs "github.com/dantedoyl/car-life-api/internal/app/clubs"
+	"github.com/dantedoyl/car-life-api/internal/app/middleware"
 	"github.com/dantedoyl/car-life-api/internal/app/models"
 	"github.com/dantedoyl/car-life-api/internal/app/utils"
 	"github.com/gorilla/mux"
@@ -21,12 +22,12 @@ func NewClubsHandler(clubsUcase clubs.IClubsUsecase) *ClubsHandler {
 	}
 }
 
-func (ch *ClubsHandler) Configure(r *mux.Router) {
-	r.HandleFunc("/club/create", ch.CreateClub).Methods(http.MethodPost, http.MethodOptions)
-	r.HandleFunc("/clubs/{id:[0-9]+}", ch.GetClubByID).Methods(http.MethodGet, http.MethodOptions)
-	r.HandleFunc("/clubs", ch.GetClubs).Methods(http.MethodGet, http.MethodOptions)
-	r.HandleFunc("/clubs/tags", ch.GetTags).Methods(http.MethodGet, http.MethodOptions)
-	r.HandleFunc("/clubs/{id:[0-9]+}/upload", ch.UploadAvatarHandler).Methods(http.MethodPost, http.MethodOptions)
+func (ch *ClubsHandler) Configure(r *mux.Router, mw *middleware.Middleware) {
+	r.HandleFunc("/club/create", mw.CheckAuthMiddleware(ch.CreateClub)).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/clubs/{id:[0-9]+}", mw.CheckAuthMiddleware(ch.GetClubByID)).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc("/clubs", mw.CheckAuthMiddleware(ch.GetClubs)).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc("/clubs/tags", mw.CheckAuthMiddleware(ch.GetTags)).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc("/clubs/{id:[0-9]+}/upload", mw.CheckAuthMiddleware(ch.UploadAvatarHandler)).Methods(http.MethodPost, http.MethodOptions)
 }
 
 // CreateClub godoc

@@ -1,6 +1,20 @@
 package middleware
 
-import "net/http"
+import (
+	"context"
+	users "github.com/dantedoyl/car-life-api/internal/app/users"
+	"net/http"
+)
+
+type Middleware struct {
+	userUcase    users.IUsersUsecase
+}
+
+func NewMiddleware(userUcase users.IUsersUsecase) *Middleware {
+	return &Middleware{
+		userUcase: userUcase,
+	}
+}
 
 func CorsControlMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
@@ -34,4 +48,24 @@ func CorsControlMiddleware(next http.Handler) http.Handler {
 
 		next.ServeHTTP(w, req)
 	})
+}
+
+func (m *Middleware) CheckAuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		cookie, err := r.Cookie("session_id")
+		if err != nil {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		session, errE := m.userUcase.CheckSession(cookie.Value)
+		if errE != nil {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		ctx := r.Context()
+		ctx = context.WithValue(ctx, "userID", session.UserID)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	}
 }

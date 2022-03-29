@@ -60,6 +60,9 @@ func main() {
 	clubsUcase := clubs_usecase.NewClubsUsecase(clubsRepo)
 	clubsHandler := clubs_delivery.NewClubsHandler(clubsUcase)
 
+	mw := middleware.NewMiddleware(userUcase)
+
+
 	router := mux.NewRouter()
 
 	static := router.PathPrefix("/img").Subrouter()
@@ -68,9 +71,9 @@ func main() {
 
 	api := router.PathPrefix("/api/v1").Subrouter()
 	api.Use(middleware.CorsControlMiddleware)
-	eventHandler.Configure(api)
-	clubsHandler.Configure(api)
-	userHandler.Configure(api)
+	eventHandler.Configure(api, mw)
+	clubsHandler.Configure(api, mw)
+	userHandler.Configure(api, mw)
 	api.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
 
 	server := http.Server{

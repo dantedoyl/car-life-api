@@ -26,7 +26,7 @@ services:
       - "3301:3301"
     volumes:
       - ./tarantool-data:/var/lib/tarantool
-      - $PWD/configs/lua/:/opt/tarantool/
+      - $PWD/config/lua/:/opt/tarantool/
     restart: always
     logging:
       driver: gelf
