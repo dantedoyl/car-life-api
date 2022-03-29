@@ -24,6 +24,8 @@ func NewUserssHandler(usersUcase users.IUsersUsecase) *UsersHandler {
 
 func (uh *UsersHandler) Configure(r *mux.Router, mw *middleware.Middleware) {
 	r.HandleFunc("/signup", uh.SignUp).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/me", mw.CheckAuthMiddleware(uh.MyProfile)).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/user/{id:[0-9]+}", uh.UserProfile).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/login", uh.Login).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/garage/{id:[0-9]+}/upload", uh.UploadAvatarHandler).Methods(http.MethodPost, http.MethodOptions)
 }
@@ -196,6 +198,79 @@ func (uh *UsersHandler) UploadAvatarHandler(w http.ResponseWriter, r *http.Reque
 
 	file := r.MultipartForm.File["file-upload"][0]
 	user, err := uh.usersUcase.UpdateAvatar(uint64(carID), file)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	body, err := json.Marshal(user)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: "can't marshal data"}))
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(body)
+}
+
+// UserProfile godoc
+// @Summary      get user by id
+// @Description  Handler for getting a user by id
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Param        id path int64 true "User ID"
+// @Success      200  {object}  models.User
+// @Failure      400  {object}  utils.Error
+// @Failure      404  {object}  utils.Error
+// @Failure      500  {object}  utils.Error
+// @Router       /user/{id} [get]
+func (uh *UsersHandler) UserProfile(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	userID, _ := strconv.ParseUint(vars["id"], 10, 64)
+
+	user, err := uh.usersUcase.GetByID(userID)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	body, err := json.Marshal(user)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: "can't marshal data"}))
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(body)
+}
+
+// MyProfile godoc
+// @Summary      get user by id
+// @Description  Handler for getting a user by id
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  models.User
+// @Failure      400  {object}  utils.Error
+// @Failure      404  {object}  utils.Error
+// @Failure      500  {object}  utils.Error
+// @Router       /me [get]
+func (uh *UsersHandler) MyProfile(w http.ResponseWriter, r *http.Request) {
+	userID, ok := r.Context().Value("userID").(uint64)
+	if !ok {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write(utils.JSONError(&utils.Error{Message: "you're unauthorized"}))
+		return
+	}
+
+	user, err := uh.usersUcase.GetByID(userID)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
