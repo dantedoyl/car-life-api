@@ -588,6 +588,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/utils.Error"
                         }
                     },
+                    "401": {
+                        "description": ""
+                    },
                     "404": {
                         "description": "Not Found",
                         "schema": {
@@ -660,14 +663,40 @@ const docTemplate = `{
                 "avatarUrl": {
                     "type": "string"
                 },
+                "barnd": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
-                "name": {
+                "model": {
                     "type": "string"
                 },
                 "ownerID": {
                     "type": "integer"
+                }
+            }
+        },
+        "models.CarRequest": {
+            "type": "object",
+            "properties": {
+                "barnd": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "model": {
+                    "type": "string"
                 }
             }
         },
@@ -897,7 +926,7 @@ const docTemplate = `{
                 "garage": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.CarCard"
+                        "$ref": "#/definitions/models.CarRequest"
                     }
                 },
                 "name": {
@@ -905,6 +934,12 @@ const docTemplate = `{
                 },
                 "surname": {
                     "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "vkid": {
                     "type": "integer"
@@ -961,6 +996,12 @@ const docTemplate = `{
                 },
                 "surname": {
                     "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "vkid": {
                     "type": "integer"

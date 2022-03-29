@@ -21,7 +21,7 @@ func NewUserRepository(connP *sql.DB, connT *tarantool.Connection) users.IUsersR
 	}
 }
 
-func (ur *UsersRepository) InsertUser(user *models.User) error {
+func (ur *UsersRepository) InsertUser(user *models.User) (*models.User, error) {
 	_, err := ur.sqlConn.Exec(
 		`INSERT INTO users
                 (vk_id, name, surname, avatar)
@@ -31,20 +31,20 @@ func (ur *UsersRepository) InsertUser(user *models.User) error {
 		user.Surname,
 		user.AvatarUrl)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	err = ur.sqlConn.QueryRow(
 		`INSERT INTO cars
-                (name, owner_id)
-                VALUES ($1, $2)`,
-		user.Garage[0].Name,
-		user.VKID).Scan(&user.Garage[0].ID)
+                (owner_id, barnd, model,date,description)
+                VALUES ($1, $2, $3, $4, $5)
+                RETURNING id`,
+		user.VKID, user.Garage[0].Barnd, user.Garage[0].Model, user.Garage[0].Date, user.Garage[0].Description).Scan(&user.Garage[0].ID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return user, nil
 }
 
 func (ur *UsersRepository) SelectByID(userID uint64) (*models.User, error) {
@@ -58,7 +58,7 @@ func (ur *UsersRepository) SelectByID(userID uint64) (*models.User, error) {
 
 	var cars []*models.CarCard
 
-	q := `SELECT id, name, owner_id, avatar FROM cars WHERE owner_id = $1`
+	q := `SELECT id, owner_id, barnd, model,date,description, avatar FROM cars WHERE owner_id = $1`
 	rows, err := ur.sqlConn.Query(q, userID)
 	if err != nil {
 		return nil, err
@@ -68,7 +68,7 @@ func (ur *UsersRepository) SelectByID(userID uint64) (*models.User, error) {
 
 	for rows.Next() {
 		car := &models.CarCard{}
-		err = rows.Scan(&car.ID, &car.Name, &car.OwnerID, &car.AvatarUrl)
+		err = rows.Scan(&car.ID, &car.OwnerID, &car.Barnd, &car.Model, &car.Date, &car.Description, &car.AvatarUrl)
 		if err != nil {
 			return nil, err
 		}
@@ -142,8 +142,8 @@ func (ur *UsersRepository) DeleteByValue(sessionValue string) error {
 func (ur *UsersRepository)SelectCarByID(carID uint64) (*models.CarCard, error) {
 	car := &models.CarCard{}
 	err := ur.sqlConn.QueryRow(
-		`SELECT id, owner_id, name, avatar from cars
-				WHERE id = $1`, carID).Scan(&car.ID, &car.OwnerID, &car.Name, &car.AvatarUrl)
+		`SELECT id, owner_id, barnd, model,date,description, avatar FROM cars
+				WHERE id = $1`, carID).Scan(&car.ID, &car.OwnerID, &car.Barnd, &car.Model, &car.Date, &car.Description, &car.AvatarUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -152,12 +152,15 @@ func (ur *UsersRepository)SelectCarByID(carID uint64) (*models.CarCard, error) {
 
 func (ur *UsersRepository) UpdateCar(car *models.CarCard) (*models.CarCard, error) {
 	err := ur.sqlConn.QueryRow(
-		`UPDATE cars SET name = $2, avatar = $3
+		`UPDATE cars SET brand = $2, avatar = $3, model = $4, description = $5, date = $6
                 WHERE id = $1
-                RETURNING id, name, avatar, owner_id)`,
+                RETURNING id, owner_id, barnd, model,date,description, avatar)`,
 		car.ID,
-		car.Name,
-		car.AvatarUrl).Scan(&car.ID, &car.Name, &car.AvatarUrl, &car.OwnerID)
+		car.Barnd,
+		car.AvatarUrl,
+		car.Model,
+		car.Description,
+		car.Date).Scan(&car.ID, &car.OwnerID, &car.Barnd, &car.Model, &car.Date, &car.Description, &car.AvatarUrl)
 	if err != nil {
 		return nil, err
 	}

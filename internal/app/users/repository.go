@@ -7,7 +7,7 @@ type IUsersRepository interface {
 	SelectByValue(sessValue string) (*models.Session, error)
 	DeleteByValue(sessionValue string) error
 
-	InsertUser(user *models.User) error
+	InsertUser(user *models.User) (*models.User, error)
 	SelectByID(userID uint64) (*models.User, error)
 	SelectCarByID(carID uint64) (*models.CarCard, error)
 	UpdateCar(car *models.CarCard) (*models.CarCard, error)

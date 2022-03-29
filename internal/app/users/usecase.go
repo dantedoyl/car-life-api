@@ -11,7 +11,7 @@ type IUsersUsecase interface {
 	DeleteSession(sessionValue string) error
 	CheckSession(sessValue string) (*models.Session, error)
 
-	Create(user *models.User) error
+	Create(user *models.User) (*models.User, error)
 	GetByID(vkID uint64) (*models.User, error)
 
 	UpdateAvatar(carID uint64, fileHeader *multipart.FileHeader) (*models.User, error)

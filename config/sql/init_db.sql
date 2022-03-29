@@ -44,13 +44,17 @@ create table if not exists users
         name text not null,
         surname text not null,
         avatar    varchar(512) NOT NULL,
+    tags text[],
     created_at timestamp default CURRENT_TIMESTAMP
     );
 create table if not exists cars
 (
     id bigserial primary key,
     owner_id bigint not null,
-    name text not null,
+    barnd text not null,
+    model text not null,
+    date timestamp not null,
+    description text not null,
     avatar    varchar(512) NOT NULL
 );
 

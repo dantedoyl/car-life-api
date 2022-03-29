@@ -581,6 +581,9 @@
                             "$ref": "#/definitions/utils.Error"
                         }
                     },
+                    "401": {
+                        "description": ""
+                    },
                     "404": {
                         "description": "Not Found",
                         "schema": {
@@ -653,14 +656,40 @@
                 "avatarUrl": {
                     "type": "string"
                 },
+                "barnd": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
-                "name": {
+                "model": {
                     "type": "string"
                 },
                 "ownerID": {
                     "type": "integer"
+                }
+            }
+        },
+        "models.CarRequest": {
+            "type": "object",
+            "properties": {
+                "barnd": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "model": {
+                    "type": "string"
                 }
             }
         },
@@ -890,7 +919,7 @@
                 "garage": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.CarCard"
+                        "$ref": "#/definitions/models.CarRequest"
                     }
                 },
                 "name": {
@@ -898,6 +927,12 @@
                 },
                 "surname": {
                     "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "vkid": {
                     "type": "integer"
@@ -954,6 +989,12 @@
                 },
                 "surname": {
                     "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "vkid": {
                     "type": "integer"

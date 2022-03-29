@@ -18,6 +18,7 @@ type User struct {
 	AvatarUrl string
 	Garage []*CarCard
 	OwnClubs []ClubCard
+	Tags []string
 	ParticipantClubs []ClubCard
 	ParticipantEvents []EventCard
 }
@@ -30,8 +31,18 @@ type UserCard struct {
 type CarCard struct {
 	ID uint64
 	AvatarUrl string
-	Name      string
+	Barnd string
+	Model string
+	Date time.Time
+	Description string
 	OwnerID uint64
+}
+
+type CarRequest struct {
+	Barnd string
+	Model string
+	Date time.Time
+	Description string
 }
 
 type SignUpRequest struct {
@@ -39,7 +50,8 @@ type SignUpRequest struct {
 	Name string
 	Surname string
 	AvatarUrl string
-	Garage []CarCard
+	Garage []CarRequest
+	Tags []string
 }
 
 type LoginRequest struct {

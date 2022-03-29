@@ -4,12 +4,29 @@ definitions:
     properties:
       avatarUrl:
         type: string
+      barnd:
+        type: string
+      date:
+        type: string
+      description:
+        type: string
       id:
         type: integer
-      name:
+      model:
         type: string
       ownerID:
         type: integer
+    type: object
+  models.CarRequest:
+    properties:
+      barnd:
+        type: string
+      date:
+        type: string
+      description:
+        type: string
+      model:
+        type: string
     type: object
   models.Club:
     properties:
@@ -170,12 +187,16 @@ definitions:
         type: string
       garage:
         items:
-          $ref: '#/definitions/models.CarCard'
+          $ref: '#/definitions/models.CarRequest'
         type: array
       name:
         type: string
       surname:
         type: string
+      tags:
+        items:
+          type: string
+        type: array
       vkid:
         type: integer
     type: object
@@ -213,6 +234,10 @@ definitions:
         type: array
       surname:
         type: string
+      tags:
+        items:
+          type: string
+        type: array
       vkid:
         type: integer
     type: object
@@ -603,6 +628,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/utils.Error'
+        "401":
+          description: ""
         "404":
           description: Not Found
           schema:

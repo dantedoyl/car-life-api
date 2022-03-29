@@ -18,12 +18,12 @@ func NewUsersUsecase(repo users.IUsersRepository) users.IUsersUsecase {
 	}
 }
 
-func (uu *UsersUsecase) Create(user *models.User) error {
-	err := uu.usersRepo.InsertUser(user)
+func (uu *UsersUsecase) Create(user *models.User) (*models.User, error) {
+	user, err := uu.usersRepo.InsertUser(user)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return user, nil
 }
 
 func (uu *UsersUsecase) GetByID(vkID uint64) (*models.User, error) {

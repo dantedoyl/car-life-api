@@ -57,7 +57,7 @@ func (uh *UsersHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		AvatarUrl:  signUp.AvatarUrl,
 	}
 
-	err = uh.usersUcase.Create(user)
+	user, err = uh.usersUcase.Create(user)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
@@ -81,8 +81,16 @@ func (uh *UsersHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 	}
 
+	body, err := json.Marshal(user)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: "can't marshal data"}))
+		return
+	}
+
 	http.SetCookie(w, &cookie)
 	w.WriteHeader(http.StatusOK)
+	w.Write(body)
 }
 
 // Login godoc
@@ -94,6 +102,7 @@ func (uh *UsersHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 // @Param        body body models.LoginRequest true "User"
 // @Success      200
 // @Failure      400  {object}  utils.Error
+// @Failure      401
 // @Failure      404  {object}  utils.Error
 // @Failure      500  {object}  utils.Error
 // @Router       /login [post]
