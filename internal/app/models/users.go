@@ -12,15 +12,15 @@ type Session struct {
 }
 
 type User struct {
-	VKID              uint64
-	Name              string
-	Surname           string
-	AvatarUrl         string
-	Garage            []*CarCard
-	OwnClubs          []ClubCard
-	Tags              []string
-	ParticipantClubs  []ClubCard
-	ParticipantEvents []EventCard
+	VKID              uint64      `json:"vkid" binding:"required"`
+	Name              string      `json:"name" binding:"required"`
+	Surname           string      `json:"surname" binding:"required"`
+	AvatarUrl         string      `json:"avatar_url" binding:"required"`
+	Garage            []*CarCard  `json:"garage" binding:"required"`
+	OwnClubs          []ClubCard  `json:"own_clubs" binding:"required"`
+	Tags              []string    `json:"tags" binding:"required"`
+	ParticipantClubs  []ClubCard  `json:"participant_clubs" binding:"required"`
+	ParticipantEvents []EventCard `json:"participant_events" binding:"required"`
 }
 
 type UserCard struct {
@@ -29,13 +29,13 @@ type UserCard struct {
 }
 
 type CarCard struct {
-	ID          uint64
-	AvatarUrl   string
-	Brand       string
-	Model       string
-	Date        time.Time
-	Description string
-	OwnerID     uint64
+	ID          uint64    `json:"id" binding:"required"`
+	AvatarUrl   string    `json:"avatar_url" binding:"required"`
+	Brand       string    `json:"brand" binding:"required"`
+	Model       string    `json:"model" binding:"required"`
+	Date        time.Time `json:"date" binding:"required"`
+	Description string    `json:"description" binding:"required"`
+	OwnerID     uint64    `json:"owner_id" binding:"required"`
 }
 
 type CarRequest struct {

@@ -38,7 +38,7 @@ func (ur *UsersRepository) InsertUser(user *models.User) (*models.User, error) {
 
 	err = ur.sqlConn.QueryRow(
 		`INSERT INTO cars
-                (owner_id, barnd, model,date,description)
+                (owner_id, brand, model,date,description)
                 VALUES ($1, $2, $3, $4, $5)
                 RETURNING id`,
 		user.VKID, user.Garage[0].Brand, user.Garage[0].Model, user.Garage[0].Date, user.Garage[0].Description).Scan(&user.Garage[0].ID)
@@ -54,13 +54,17 @@ func (ur *UsersRepository) SelectByID(userID uint64) (*models.User, error) {
 	err := ur.sqlConn.QueryRow(
 		`SELECT  vk_id, name, surname, avatar from users
 				WHERE vk_id = $1`, userID).Scan(&user.VKID, &user.Name, &user.Surname, &user.AvatarUrl)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+
 	if err != nil {
 		return nil, err
 	}
 
 	var cars []*models.CarCard
 
-	q := `SELECT id, owner_id, barnd, model,date,description, avatar FROM cars WHERE owner_id = $1`
+	q := `SELECT id, owner_id, brand, model,date,description, avatar FROM cars WHERE owner_id = $1`
 	rows, err := ur.sqlConn.Query(q, userID)
 	if err != nil {
 		return nil, err
@@ -144,7 +148,7 @@ func (ur *UsersRepository) DeleteByValue(sessionValue string) error {
 func (ur *UsersRepository) SelectCarByID(carID uint64) (*models.CarCard, error) {
 	car := &models.CarCard{}
 	err := ur.sqlConn.QueryRow(
-		`SELECT id, owner_id, barnd, model,date,description, avatar FROM cars
+		`SELECT id, owner_id, brand, model,date,description, avatar FROM cars
 				WHERE id = $1`, carID).Scan(&car.ID, &car.OwnerID, &car.Brand, &car.Model, &car.Date, &car.Description, &car.AvatarUrl)
 	if err != nil {
 		return nil, err
@@ -156,7 +160,7 @@ func (ur *UsersRepository) UpdateCar(car *models.CarCard) (*models.CarCard, erro
 	err := ur.sqlConn.QueryRow(
 		`UPDATE cars SET brand = $2, avatar = $3, model = $4, description = $5, date = $6
                 WHERE id = $1
-                RETURNING id, owner_id, barnd, model,date,description, avatar)`,
+                RETURNING id, owner_id, brand, model,date,description, avatar`,
 		car.ID,
 		car.Brand,
 		car.AvatarUrl,

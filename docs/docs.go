@@ -753,8 +753,17 @@ const docTemplate = `{
     "definitions": {
         "models.CarCard": {
             "type": "object",
+            "required": [
+                "avatar_url",
+                "brand",
+                "date",
+                "description",
+                "id",
+                "model",
+                "owner_id"
+            ],
             "properties": {
-                "avatarUrl": {
+                "avatar_url": {
                     "type": "string"
                 },
                 "brand": {
@@ -772,7 +781,7 @@ const docTemplate = `{
                 "model": {
                     "type": "string"
                 },
-                "ownerID": {
+                "owner_id": {
                     "type": "integer"
                 }
             }
@@ -1061,8 +1070,19 @@ const docTemplate = `{
         },
         "models.User": {
             "type": "object",
+            "required": [
+                "avatar_url",
+                "garage",
+                "name",
+                "own_clubs",
+                "participant_clubs",
+                "participant_events",
+                "surname",
+                "tags",
+                "vkid"
+            ],
             "properties": {
-                "avatarUrl": {
+                "avatar_url": {
                     "type": "string"
                 },
                 "garage": {
@@ -1074,19 +1094,19 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "ownClubs": {
+                "own_clubs": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.ClubCard"
                     }
                 },
-                "participantClubs": {
+                "participant_clubs": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.ClubCard"
                     }
                 },
-                "participantEvents": {
+                "participant_events": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.EventCard"

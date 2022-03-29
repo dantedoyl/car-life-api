@@ -51,7 +51,7 @@ create table if not exists cars
 (
     id bigserial primary key,
     owner_id bigint not null,
-    barnd text not null,
+    brand text not null,
     model text not null,
     date timestamp not null,
     description text not null,

@@ -2,7 +2,7 @@ basePath: /api/v1
 definitions:
   models.CarCard:
     properties:
-      avatarUrl:
+      avatar_url:
         type: string
       brand:
         type: string
@@ -14,8 +14,16 @@ definitions:
         type: integer
       model:
         type: string
-      ownerID:
+      owner_id:
         type: integer
+    required:
+    - avatar_url
+    - brand
+    - date
+    - description
+    - id
+    - model
+    - owner_id
     type: object
   models.CarRequest:
     properties:
@@ -215,7 +223,7 @@ definitions:
     type: object
   models.User:
     properties:
-      avatarUrl:
+      avatar_url:
         type: string
       garage:
         items:
@@ -223,15 +231,15 @@ definitions:
         type: array
       name:
         type: string
-      ownClubs:
+      own_clubs:
         items:
           $ref: '#/definitions/models.ClubCard'
         type: array
-      participantClubs:
+      participant_clubs:
         items:
           $ref: '#/definitions/models.ClubCard'
         type: array
-      participantEvents:
+      participant_events:
         items:
           $ref: '#/definitions/models.EventCard'
         type: array
@@ -243,6 +251,16 @@ definitions:
         type: array
       vkid:
         type: integer
+    required:
+    - avatar_url
+    - garage
+    - name
+    - own_clubs
+    - participant_clubs
+    - participant_events
+    - surname
+    - tags
+    - vkid
     type: object
   utils.Error:
     properties:

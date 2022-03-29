@@ -2,7 +2,6 @@ package delivery
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/dantedoyl/car-life-api/internal/app/middleware"
 	"github.com/dantedoyl/car-life-api/internal/app/models"
 	"github.com/dantedoyl/car-life-api/internal/app/users"
@@ -53,8 +52,6 @@ func (uh *UsersHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(signUp)
-
 	user := &models.User{
 		VKID: signUp.VKID,
 		Garage: []*models.CarCard{
@@ -70,8 +67,6 @@ func (uh *UsersHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		Surname:   signUp.Surname,
 		AvatarUrl: signUp.AvatarUrl,
 	}
-
-	fmt.Println(user)
 
 	user, err = uh.usersUcase.Create(user)
 	if err != nil {
@@ -131,8 +126,8 @@ func (uh *UsersHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, errE := uh.usersUcase.GetByID(login.VKID)
-	if errE != nil {
+	user, err := uh.usersUcase.GetByID(login.VKID)
+	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
 		return
