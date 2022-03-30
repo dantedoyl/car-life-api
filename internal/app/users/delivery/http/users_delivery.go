@@ -272,6 +272,19 @@ func (uh *UsersHandler) MyProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if user.Garage == nil {
+		user.Garage = make([]*models.CarCard, 0)
+	}
+	if user.OwnClubs == nil {
+		user.OwnClubs = make([]models.ClubCard, 0)
+	}
+	if user.ParticipantClubs == nil {
+		user.ParticipantClubs = make([]models.ClubCard, 0)
+	}
+	if user.ParticipantEvents == nil {
+		user.ParticipantEvents = make([]models.EventCard, 0)
+	}
+
 	body, err := json.Marshal(user)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
