@@ -53,19 +53,22 @@ func (uh *UsersHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user := &models.User{
-		VKID: signUp.VKID,
-		Garage: []*models.CarCard{
+		VKID:      signUp.VKID,
+		Tags:      signUp.Tags,
+		Name:      signUp.Name,
+		Surname:   signUp.Surname,
+		AvatarUrl: signUp.AvatarUrl,
+	}
+
+	if len(signUp.Garage) != 0 {
+		user.Garage = []*models.CarCard{
 			{
 				Brand:       signUp.Garage[0].Brand,
 				Model:       signUp.Garage[0].Model,
 				Date:        signUp.Garage[0].Date,
 				Description: signUp.Garage[0].Description,
 			},
-		},
-		Tags:      signUp.Tags,
-		Name:      signUp.Name,
-		Surname:   signUp.Surname,
-		AvatarUrl: signUp.AvatarUrl,
+		}
 	}
 
 	user, err = uh.usersUcase.Create(user)

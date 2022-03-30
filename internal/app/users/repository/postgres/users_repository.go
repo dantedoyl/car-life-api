@@ -36,14 +36,16 @@ func (ur *UsersRepository) InsertUser(user *models.User) (*models.User, error) {
 		return nil, err
 	}
 
-	err = ur.sqlConn.QueryRow(
-		`INSERT INTO cars
+	if len(user.Garage) != 0 {
+		err = ur.sqlConn.QueryRow(
+			`INSERT INTO cars
                 (owner_id, brand, model,date,description)
                 VALUES ($1, $2, $3, $4, $5)
                 RETURNING id`,
-		user.VKID, user.Garage[0].Brand, user.Garage[0].Model, user.Garage[0].Date, user.Garage[0].Description).Scan(&user.Garage[0].ID)
-	if err != nil {
-		return nil, err
+			user.VKID, user.Garage[0].Brand, user.Garage[0].Model, user.Garage[0].Date, user.Garage[0].Description).Scan(&user.Garage[0].ID)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return user, nil
