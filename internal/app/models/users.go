@@ -21,6 +21,7 @@ type User struct {
 	Tags              []string    `json:"tags" binding:"required"`
 	ParticipantClubs  []ClubCard  `json:"participant_clubs" binding:"required"`
 	ParticipantEvents []EventCard `json:"participant_events" binding:"required"`
+	Description       string `json:"description" binding:"required"`
 }
 
 type UserCard struct {
@@ -36,6 +37,10 @@ type CarCard struct {
 	Date        time.Time `json:"date" binding:"required"`
 	Description string    `json:"description" binding:"required"`
 	OwnerID     uint64    `json:"owner_id" binding:"required"`
+	Body        string `json:"body" binding:"required"`
+	Engine      string `json:"engine" binding:"required"`
+	HorsePower  string `json:"horse_power" binding:"required"`
+	Name        string `json:"name" binding:"required"`
 }
 
 type CarRequest struct {
@@ -43,6 +48,10 @@ type CarRequest struct {
 	Model       string
 	Date        time.Time
 	Description string
+	Body        string
+	Engine      string
+	HorsePower  string
+	Name        string
 }
 
 type SignUpRequest struct {
@@ -52,6 +61,7 @@ type SignUpRequest struct {
 	AvatarUrl string
 	Garage    []CarRequest
 	Tags      []string
+	Description string
 }
 
 type LoginRequest struct {

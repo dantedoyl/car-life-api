@@ -45,7 +45,8 @@ create table if not exists users
         surname text not null,
         avatar    varchar(512) NOT NULL,
     tags text[],
-    created_at timestamp default CURRENT_TIMESTAMP
+    created_at timestamp default CURRENT_TIMESTAMP,
+    description text
     );
 create table if not exists cars
 (
@@ -55,7 +56,11 @@ create table if not exists cars
     model text not null,
     date timestamp not null,
     description text not null,
-    avatar    varchar(512) NOT NULL DEFAULT '/img/cars/default.jpeg'
+    avatar    varchar(512) NOT NULL DEFAULT '/img/cars/default.jpeg',
+    body text,
+    engine text,
+    horse_power text,
+    name text
 );
 
 INSERT INTO tags (name, usage_count)

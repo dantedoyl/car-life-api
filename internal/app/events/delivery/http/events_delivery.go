@@ -125,6 +125,8 @@ func (eh *EventsHandler) GetEvents(w http.ResponseWriter, r *http.Request) {
 			Name:      event.Name,
 			EventDate: event.EventDate,
 			AvatarUrl: event.AvatarUrl,
+			Latitude: event.Latitude,
+			Longitude: event.Longitude,
 		})
 	}
 

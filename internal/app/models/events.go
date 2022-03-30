@@ -19,6 +19,8 @@ type EventCard struct {
 	Name      string    `json:"name" binding:"required"`
 	EventDate time.Time `json:"event_date" binding:"required"`
 	AvatarUrl string    `json:"avatar" binding:"required"`
+	Latitude    float32   `json:"latitude" binding:"required"`
+	Longitude   float32   `json:"longitude" binding:"required"`
 }
 
 type EventQuery struct {

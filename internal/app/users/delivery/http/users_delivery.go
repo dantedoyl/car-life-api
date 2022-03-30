@@ -58,6 +58,7 @@ func (uh *UsersHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		Name:      signUp.Name,
 		Surname:   signUp.Surname,
 		AvatarUrl: signUp.AvatarUrl,
+		Description: signUp.Description,
 	}
 
 	if len(signUp.Garage) != 0 {
@@ -67,6 +68,10 @@ func (uh *UsersHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 				Model:       signUp.Garage[0].Model,
 				Date:        signUp.Garage[0].Date,
 				Description: signUp.Garage[0].Description,
+				Body: signUp.Garage[0].Body,
+				Engine: signUp.Garage[0].Engine,
+				HorsePower: signUp.Garage[0].HorsePower,
+				Name: signUp.Garage[0].Name,
 			},
 		}
 	}

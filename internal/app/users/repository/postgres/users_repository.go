@@ -25,13 +25,14 @@ func NewUserRepository(connP *sql.DB, connT *tarantool.Connection) users.IUsersR
 func (ur *UsersRepository) InsertUser(user *models.User) (*models.User, error) {
 	_, err := ur.sqlConn.Exec(
 		`INSERT INTO users
-                (vk_id, name, surname, avatar, tags)
-                VALUES ($1, $2, $3, $4, $5)`,
+                (vk_id, name, surname, avatar, tags, description)
+                VALUES ($1, $2, $3, $4, $5, $6)`,
 		user.VKID,
 		user.Name,
 		user.Surname,
 		user.AvatarUrl,
-		pq.Array(user.Tags))
+		pq.Array(user.Tags),
+		user.Description)
 	if err != nil {
 		return nil, err
 	}
@@ -39,10 +40,10 @@ func (ur *UsersRepository) InsertUser(user *models.User) (*models.User, error) {
 	if len(user.Garage) != 0 {
 		err = ur.sqlConn.QueryRow(
 			`INSERT INTO cars
-                (owner_id, brand, model,date,description)
-                VALUES ($1, $2, $3, $4, $5)
+                (owner_id, brand, model,date,description, body, engine, horse_power, name)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                 RETURNING id`,
-			user.VKID, user.Garage[0].Brand, user.Garage[0].Model, user.Garage[0].Date, user.Garage[0].Description).Scan(&user.Garage[0].ID)
+			user.VKID, user.Garage[0].Brand, user.Garage[0].Model, user.Garage[0].Date, user.Garage[0].Description,user.Garage[0].Body, user.Garage[0].Engine, user.Garage[0].HorsePower, user.Garage[0].Name).Scan(&user.Garage[0].ID)
 		if err != nil {
 			return nil, err
 		}
@@ -54,8 +55,8 @@ func (ur *UsersRepository) InsertUser(user *models.User) (*models.User, error) {
 func (ur *UsersRepository) SelectByID(userID uint64) (*models.User, error) {
 	user := &models.User{}
 	err := ur.sqlConn.QueryRow(
-		`SELECT  vk_id, name, surname, avatar, tags from users
-				WHERE vk_id = $1`, userID).Scan(&user.VKID, &user.Name, &user.Surname, &user.AvatarUrl, pq.Array(&user.Tags))
+		`SELECT  vk_id, name, surname, avatar, tags, description from users
+				WHERE vk_id = $1`, userID).Scan(&user.VKID, &user.Name, &user.Surname, &user.AvatarUrl, pq.Array(&user.Tags), &user.Description)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	}
@@ -66,7 +67,7 @@ func (ur *UsersRepository) SelectByID(userID uint64) (*models.User, error) {
 
 	var cars []*models.CarCard
 
-	q := `SELECT id, owner_id, brand, model,date,description, avatar FROM cars WHERE owner_id = $1`
+	q := `SELECT id, owner_id, brand, model,date,description, avatar, body, engine, horse_power, name FROM cars WHERE owner_id = $1`
 	rows, err := ur.sqlConn.Query(q, userID)
 	if err != nil {
 		return nil, err
@@ -76,7 +77,7 @@ func (ur *UsersRepository) SelectByID(userID uint64) (*models.User, error) {
 
 	for rows.Next() {
 		car := &models.CarCard{}
-		err = rows.Scan(&car.ID, &car.OwnerID, &car.Brand, &car.Model, &car.Date, &car.Description, &car.AvatarUrl)
+		err = rows.Scan(&car.ID, &car.OwnerID, &car.Brand, &car.Model, &car.Date, &car.Description, &car.AvatarUrl, user.Garage[0].Body, user.Garage[0].Engine, user.Garage[0].HorsePower, user.Garage[0].Name)
 		if err != nil {
 			return nil, err
 		}
@@ -150,8 +151,8 @@ func (ur *UsersRepository) DeleteByValue(sessionValue string) error {
 func (ur *UsersRepository) SelectCarByID(carID uint64) (*models.CarCard, error) {
 	car := &models.CarCard{}
 	err := ur.sqlConn.QueryRow(
-		`SELECT id, owner_id, brand, model,date,description, avatar FROM cars
-				WHERE id = $1`, carID).Scan(&car.ID, &car.OwnerID, &car.Brand, &car.Model, &car.Date, &car.Description, &car.AvatarUrl)
+		`SELECT id, owner_id, brand, model,date,description, avatar, body, engine, horse_power, name FROM cars
+				WHERE id = $1`, carID).Scan(&car.ID, &car.OwnerID, &car.Brand, &car.Model, &car.Date, &car.Description, &car.AvatarUrl, &car.Body, &car.Engine, &car.HorsePower, &car.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -160,15 +161,16 @@ func (ur *UsersRepository) SelectCarByID(carID uint64) (*models.CarCard, error) 
 
 func (ur *UsersRepository) UpdateCar(car *models.CarCard) (*models.CarCard, error) {
 	err := ur.sqlConn.QueryRow(
-		`UPDATE cars SET brand = $2, avatar = $3, model = $4, description = $5, date = $6
+		`UPDATE cars SET brand = $2, avatar = $3, model = $4, description = $5, date = $6, body = $7, engine = $8, horse_power = $9, name = $10
                 WHERE id = $1
-                RETURNING id, owner_id, brand, model,date,description, avatar`,
+                RETURNING id, owner_id, brand, model,date,description, avatar, body, engine, horse_power, name`,
 		car.ID,
 		car.Brand,
 		car.AvatarUrl,
 		car.Model,
 		car.Description,
-		car.Date).Scan(&car.ID, &car.OwnerID, &car.Brand, &car.Model, &car.Date, &car.Description, &car.AvatarUrl)
+		car.Date,
+		car.Body, car.Engine, car.HorsePower, car.Name).Scan(&car.ID, &car.OwnerID, &car.Brand, &car.Model, &car.Date, &car.Description, &car.AvatarUrl, &car.Body, &car.Engine, &car.HorsePower, &car.Name)
 	if err != nil {
 		return nil, err
 	}
