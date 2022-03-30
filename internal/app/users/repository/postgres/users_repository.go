@@ -52,8 +52,8 @@ func (ur *UsersRepository) InsertUser(user *models.User) (*models.User, error) {
 func (ur *UsersRepository) SelectByID(userID uint64) (*models.User, error) {
 	user := &models.User{}
 	err := ur.sqlConn.QueryRow(
-		`SELECT  vk_id, name, surname, avatar from users
-				WHERE vk_id = $1`, userID).Scan(&user.VKID, &user.Name, &user.Surname, &user.AvatarUrl)
+		`SELECT  vk_id, name, surname, avatar, tags from users
+				WHERE vk_id = $1`, userID).Scan(&user.VKID, &user.Name, &user.Surname, &user.AvatarUrl, pq.Array(&user.Tags))
 	if err == sql.ErrNoRows {
 		return nil, nil
 	}
