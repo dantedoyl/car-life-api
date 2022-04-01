@@ -7,6 +7,7 @@ import (
 	"github.com/dantedoyl/car-life-api/internal/app/users"
 	"github.com/lib/pq"
 	"github.com/tarantool/go-tarantool"
+	"sync"
 )
 
 type UsersRepository struct {
@@ -14,6 +15,8 @@ type UsersRepository struct {
 	//tarantoolConn *tarantool.Connection
 	userSessions map[string]*models.Session
 }
+
+var mtx sync.Mutex
 
 func NewUserRepository(connP *sql.DB, connT *tarantool.Connection) users.IUsersRepository {
 	return &UsersRepository{
@@ -104,6 +107,8 @@ func (ur *UsersRepository) Insert(session *models.Session) error {
 	//}
 	//______________________________________
 	// map session
+	defer mtx.Unlock()
+	mtx.Lock()
 	ur.userSessions[session.Value] = session
 
 	return nil
