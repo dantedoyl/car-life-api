@@ -26,6 +26,9 @@ func (uh *UsersHandler) Configure(r *mux.Router, mw *middleware.Middleware) {
 	r.HandleFunc("/signup", uh.SignUp).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/me", mw.CheckAuthMiddleware(uh.MyProfile)).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/user/{id:[0-9]+}", uh.UserProfile).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc("/user/{id:[0-9]+}/garage", uh.UserGarage).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc("/user/{id:[0-9]+}/events/{type:admin|participant|spectator}", uh.UserEvents).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc("/user/{id:[0-9]+}/clubs/{type:admin|participant|subscriber}", uh.UserClubs).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/user/own_clubs", mw.CheckAuthMiddleware(uh.UserOwnClubs)).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/login", uh.Login).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/garage/{id:[0-9]+}/upload", uh.UploadAvatarHandler).Methods(http.MethodPost, http.MethodOptions)
@@ -329,6 +332,157 @@ func (uh *UsersHandler) UserOwnClubs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	clubs, err := uh.usersUcase.GetClubsByUserStatus(int64(userID), "admin", query.IdGt, query.IdLte, query.Limit)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	body, err := json.Marshal(clubs)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: "can't marshal data"}))
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(body)
+}
+
+// UserGarage godoc
+// @Summary      get user garage
+// @Description  Handler for getting a user by id
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Param        id path int64 true "User ID"
+// @Param        IdGt query integer false "IdGt"
+// @Param        IdLte query integer false "IdLte"
+// @Param        Limit query integer false "Limit"
+// @Success      200  {object}  []models.CarCard
+// @Failure      400  {object}  utils.Error
+// @Failure      401
+// @Failure      404  {object}  utils.Error
+// @Failure      500  {object}  utils.Error
+// @Router       /user/{id}/garage [get]
+func (uh *UsersHandler) UserGarage(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	userID, _ := strconv.ParseUint(vars["id"], 10, 64)
+
+	query := &models.ClubQuery{}
+	decoder := schema.NewDecoder()
+	decoder.IgnoreUnknownKeys(true)
+	err := decoder.Decode(query, r.URL.Query())
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	cars, err := uh.usersUcase.SelectCarByUserID(int64(userID), query.IdGt, query.IdLte, query.Limit)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	body, err := json.Marshal(cars)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: "can't marshal data"}))
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(body)
+}
+
+// UserClubs godoc
+// @Summary      get clubs where user is in status
+// @Description  Handler for getting a user by id
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Param        id path int64 true "User ID"
+// @Param        IdGt query integer false "IdGt"
+// @Param        IdLte query integer false "IdLte"
+// @Param        Limit query integer false "Limit"
+// @Param        type path string true "Type" Enums(admin, participant, subscriber)
+// @Success      200  {object}  []models.ClubCard
+// @Failure      400  {object}  utils.Error
+// @Failure      401
+// @Failure      404  {object}  utils.Error
+// @Failure      500  {object}  utils.Error
+// @Router       /user/{id}/clubs/{type} [get]
+func (uh *UsersHandler) UserClubs(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	userID, _ := strconv.ParseUint(vars["id"], 10, 64)
+	role := vars["type"]
+
+	query := &models.ClubQuery{}
+	decoder := schema.NewDecoder()
+	decoder.IgnoreUnknownKeys(true)
+	err := decoder.Decode(query, r.URL.Query())
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	clubs, err := uh.usersUcase.GetClubsByUserStatus(int64(userID), role, query.IdGt, query.IdLte, query.Limit)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	body, err := json.Marshal(clubs)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: "can't marshal data"}))
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(body)
+}
+
+// UserEvents godoc
+// @Summary      get events where user is in status
+// @Description  Handler for getting a user by id
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Param        id path int64 true "User ID"
+// @Param        IdGt query integer false "IdGt"
+// @Param        IdLte query integer false "IdLte"
+// @Param        Limit query integer false "Limit"
+// @Param        type path string true "Type" Enums(admin, participant, spectator)
+// @Success      200  {object}  []models.ClubCard
+// @Failure      400  {object}  utils.Error
+// @Failure      401
+// @Failure      404  {object}  utils.Error
+// @Failure      500  {object}  utils.Error
+// @Router       /user/{id}/events/{type} [get]
+func (uh *UsersHandler) UserEvents(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	userID, _ := strconv.ParseUint(vars["id"], 10, 64)
+	role := vars["type"]
+
+	query := &models.ClubQuery{}
+	decoder := schema.NewDecoder()
+	decoder.IgnoreUnknownKeys(true)
+	err := decoder.Decode(query, r.URL.Query())
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	clubs, err := uh.usersUcase.GetEventsByUserStatus(int64(userID), role, query.IdGt, query.IdLte, query.Limit)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))

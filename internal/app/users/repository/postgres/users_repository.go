@@ -242,3 +242,90 @@ func (ur *UsersRepository) GetClubsByUserStatus(userID int64, status string, idG
 	}
 	return clubs, nil
 }
+
+func (ur *UsersRepository) SelectCarByUserID(userID int64, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.CarCard, error) {
+	var cars []*models.CarCard
+	ind := 2
+	var values []interface{}
+	values = append(values, userID)
+	q := `SELECT c.id, c.owner_id, c.brand, c.model,c.date,c.description, c.avatar, c.body, c.engine, c.horse_power, c.name from cars as c WHERE c.owner_id = $1`
+
+	if idGt != nil {
+		q += ` AND c.id > $` + strconv.Itoa(ind)
+		values = append(values, idGt)
+		ind++
+	}
+
+	if idLte != nil {
+		q += ` AND c.id <= $` + strconv.Itoa(ind)
+		values = append(values, idLte)
+		ind++
+	}
+
+	if limit != nil {
+		q += ` LIMIT $` + strconv.Itoa(ind)
+		values = append(values, limit)
+	}
+
+	q += ` ORDER BY c.name desc`
+	rows, err := ur.sqlConn.Query(q, values...)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		car := &models.CarCard{}
+		err = rows.Scan(&car.ID, &car.OwnerID, &car.Brand, &car.Model, &car.Date, &car.Description, &car.AvatarUrl, &car.Body, &car.Engine, &car.HorsePower, &car.Name)
+		if err != nil {
+			return nil, err
+		}
+		cars = append(cars, car)
+	}
+	return cars, nil
+}
+
+func (ur *UsersRepository) GetEventsByUserStatus(userID int64, status string, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.EventCard, error) {
+	var events []*models.EventCard
+	ind := 3
+	var values []interface{}
+	values = append(values, status, userID)
+	q := `SELECT e.id, e.name, e.event_date, e.latitude, e.longitude, e.avatar from users_events as ue inner join events as e on e.id = ue.event_id WHERE ue.status = $1 and ue.user_id = $2`
+
+	if idGt != nil {
+		q += ` AND e.id > $` + strconv.Itoa(ind)
+		values = append(values, idGt)
+		ind++
+	}
+
+	if idLte != nil {
+		q += ` AND e.id <= $` + strconv.Itoa(ind)
+		values = append(values, idLte)
+		ind++
+	}
+
+	if limit != nil {
+		q += ` LIMIT $` + strconv.Itoa(ind)
+		values = append(values, limit)
+	}
+
+	q += ` ORDER BY e.event_date desc`
+	rows, err := ur.sqlConn.Query(q, values...)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		event := &models.EventCard{}
+		err = rows.Scan(&event.ID, &event.Name, &event.EventDate,
+			&event.Latitude, &event.Longitude, &event.AvatarUrl)
+		if err != nil {
+			return nil, err
+		}
+		events = append(events, event)
+	}
+	return events, nil
+}

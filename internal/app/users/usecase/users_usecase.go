@@ -127,3 +127,11 @@ func (uu *UsersUsecase) GetClubsByUserStatus(userID int64, status string, idGt *
 	return uu.usersRepo.GetClubsByUserStatus(userID, status, idGt, idLte, limit)
 }
 
+func (uu *UsersUsecase) SelectCarByUserID(userID int64, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.CarCard, error){
+return uu.usersRepo.SelectCarByUserID(userID, idGt, idLte, limit)
+}
+
+func (uu *UsersUsecase) GetEventsByUserStatus(userID int64, status string, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.EventCard, error) {
+	return uu.usersRepo.GetEventsByUserStatus(userID, status, idGt, idLte, limit)
+}
+

@@ -73,7 +73,7 @@ create table if not exists users_clubs
     PRIMARY KEY (user_id, club_id)
     );
 
-CREATE TYPE user_event_status AS ENUM ('participant', 'participant_request', 'spectator');
+CREATE TYPE user_event_status AS ENUM ('admin', 'participant', 'participant_request', 'spectator');
 
 create table if not exists users_events
 (

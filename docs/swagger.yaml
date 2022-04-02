@@ -1173,6 +1173,171 @@ paths:
       summary: get user by id
       tags:
       - Users
+  /user/{id}/clubs/{type}:
+    get:
+      consumes:
+      - application/json
+      description: Handler for getting a user by id
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: IdGt
+        in: query
+        name: IdGt
+        type: integer
+      - description: IdLte
+        in: query
+        name: IdLte
+        type: integer
+      - description: Limit
+        in: query
+        name: Limit
+        type: integer
+      - description: Type
+        enum:
+        - admin
+        - participant
+        - subscriber
+        in: path
+        name: type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.ClubCard'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "401":
+          description: ""
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: get clubs where user is in status
+      tags:
+      - Users
+  /user/{id}/events/{type}:
+    get:
+      consumes:
+      - application/json
+      description: Handler for getting a user by id
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: IdGt
+        in: query
+        name: IdGt
+        type: integer
+      - description: IdLte
+        in: query
+        name: IdLte
+        type: integer
+      - description: Limit
+        in: query
+        name: Limit
+        type: integer
+      - description: Type
+        enum:
+        - admin
+        - participant
+        - spectator
+        in: path
+        name: type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.ClubCard'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "401":
+          description: ""
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: get events where user is in status
+      tags:
+      - Users
+  /user/{id}/garage:
+    get:
+      consumes:
+      - application/json
+      description: Handler for getting a user by id
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: IdGt
+        in: query
+        name: IdGt
+        type: integer
+      - description: IdLte
+        in: query
+        name: IdLte
+        type: integer
+      - description: Limit
+        in: query
+        name: Limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.CarCard'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "401":
+          description: ""
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: get user garage
+      tags:
+      - Users
   /user/own_clubs:
     get:
       consumes:

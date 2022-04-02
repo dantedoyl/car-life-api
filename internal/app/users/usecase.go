@@ -15,4 +15,6 @@ type IUsersUsecase interface {
 	GetByID(vkID uint64) (*models.User, error)
 	GetClubsByUserStatus(userID int64, status string, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.ClubCard, error)
 	UpdateAvatar(carID uint64, fileHeader *multipart.FileHeader) (*models.User, error)
+	SelectCarByUserID(userID int64, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.CarCard, error)
+	GetEventsByUserStatus(userID int64, status string, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.EventCard, error)
 }
