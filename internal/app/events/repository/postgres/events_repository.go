@@ -49,8 +49,7 @@ func (er *EventsRepository) GetEventByID(id int64) (*models.Event, error) {
 
 	err = er.dbConn.QueryRow(
 		`SELECT  c.id, c.name, c.tags, c.participants_count, c.avatar from clubs as c
-				WHERE c.id = $1`, id).Scan(&event.Club.ID, &event.Club.Name, pq.Array(&event.Club.Tags), &event.Club.ParticipantsCount, &event.Club.AvatarUrl,
-		&event.Latitude, &event.Longitude, &event.AvatarUrl)
+				WHERE c.id = $1`, id).Scan(&event.Club.ID, &event.Club.Name, pq.Array(&event.Club.Tags), &event.Club.ParticipantsCount, &event.Club.AvatarUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -120,7 +119,7 @@ func (er *EventsRepository) UpdateEvent(event *models.Event) (*models.Event, err
 	return event, nil
 }
 
-func (er *EventsRepository)	GetEventsUserByStatus(event_id int64, status string, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.UserCard, error) {
+func (er *EventsRepository) GetEventsUserByStatus(event_id int64, status string, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.UserCard, error) {
 	var users []*models.UserCard
 	ind := 3
 	var values []interface{}
@@ -174,4 +173,3 @@ func (er *EventsRepository) SetUserStatusByEventID(eventID int64, userID int64, 
 
 	return nil
 }
-
