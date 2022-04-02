@@ -755,15 +755,22 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "avatar_url",
+                "body",
                 "brand",
                 "date",
                 "description",
+                "engine",
+                "horse_power",
                 "id",
                 "model",
+                "name",
                 "owner_id"
             ],
             "properties": {
                 "avatar_url": {
+                    "type": "string"
+                },
+                "body": {
                     "type": "string"
                 },
                 "brand": {
@@ -775,10 +782,19 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
+                "engine": {
+                    "type": "string"
+                },
+                "horse_power": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
                 "model": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 },
                 "owner_id": {
@@ -789,6 +805,9 @@ const docTemplate = `{
         "models.CarRequest": {
             "type": "object",
             "properties": {
+                "body": {
+                    "type": "string"
+                },
                 "brand": {
                     "type": "string"
                 },
@@ -798,7 +817,16 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
+                "engine": {
+                    "type": "string"
+                },
+                "horsePower": {
+                    "type": "string"
+                },
                 "model": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 }
             }
@@ -999,6 +1027,8 @@ const docTemplate = `{
                 "avatar",
                 "event_date",
                 "id",
+                "latitude",
+                "longitude",
                 "name"
             ],
             "properties": {
@@ -1010,6 +1040,12 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
                 },
                 "name": {
                     "type": "string"
@@ -1028,6 +1064,9 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "avatarUrl": {
+                    "type": "string"
+                },
+                "description": {
                     "type": "string"
                 },
                 "garage": {
@@ -1072,6 +1111,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "avatar_url",
+                "description",
                 "garage",
                 "name",
                 "own_clubs",
@@ -1083,6 +1123,9 @@ const docTemplate = `{
             ],
             "properties": {
                 "avatar_url": {
+                    "type": "string"
+                },
+                "description": {
                     "type": "string"
                 },
                 "garage": {

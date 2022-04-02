@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/dantedoyl/car-life-api/internal/app/clients/database"
 	clubs_delivery "github.com/dantedoyl/car-life-api/internal/app/clubs/delivery/http"
 	clubs_repository "github.com/dantedoyl/car-life-api/internal/app/clubs/repository/postgres"
@@ -37,19 +38,19 @@ func main() {
 	}
 	defer postgresDB.Close()
 
-	//opts := tarantool.Opts{
-	//	User: "admin",
-	//	Pass: "pass",
-	//}
-	//tarConn, err := tarantool.Connect("127.0.0.1:3301", opts)
-	//if err != nil {
-	//	fmt.Println("baa: Connection refused:", err)
-	//	return
-	//}
+	opts := tarantool.Opts{
+		User: "admin",
+		Pass: "pass",
+	}
+	tarConn, err := tarantool.Connect("127.0.0.1:3301", opts)
+	if err != nil {
+		fmt.Println("baa: Connection refused:", err)
+		return
+	}
 
 	//________________________________
-	// session map
-	var tarConn *tarantool.Connection = nil
+	//session map
+	//var tarConn *tarantool.Connection = nil
 
 	userRepo := users_repository.NewUserRepository(postgresDB.GetDatabase(), tarConn)
 	userUcase := users_usecase.NewUsersUsecase(userRepo)
