@@ -1827,7 +1827,8 @@ const docTemplate = `{
                 "name",
                 "owner_id",
                 "participants_count",
-                "tags"
+                "tags",
+                "user_status"
             ],
             "properties": {
                 "avatar": {
@@ -1856,6 +1857,9 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                },
+                "user_status": {
+                    "type": "string"
                 }
             }
         },
@@ -1962,7 +1966,8 @@ const docTemplate = `{
                 "latitude",
                 "longitude",
                 "name",
-                "participants_count"
+                "participants_count",
+                "user_status"
             ],
             "properties": {
                 "avatar": {
@@ -1994,6 +1999,9 @@ const docTemplate = `{
                 },
                 "participants_count": {
                     "type": "integer"
+                },
+                "user_status": {
+                    "type": "string"
                 }
             }
         },

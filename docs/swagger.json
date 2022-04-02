@@ -1820,7 +1820,8 @@
                 "name",
                 "owner_id",
                 "participants_count",
-                "tags"
+                "tags",
+                "user_status"
             ],
             "properties": {
                 "avatar": {
@@ -1849,6 +1850,9 @@
                     "items": {
                         "type": "string"
                     }
+                },
+                "user_status": {
+                    "type": "string"
                 }
             }
         },
@@ -1955,7 +1959,8 @@
                 "latitude",
                 "longitude",
                 "name",
-                "participants_count"
+                "participants_count",
+                "user_status"
             ],
             "properties": {
                 "avatar": {
@@ -1987,6 +1992,9 @@
                 },
                 "participants_count": {
                     "type": "integer"
+                },
+                "user_status": {
+                    "type": "string"
                 }
             }
         },
