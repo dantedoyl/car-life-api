@@ -53,6 +53,7 @@ func (ur *UsersRepository) InsertUser(user *models.User, car *models.CarCard) (*
 			return nil, err
 		}
 	//}
+	user.CarID = int64(car.ID)
 
 	return user, nil
 }

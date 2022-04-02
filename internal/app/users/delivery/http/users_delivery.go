@@ -99,7 +99,11 @@ func (uh *UsersHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 	}
 
-	body, err := json.Marshal(user)
+	body, err := json.Marshal(struct {
+		CarID int64 `json:"car_id"`
+	}{
+		CarID: user.CarID,
+	})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: "can't marshal data"}))

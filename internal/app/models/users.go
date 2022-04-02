@@ -18,6 +18,7 @@ type User struct {
 	AvatarUrl         string      `json:"avatar_url" binding:"required"`
 	Tags              []string    `json:"tags" binding:"required"`
 	Description       string `json:"description" binding:"required"`
+	CarID             int64  `json:"-"`
 }
 
 type UserCard struct {
