@@ -129,7 +129,7 @@ func (eh *EventsHandler) GetEvents(w http.ResponseWriter, r *http.Request) {
 			Name:      event.Name,
 			EventDate: event.EventDate,
 			AvatarUrl: event.AvatarUrl,
-			Latitude: event.Latitude,
+			Latitude:  event.Latitude,
 			Longitude: event.Longitude,
 		})
 	}
@@ -298,7 +298,7 @@ func (eh *EventsHandler) GetEventsParticipants(w http.ResponseWriter, r *http.Re
 // @Failure      400  {object}  utils.Error
 // @Failure      404  {object}  utils.Error
 // @Failure      500  {object}  utils.Error
-// @Router       /events/{id}/participants [get]
+// @Router       /events/{id}/participants/requests [get]
 func (eh *EventsHandler) GetEventsParticipantsRequests(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	eventID, _ := strconv.ParseUint(vars["id"], 10, 64)
@@ -372,7 +372,7 @@ func (eh *EventsHandler) ParticipateByEventID(w http.ResponseWriter, r *http.Req
 // ApproveRejectUserParticipateInEvent godoc
 // @Summary      approve/reject participate in event
 // @Description  Handler for getting tags list
-// @Tags         Clubs
+// @Tags         Events
 // @Accept       json
 // @Produce      json
 // @Param        cid path int64 true "Event ID"

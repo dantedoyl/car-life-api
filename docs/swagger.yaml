@@ -865,7 +865,7 @@ paths:
             $ref: '#/definitions/utils.Error'
       summary: approve/reject participate in event
       tags:
-      - Clubs
+      - Events
   /events/{id}:
     get:
       consumes:
@@ -900,6 +900,53 @@ paths:
       tags:
       - Events
   /events/{id}/participants:
+    get:
+      consumes:
+      - application/json
+      description: Handler for getting tags list
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: IdGt
+        in: query
+        name: IdGt
+        type: integer
+      - description: IdLte
+        in: query
+        name: IdLte
+        type: integer
+      - description: Limit
+        in: query
+        name: Limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.UserCard'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: get events participants list
+      tags:
+      - Events
+  /events/{id}/participants/requests:
     get:
       consumes:
       - application/json
