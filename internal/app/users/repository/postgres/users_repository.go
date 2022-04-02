@@ -42,20 +42,20 @@ func (ur *UsersRepository) InsertUser(user *models.User, car *models.CarCard) (*
 	if err != nil {
 		return nil, err
 	}
-
-	//if len(user.Garage) != 0 {
+	if car != nil {
+		//if len(user.Garage) != 0 {
 		err = ur.sqlConn.QueryRow(
 			`INSERT INTO cars
                (owner_id, brand, model,date,description, body, engine, horse_power, name)
                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                RETURNING id`,
-			user.VKID, car.Brand, car.Model, car.Date, car.Description,car.Body, car.Engine, car.HorsePower, car.Name).Scan(&car.ID)
+			user.VKID, car.Brand, car.Model, car.Date, car.Description, car.Body, car.Engine, car.HorsePower, car.Name).Scan(&car.ID)
 		if err != nil {
 			return nil, err
 		}
-	//}
-	user.CarID = int64(car.ID)
-
+		//}
+		user.CarID = int64(car.ID)
+	}
 	return user, nil
 }
 
