@@ -11,6 +11,12 @@ type Club struct {
 	OwnerID           uint64      `json:"owner_id" binding:"required"`
 }
 
+type ClubUser struct {
+	UserID int64
+	ClubID int64
+	Status string
+}
+
 type ClubCard struct {
 	ID                uint64   `json:"id" binding:"required"`
 	Name              string   `json:"name" binding:"required"`

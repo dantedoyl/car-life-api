@@ -12,4 +12,5 @@ type IClubsRepository interface {
 	GetClubsCars(club_id int64, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.CarCard, error)
 	GetClubsEvents(club_id int64, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.EventCard, error)
 	SetUserStatusByClubID(clubID int64, userID int64, status string) error
+	GetUserStatusInClub(clubID int64, userID int64) (*models.ClubUser, error)
 }

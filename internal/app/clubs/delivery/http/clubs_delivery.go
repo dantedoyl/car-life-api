@@ -399,10 +399,30 @@ func (ch *ClubsHandler) GetClubsParticipantsRequests(w http.ResponseWriter, r *h
 	vars := mux.Vars(r)
 	clubID, _ := strconv.ParseUint(vars["id"], 10, 64)
 
+	userID, ok := r.Context().Value("userID").(uint64)
+	if !ok {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write(utils.JSONError(&utils.Error{Message: "you're unauthorized"}))
+		return
+	}
+
+	userClubSatus, err := ch.clubsUcase.GetUserStatusInClub(int64(clubID), int64(userID))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	if userClubSatus == nil || userClubSatus.Status != "admin" {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(utils.JSONError(&utils.Error{Message: "user has inappropriate status"}))
+		return
+	}
+
 	query := &models.ClubQuery{}
 	decoder := schema.NewDecoder()
 	decoder.IgnoreUnknownKeys(true)
-	err := decoder.Decode(query, r.URL.Query())
+	err = decoder.Decode(query, r.URL.Query())
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
@@ -506,7 +526,20 @@ func (ch *ClubsHandler) ParticipateByClubID(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	err := ch.clubsUcase.SetUserStatusByClubID(int64(clubID), int64(userID), "participant_request")
+	userClubSatus, err := ch.clubsUcase.GetUserStatusInClub(int64(clubID), int64(userID))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	if userClubSatus != nil && (userClubSatus.Status == "participant" || userClubSatus.Status == "admin" || userClubSatus.Status == "moderator") {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(utils.JSONError(&utils.Error{Message: "user has inappropriate status"}))
+		return
+	}
+
+	err = ch.clubsUcase.SetUserStatusByClubID(int64(clubID), int64(userID), "participant_request")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
@@ -537,14 +570,27 @@ func (ch *ClubsHandler) ApproveRejectUserParticipateInClub(w http.ResponseWriter
 	userID, _ := strconv.ParseUint(vars["uid"], 10, 64)
 	decision := vars["type"]
 
-	_, ok := r.Context().Value("userID").(uint64)
+	ownerID, ok := r.Context().Value("userID").(uint64)
 	if !ok {
 		w.WriteHeader(http.StatusUnauthorized)
 		w.Write(utils.JSONError(&utils.Error{Message: "you're unauthorized"}))
 		return
 	}
 
-	err := ch.clubsUcase.ApproveRejectUserParticipateInClub(int64(clubID), int64(userID), decision)
+	userClubSatus, err := ch.clubsUcase.GetUserStatusInClub(int64(clubID), int64(ownerID))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	if userClubSatus == nil || userClubSatus.Status != "admin" {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(utils.JSONError(&utils.Error{Message: "user has inappropriate status"}))
+		return
+	}
+
+	err = ch.clubsUcase.ApproveRejectUserParticipateInClub(int64(clubID), int64(userID), decision)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))

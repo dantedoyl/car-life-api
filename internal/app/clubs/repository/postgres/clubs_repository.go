@@ -38,6 +38,14 @@ func (cr *ClubsRepository) InsertClub(club *models.Club) error {
 		return err
 	}
 
+	_, err = cr.dbConn.Exec(
+		`INSERT INTO users_clubs (club_id, user_id, status) VALUES ($1, $2, $3)
+				ON CONFLICT (user_id, club_id) DO UPDATE
+			SET status = $3`, club.ID, club.OwnerID, "admin")
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -275,4 +283,17 @@ func (cr *ClubsRepository) SetUserStatusByClubID(clubID int64, userID int64, sta
 	}
 
 	return nil
+}
+
+func (cr *ClubsRepository) GetUserStatusInClub(clubID int64, userID int64) (*models.ClubUser, error) {
+	userClub := &models.ClubUser{}
+	err := cr.dbConn.QueryRow(`SELECT club_id, user_id, status FROM users_clubs WHERE club_id = $1 and user_id = $2`, clubID, userID).Scan(
+		&userClub.ClubID, &userClub.UserID, &userClub.Status)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return userClub, nil
 }

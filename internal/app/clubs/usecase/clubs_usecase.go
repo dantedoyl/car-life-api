@@ -85,3 +85,7 @@ func (cu *ClubsUsecase) ApproveRejectUserParticipateInClub(clubID int64, userID 
 	}
 	return cu.clubsRepo.SetUserStatusByClubID(clubID, userID, "subscriber")
 }
+
+func (cu *ClubsUsecase) GetUserStatusInClub(clubID int64, userID int64) (*models.ClubUser, error) {
+	return cu.clubsRepo.GetUserStatusInClub(clubID, userID)
+}
