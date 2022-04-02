@@ -60,14 +60,6 @@ definitions:
     properties:
       avatar:
         type: string
-      club_events:
-        items:
-          $ref: '#/definitions/models.EventCard'
-        type: array
-      club_garage:
-        items:
-          $ref: '#/definitions/models.CarCard'
-        type: array
       description:
         type: string
       events_count:
@@ -86,8 +78,6 @@ definitions:
         type: array
     required:
     - avatar
-    - club_events
-    - club_garage
     - description
     - events_count
     - id
@@ -255,24 +245,8 @@ definitions:
         type: string
       description:
         type: string
-      garage:
-        items:
-          $ref: '#/definitions/models.CarCard'
-        type: array
       name:
         type: string
-      own_clubs:
-        items:
-          $ref: '#/definitions/models.ClubCard'
-        type: array
-      participant_clubs:
-        items:
-          $ref: '#/definitions/models.ClubCard'
-        type: array
-      participant_events:
-        items:
-          $ref: '#/definitions/models.EventCard'
-        type: array
       surname:
         type: string
       tags:
@@ -284,13 +258,25 @@ definitions:
     required:
     - avatar_url
     - description
-    - garage
     - name
-    - own_clubs
-    - participant_clubs
-    - participant_events
     - surname
     - tags
+    - vkid
+    type: object
+  models.UserCard:
+    properties:
+      avatar_url:
+        type: string
+      name:
+        type: string
+      surname:
+        type: string
+      vkid:
+        type: integer
+    required:
+    - avatar_url
+    - name
+    - surname
     - vkid
     type: object
   utils.Error:
@@ -416,6 +402,180 @@ paths:
           schema:
             $ref: '#/definitions/utils.Error'
       summary: get club by id
+      tags:
+      - Clubs
+  /clubs/{id}/cars:
+    get:
+      consumes:
+      - application/json
+      description: Handler for getting tags list
+      parameters:
+      - description: Club ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: IdGt
+        in: query
+        name: IdGt
+        type: integer
+      - description: IdLte
+        in: query
+        name: IdLte
+        type: integer
+      - description: Limit
+        in: query
+        name: Limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.EventCard'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: get clubs events list
+      tags:
+      - Clubs
+  /clubs/{id}/participants:
+    get:
+      consumes:
+      - application/json
+      description: Handler for getting tags list
+      parameters:
+      - description: Club ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: IdGt
+        in: query
+        name: IdGt
+        type: integer
+      - description: IdLte
+        in: query
+        name: IdLte
+        type: integer
+      - description: Limit
+        in: query
+        name: Limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.UserCard'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: get clubs participants list
+      tags:
+      - Clubs
+  /clubs/{id}/participants/requests:
+    get:
+      consumes:
+      - application/json
+      description: Handler for getting tags list
+      parameters:
+      - description: Club ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: IdGt
+        in: query
+        name: IdGt
+        type: integer
+      - description: IdLte
+        in: query
+        name: IdLte
+        type: integer
+      - description: Limit
+        in: query
+        name: Limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.UserCard'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: get clubs participants request list
+      tags:
+      - Clubs
+  /clubs/{id}/participate:
+    post:
+      consumes:
+      - application/json
+      description: Handler for getting tags list
+      parameters:
+      - description: Club ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "401":
+          description: ""
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: request participate
       tags:
       - Clubs
   /clubs/{id}/upload:

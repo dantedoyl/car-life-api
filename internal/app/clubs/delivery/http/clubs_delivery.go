@@ -488,7 +488,7 @@ func (ch *ClubsHandler) GetClubsEvents(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Param        id path int64 true "Club ID"
-// @Success      200  {object}
+// @Success      200
 // @Failure      400  {object}  utils.Error
 // @Failure      401
 // @Failure      404  {object}  utils.Error

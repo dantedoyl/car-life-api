@@ -232,6 +232,269 @@ const docTemplate = `{
                 }
             }
         },
+        "/clubs/{id}/cars": {
+            "get": {
+                "description": "Handler for getting tags list",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Clubs"
+                ],
+                "summary": "get clubs events list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Club ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "IdGt",
+                        "name": "IdGt",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "IdLte",
+                        "name": "IdLte",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit",
+                        "name": "Limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.EventCard"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/clubs/{id}/participants": {
+            "get": {
+                "description": "Handler for getting tags list",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Clubs"
+                ],
+                "summary": "get clubs participants list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Club ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "IdGt",
+                        "name": "IdGt",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "IdLte",
+                        "name": "IdLte",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit",
+                        "name": "Limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.UserCard"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/clubs/{id}/participants/requests": {
+            "get": {
+                "description": "Handler for getting tags list",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Clubs"
+                ],
+                "summary": "get clubs participants request list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Club ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "IdGt",
+                        "name": "IdGt",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "IdLte",
+                        "name": "IdLte",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit",
+                        "name": "Limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.UserCard"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/clubs/{id}/participate": {
+            "post": {
+                "description": "Handler for getting tags list",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Clubs"
+                ],
+                "summary": "request participate",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Club ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "401": {
+                        "description": ""
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/clubs/{id}/upload": {
             "post": {
                 "description": "Handler for uploading a club's avatar",
@@ -835,8 +1098,6 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "avatar",
-                "club_events",
-                "club_garage",
                 "description",
                 "events_count",
                 "id",
@@ -848,18 +1109,6 @@ const docTemplate = `{
             "properties": {
                 "avatar": {
                     "type": "string"
-                },
-                "club_events": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.EventCard"
-                    }
-                },
-                "club_garage": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.CarCard"
-                    }
                 },
                 "description": {
                     "type": "string"
@@ -1112,11 +1361,7 @@ const docTemplate = `{
             "required": [
                 "avatar_url",
                 "description",
-                "garage",
                 "name",
-                "own_clubs",
-                "participant_clubs",
-                "participant_events",
                 "surname",
                 "tags",
                 "vkid"
@@ -1128,32 +1373,8 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
-                "garage": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.CarCard"
-                    }
-                },
                 "name": {
                     "type": "string"
-                },
-                "own_clubs": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.ClubCard"
-                    }
-                },
-                "participant_clubs": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.ClubCard"
-                    }
-                },
-                "participant_events": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.EventCard"
-                    }
                 },
                 "surname": {
                     "type": "string"
@@ -1163,6 +1384,29 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                },
+                "vkid": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.UserCard": {
+            "type": "object",
+            "required": [
+                "avatar_url",
+                "name",
+                "surname",
+                "vkid"
+            ],
+            "properties": {
+                "avatar_url": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "surname": {
+                    "type": "string"
                 },
                 "vkid": {
                     "type": "integer"
