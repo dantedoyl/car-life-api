@@ -173,7 +173,13 @@ func (ch *ClubsHandler) GetClubByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	clubID, _ := strconv.ParseUint(vars["id"], 10, 64)
 
-	club, err := ch.clubsUcase.GetClubByID(clubID)
+	club := &models.Club{}
+	userID, ok := r.Context().Value("userID").(uint64)
+	if !ok {
+		club.UserStatus = "unknown"
+	}
+
+	club, err := ch.clubsUcase.GetClubByID(clubID, userID)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))

@@ -13,6 +13,7 @@ type Event struct {
 	Longitude   float32   `json:"longitude" binding:"required"`
 	AvatarUrl   string    `json:"avatar" binding:"required"`
 	ParticipantsCount int         `json:"participants_count" binding:"required"`
+	UserStatus string `json:"user_status" binding:"required"`
 }
 
 type EventCard struct {

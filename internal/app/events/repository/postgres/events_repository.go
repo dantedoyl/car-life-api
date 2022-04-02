@@ -46,7 +46,7 @@ func (er *EventsRepository) InsertEvent(event *models.Event) error {
 	return nil
 }
 
-func (er *EventsRepository) GetEventByID(id int64) (*models.Event, error) {
+func (er *EventsRepository) GetEventByID(id int64, userID uint64) (*models.Event, error) {
 	event := &models.Event{}
 	err := er.dbConn.QueryRow(
 		`SELECT  id, name, club_id, creator_id, description, event_date, latitude, longitude, avatar from events
@@ -61,6 +61,21 @@ func (er *EventsRepository) GetEventByID(id int64) (*models.Event, error) {
 				WHERE c.id = $1`, id).Scan(&event.Club.ID, &event.Club.Name, pq.Array(&event.Club.Tags), &event.Club.ParticipantsCount, &event.Club.AvatarUrl)
 	if err != nil {
 		return nil, err
+	}
+
+	if userID != 0 {
+		var status string
+		err = er.dbConn.QueryRow(
+			`SELECT status from users_events
+				WHERE event_id = $1 and user_id = $2`, event.ID, userID).Scan(&status)
+		if err == sql.ErrNoRows {
+			event.UserStatus = "unknown"
+			return event, nil
+		}
+		if err != nil {
+			return nil, err
+		}
+		event.UserStatus = status
 	}
 
 	return event, nil

@@ -21,8 +21,8 @@ func (eu *EventsUsecase) CreateEvent(event *models.Event) error {
 	return eu.eventsRepo.InsertEvent(event)
 }
 
-func (eu *EventsUsecase) GetEventByID(id uint64) (*models.Event, error) {
-	return eu.eventsRepo.GetEventByID(int64(id))
+func (eu *EventsUsecase) GetEventByID(id uint64, userID uint64) (*models.Event, error) {
+	return eu.eventsRepo.GetEventByID(int64(id), userID)
 }
 
 func (eu *EventsUsecase) GetEvents(idGt *uint64, idLte *uint64, limit *uint64, query *string) ([]*models.Event, error) {
@@ -30,7 +30,7 @@ func (eu *EventsUsecase) GetEvents(idGt *uint64, idLte *uint64, limit *uint64, q
 }
 
 func (eu *EventsUsecase) UpdateAvatar(eventID int64, fileHeader *multipart.FileHeader) (*models.Event, error) {
-	event, err := eu.eventsRepo.GetEventByID(eventID)
+	event, err := eu.eventsRepo.GetEventByID(eventID, 0)
 	if err != nil {
 		return nil, err
 	}

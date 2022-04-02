@@ -186,7 +186,13 @@ func (eh *EventsHandler) GetEventByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	eventID, _ := strconv.ParseUint(vars["id"], 10, 64)
 
-	event, err := eh.eventsUcase.GetEventByID(eventID)
+	event := &models.Event{}
+	userID, ok := r.Context().Value("userID").(uint64)
+	if !ok {
+		event.UserStatus = "unknown"
+	}
+
+	event, err := eh.eventsUcase.GetEventByID(eventID, userID)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))

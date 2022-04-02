@@ -49,7 +49,7 @@ func (cr *ClubsRepository) InsertClub(club *models.Club) error {
 	return nil
 }
 
-func (cr *ClubsRepository) GetClubByID(id int64) (*models.Club, error) {
+func (cr *ClubsRepository) GetClubByID(id int64, userID uint64) (*models.Club, error) {
 	club := &models.Club{}
 	err := cr.dbConn.QueryRow(
 		`SELECT  id, name, description, tags, events_count, participants_count, avatar from clubs
@@ -57,6 +57,22 @@ func (cr *ClubsRepository) GetClubByID(id int64) (*models.Club, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	if userID != 0 {
+		var status string
+		err = cr.dbConn.QueryRow(
+			`SELECT status from users_clubs
+				WHERE club_id = $1 and user_id = $2`, club.ID, userID).Scan(&status)
+		if err == sql.ErrNoRows {
+			club.UserStatus = "unknown"
+			return club, nil
+		}
+		if err != nil {
+			return nil, err
+		}
+		club.UserStatus = status
+	}
+
 	return club, nil
 }
 
