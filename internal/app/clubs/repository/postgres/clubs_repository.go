@@ -135,7 +135,7 @@ func (cr *ClubsRepository) GetTags() ([]models.Tag, error) {
 	return tags, nil
 }
 
-func (cr *ClubsRepository) GetClubsUserByStatus(club_id int64, status string, idGt *uint64, idLte *uint64, limit *uint64,) ([]*models.UserCard, error) {
+func (cr *ClubsRepository) GetClubsUserByStatus(club_id int64, status string, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.UserCard, error) {
 	var users []*models.UserCard
 	ind := 3
 	var values []interface{}
@@ -183,7 +183,7 @@ func (cr *ClubsRepository) GetClubsCars(club_id int64, idGt *uint64, idLte *uint
 	ind := 2
 	var values []interface{}
 	values = append(values, club_id)
-	q := `SELECT c.id, c.owner_id, c.brand, c.model,c.date,c.description, c.avatar, c.body, c.engine, c.horse_power, c.name from cars as c JOIN user_clubs as uc on c.owner_id = uc.user_id WHERE uc.status = 'participant' and uc.club_id=$1`
+	q := `SELECT c.id, c.owner_id, c.brand, c.model,c.date,c.description, c.avatar, c.body, c.engine, c.horse_power, c.name from cars as c JOIN users_clubs as uc on c.owner_id = uc.user_id WHERE uc.status = 'participant' and uc.club_id=$1`
 
 	if idGt != nil {
 		q += ` AND c.id > $` + strconv.Itoa(ind)
