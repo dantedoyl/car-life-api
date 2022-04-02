@@ -431,7 +431,6 @@ func (ch *ClubsHandler) GetClubsParticipantsRequests(w http.ResponseWriter, r *h
 	w.Write(body)
 }
 
-
 // GetClubsEvents godoc
 // @Summary      get clubs events list
 // @Description  Handler for getting tags list
@@ -446,7 +445,7 @@ func (ch *ClubsHandler) GetClubsParticipantsRequests(w http.ResponseWriter, r *h
 // @Failure      400  {object}  utils.Error
 // @Failure      404  {object}  utils.Error
 // @Failure      500  {object}  utils.Error
-// @Router       /clubs/{id}/cars [get]
+// @Router       /clubs/{id}/events [get]
 func (ch *ClubsHandler) GetClubsEvents(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	clubID, _ := strconv.ParseUint(vars["id"], 10, 64)

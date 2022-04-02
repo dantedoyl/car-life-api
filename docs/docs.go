@@ -312,6 +312,77 @@ const docTemplate = `{
                 "tags": [
                     "Clubs"
                 ],
+                "summary": "get clubs cars list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Club ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "IdGt",
+                        "name": "IdGt",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "IdLte",
+                        "name": "IdLte",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit",
+                        "name": "Limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.CarCard"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/clubs/{id}/events": {
+            "get": {
+                "description": "Handler for getting tags list",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Clubs"
+                ],
                 "summary": "get clubs events list",
                 "parameters": [
                     {
