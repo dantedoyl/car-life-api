@@ -378,6 +378,52 @@ paths:
       summary: get clubs list
       tags:
       - Clubs
+  /clubs/{cid}/participate/{uid}/{type}:
+    post:
+      consumes:
+      - application/json
+      description: Handler for getting tags list
+      parameters:
+      - description: Club ID
+        in: path
+        name: cid
+        required: true
+        type: integer
+      - description: User ID
+        in: path
+        name: uid
+        required: true
+        type: integer
+      - description: Type
+        enum:
+        - approve
+        - reject
+        in: path
+        name: type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "401":
+          description: ""
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: request participate
+      tags:
+      - Clubs
   /clubs/{id}:
     get:
       consumes:

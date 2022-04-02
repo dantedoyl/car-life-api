@@ -30,6 +30,7 @@ func (ch *ClubsHandler) Configure(r *mux.Router, mw *middleware.Middleware) {
 	r.HandleFunc("/clubs/{id:[0-9]+}/upload", mw.CheckAuthMiddleware(ch.UploadAvatarHandler)).Methods(http.MethodPost, http.MethodOptions)
 	//r.HandleFunc("/clubs/{id:[0-9]+}/subscribe", mw.CheckAuthMiddleware(ch.SubscribeByClubID)).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/clubs/{id:[0-9]+}/participate", mw.CheckAuthMiddleware(ch.ParticipateByClubID)).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/clubs/{cid:[0-9]+}/participate/{uid:[0-9]+}/{type:approve|reject}", mw.CheckAuthMiddleware(ch.ApproveRejectUserParticipate)).Methods(http.MethodPost, http.MethodOptions)
 	//r.HandleFunc("/clubs/{id:[0-9]+}/subscribers", mw.CheckAuthMiddleware(ch.GetClubsSubscribers)).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/clubs/{id:[0-9]+}/participants", mw.CheckAuthMiddleware(ch.GetClubsParticipants)).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/clubs/{id:[0-9]+}/cars", mw.CheckAuthMiddleware(ch.GetClubsCars)).Methods(http.MethodGet, http.MethodOptions)
@@ -515,3 +516,40 @@ func (ch *ClubsHandler) ParticipateByClubID(w http.ResponseWriter, r *http.Reque
 	w.WriteHeader(http.StatusOK)
 }
 
+// ApproveRejectUserParticipate godoc
+// @Summary      request participate
+// @Description  Handler for getting tags list
+// @Tags         Clubs
+// @Accept       json
+// @Produce      json
+// @Param        cid path int64 true "Club ID"
+// @Param        uid path int64 true "User ID"
+// @Param        type path string true "Type" Enums(approve, reject)
+// @Success      200
+// @Failure      400  {object}  utils.Error
+// @Failure      401
+// @Failure      404  {object}  utils.Error
+// @Failure      500  {object}  utils.Error
+// @Router       /clubs/{cid}/participate/{uid}/{type} [post]
+func (ch *ClubsHandler) ApproveRejectUserParticipate(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	clubID, _ := strconv.ParseUint(vars["cid"], 10, 64)
+	userID, _ := strconv.ParseUint(vars["uid"], 10, 64)
+	decision := vars["type"]
+
+	_, ok := r.Context().Value("userID").(uint64)
+	if !ok {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write(utils.JSONError(&utils.Error{Message: "you're unauthorized"}))
+		return
+	}
+
+	err := ch.clubsUcase.ApproveRejectUserParticipate(int64(clubID), int64(userID), decision)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}

@@ -182,6 +182,74 @@ const docTemplate = `{
                 }
             }
         },
+        "/clubs/{cid}/participate/{uid}/{type}": {
+            "post": {
+                "description": "Handler for getting tags list",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Clubs"
+                ],
+                "summary": "request participate",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Club ID",
+                        "name": "cid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "uid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            "approve",
+                            "reject"
+                        ],
+                        "type": "string",
+                        "description": "Type",
+                        "name": "type",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "401": {
+                        "description": ""
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/clubs/{id}": {
             "get": {
                 "description": "Handler for getting a club by id",

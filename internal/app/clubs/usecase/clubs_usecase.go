@@ -78,3 +78,10 @@ func (cu *ClubsUsecase) GetClubsEvents(club_id int64, idGt *uint64, idLte *uint6
 func (cu *ClubsUsecase) SetUserStatusByClubID(clubID int64, userID int64, status string) error {
 	return cu.clubsRepo.SetUserStatusByClubID(clubID, userID, status)
 }
+
+func (cu *ClubsUsecase) ApproveRejectUserParticipate(clubID int64, userID int64, decision string) error {
+	if decision == "approve" {
+		return cu.clubsRepo.SetUserStatusByClubID(clubID, userID, "participant")
+	}
+	return cu.clubsRepo.SetUserStatusByClubID(clubID, userID, "subscriber")
+}
