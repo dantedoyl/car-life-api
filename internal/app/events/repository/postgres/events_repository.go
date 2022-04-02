@@ -58,7 +58,7 @@ func (er *EventsRepository) GetEventByID(id int64, userID uint64) (*models.Event
 
 	err = er.dbConn.QueryRow(
 		`SELECT  c.id, c.name, c.tags, c.participants_count, c.avatar from clubs as c
-				WHERE c.id = $1`, id).Scan(&event.Club.ID, &event.Club.Name, pq.Array(&event.Club.Tags), &event.Club.ParticipantsCount, &event.Club.AvatarUrl)
+				WHERE c.id = $1`, &event.Club.ID).Scan(&event.Club.ID, &event.Club.Name, pq.Array(&event.Club.Tags), &event.Club.ParticipantsCount, &event.Club.AvatarUrl)
 	if err != nil {
 		return nil, err
 	}
