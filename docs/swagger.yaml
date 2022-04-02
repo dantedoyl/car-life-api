@@ -4,36 +4,56 @@ definitions:
     properties:
       avatar_url:
         type: string
+      body:
+        type: string
       brand:
         type: string
       date:
         type: string
       description:
+        type: string
+      engine:
+        type: string
+      horse_power:
         type: string
       id:
         type: integer
       model:
         type: string
+      name:
+        type: string
       owner_id:
         type: integer
     required:
     - avatar_url
+    - body
     - brand
     - date
     - description
+    - engine
+    - horse_power
     - id
     - model
+    - name
     - owner_id
     type: object
   models.CarRequest:
     properties:
+      body:
+        type: string
       brand:
         type: string
       date:
         type: string
       description:
         type: string
+      engine:
+        type: string
+      horsePower:
+        type: string
       model:
+        type: string
+      name:
         type: string
     type: object
   models.Club:
@@ -179,12 +199,18 @@ definitions:
         type: string
       id:
         type: integer
+      latitude:
+        type: number
+      longitude:
+        type: number
       name:
         type: string
     required:
     - avatar
     - event_date
     - id
+    - latitude
+    - longitude
     - name
     type: object
   models.LoginRequest:
@@ -195,6 +221,8 @@ definitions:
   models.SignUpRequest:
     properties:
       avatarUrl:
+        type: string
+      description:
         type: string
       garage:
         items:
@@ -225,6 +253,8 @@ definitions:
     properties:
       avatar_url:
         type: string
+      description:
+        type: string
       garage:
         items:
           $ref: '#/definitions/models.CarCard'
@@ -253,6 +283,7 @@ definitions:
         type: integer
     required:
     - avatar_url
+    - description
     - garage
     - name
     - own_clubs
