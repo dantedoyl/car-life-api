@@ -63,6 +63,16 @@ create table if not exists cars
     name text
 );
 
+CREATE TYPE user_club_status AS ENUM ('admin', 'participant', 'participant_request', 'subscriber', 'moderator');
+
+create table if not exists users_clubs
+    (
+    user_id bigint,
+    club_id bigint,
+    status user_club_status,
+    PRIMARY KEY (user_id, club_id)
+    );
+
 INSERT INTO tags (name, usage_count)
 VALUES ('jdm', 0),
        ('vintage', 0),

@@ -134,3 +134,145 @@ func (cr *ClubsRepository) GetTags() ([]models.Tag, error) {
 	}
 	return tags, nil
 }
+
+func (cr *ClubsRepository) GetClubsUserByStatus(club_id int64, status string, idGt *uint64, idLte *uint64, limit *uint64,) ([]*models.UserCard, error) {
+	var users []*models.UserCard
+	ind := 3
+	var values []interface{}
+	values = append(values, status, club_id)
+	q := `SELECT u.vk_id, u.name, u.surname, u.avatar from users_clubs as uc INNER JOIN users as u on u.vk_id = uc.user_id WHERE uc.status = $1 and uc.club_id=$2`
+
+	if idGt != nil {
+		q += ` AND u.vk_id > $` + strconv.Itoa(ind)
+		values = append(values, idGt)
+		ind++
+	}
+
+	if idLte != nil {
+		q += ` AND u.vk_id <= $` + strconv.Itoa(ind)
+		values = append(values, idLte)
+		ind++
+	}
+
+	if limit != nil {
+		q += ` LIMIT $` + strconv.Itoa(ind)
+		values = append(values, limit)
+	}
+
+	q += ` ORDER BY u.surname desc`
+	rows, err := cr.dbConn.Query(q, values...)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		user := &models.UserCard{}
+		err = rows.Scan(&user.VKID, &user.Name, &user.Surname, &user.AvatarUrl)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+	return users, nil
+}
+
+func (cr *ClubsRepository) GetClubsCars(club_id int64, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.CarCard, error) {
+	var cars []*models.CarCard
+	ind := 2
+	var values []interface{}
+	values = append(values, club_id)
+	q := `SELECT c.id, c.owner_id, c.brand, c.model,c.date,c.description, c.avatar, c.body, c.engine, c.horse_power, c.name from cars as c JOIN user_clubs as uc on c.owner_id = uc.user_id WHERE uc.status = 'participant' and uc.club_id=$1`
+
+	if idGt != nil {
+		q += ` AND c.id > $` + strconv.Itoa(ind)
+		values = append(values, idGt)
+		ind++
+	}
+
+	if idLte != nil {
+		q += ` AND c.id <= $` + strconv.Itoa(ind)
+		values = append(values, idLte)
+		ind++
+	}
+
+	if limit != nil {
+		q += ` LIMIT $` + strconv.Itoa(ind)
+		values = append(values, limit)
+	}
+
+	q += ` ORDER BY c.name desc`
+	rows, err := cr.dbConn.Query(q, values...)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		car := &models.CarCard{}
+		err = rows.Scan(&car.ID, &car.OwnerID, &car.Brand, &car.Model, &car.Date, &car.Description, &car.AvatarUrl, &car.Body, &car.Engine, &car.HorsePower, &car.Name)
+		if err != nil {
+			return nil, err
+		}
+		cars = append(cars, car)
+	}
+	return cars, nil
+}
+
+func (cr *ClubsRepository) GetClubsEvents(club_id int64, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.EventCard, error) {
+	var events []*models.EventCard
+	ind := 2
+	var values []interface{}
+	values = append(values, club_id)
+	q := `SELECT e.id, e.name, e.event_date, e.latitude, e.longitude, e.avatar from events as e WHERE e.club_id=$1`
+
+	if idGt != nil {
+		q += ` AND e.id > $` + strconv.Itoa(ind)
+		values = append(values, idGt)
+		ind++
+	}
+
+	if idLte != nil {
+		q += ` AND e.id <= $` + strconv.Itoa(ind)
+		values = append(values, idLte)
+		ind++
+	}
+
+	if limit != nil {
+		q += ` LIMIT $` + strconv.Itoa(ind)
+		values = append(values, limit)
+	}
+
+	q += ` ORDER BY e.event_date desc`
+	rows, err := cr.dbConn.Query(q, values...)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		event := &models.EventCard{}
+		err = rows.Scan(&event.ID, &event.Name, &event.EventDate,
+			&event.Latitude, &event.Longitude, &event.AvatarUrl)
+		if err != nil {
+			return nil, err
+		}
+		events = append(events, event)
+	}
+	return events, nil
+}
+
+func (cr *ClubsRepository) SetUserStatusByClubID(clubID int64, userID int64, status string) error {
+	_, err := cr.dbConn.Exec(
+		`INSERT INTO users_clubs (club_id, user_id, status) VALUES ($1, $2, $3)
+				ON CONFLICT (user_id, club_id) DO UPDATE
+			SET status = $3`, clubID, userID, status)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

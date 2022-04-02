@@ -61,9 +61,9 @@ func (uh *UsersHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		Description: signUp.Description,
 	}
 
+	var car *models.CarCard
 	if len(signUp.Garage) != 0 {
-		user.Garage = []*models.CarCard{
-			{
+		car = &models.CarCard{
 				Brand:       signUp.Garage[0].Brand,
 				Model:       signUp.Garage[0].Model,
 				Date:        signUp.Garage[0].Date,
@@ -72,11 +72,10 @@ func (uh *UsersHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 				Engine: signUp.Garage[0].Engine,
 				HorsePower: signUp.Garage[0].HorsePower,
 				Name: signUp.Garage[0].Name,
-			},
 		}
 	}
 
-	user, err = uh.usersUcase.Create(user)
+	user, err = uh.usersUcase.Create(user, car)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
@@ -278,19 +277,6 @@ func (uh *UsersHandler) MyProfile(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
 		return
-	}
-
-	if user.Garage == nil {
-		user.Garage = make([]*models.CarCard, 0)
-	}
-	if user.OwnClubs == nil {
-		user.OwnClubs = make([]models.ClubCard, 0)
-	}
-	if user.ParticipantClubs == nil {
-		user.ParticipantClubs = make([]models.ClubCard, 0)
-	}
-	if user.ParticipantEvents == nil {
-		user.ParticipantEvents = make([]models.EventCard, 0)
 	}
 
 	body, err := json.Marshal(user)

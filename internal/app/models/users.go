@@ -16,17 +16,15 @@ type User struct {
 	Name              string      `json:"name" binding:"required"`
 	Surname           string      `json:"surname" binding:"required"`
 	AvatarUrl         string      `json:"avatar_url" binding:"required"`
-	Garage            []*CarCard  `json:"garage" binding:"required"`
-	OwnClubs          []ClubCard  `json:"own_clubs" binding:"required"`
 	Tags              []string    `json:"tags" binding:"required"`
-	ParticipantClubs  []ClubCard  `json:"participant_clubs" binding:"required"`
-	ParticipantEvents []EventCard `json:"participant_events" binding:"required"`
 	Description       string `json:"description" binding:"required"`
 }
 
 type UserCard struct {
-	ID   uint64
-	Name string
+	VKID   uint64 `json:"vkid" binding:"required"`
+	Name string `json:"name" binding:"required"`
+	Surname string `json:"surname" binding:"required"`
+	AvatarUrl string `json:"avatar_url" binding:"required"`
 }
 
 type CarCard struct {

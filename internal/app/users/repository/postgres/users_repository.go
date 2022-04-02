@@ -26,7 +26,7 @@ func NewUserRepository(connP *sql.DB, connT *tarantool.Connection) users.IUsersR
 	}
 }
 
-func (ur *UsersRepository) InsertUser(user *models.User) (*models.User, error) {
+func (ur *UsersRepository) InsertUser(user *models.User, car *models.CarCard) (*models.User, error) {
 	_, err := ur.sqlConn.Exec(
 		`INSERT INTO users
                 (vk_id, name, surname, avatar, tags, description)
@@ -41,17 +41,17 @@ func (ur *UsersRepository) InsertUser(user *models.User) (*models.User, error) {
 		return nil, err
 	}
 
-	if len(user.Garage) != 0 {
+	//if len(user.Garage) != 0 {
 		err = ur.sqlConn.QueryRow(
 			`INSERT INTO cars
-                (owner_id, brand, model,date,description, body, engine, horse_power, name)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-                RETURNING id`,
-			user.VKID, user.Garage[0].Brand, user.Garage[0].Model, user.Garage[0].Date, user.Garage[0].Description,user.Garage[0].Body, user.Garage[0].Engine, user.Garage[0].HorsePower, user.Garage[0].Name).Scan(&user.Garage[0].ID)
+               (owner_id, brand, model,date,description, body, engine, horse_power, name)
+               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+               RETURNING id`,
+			user.VKID, car.Brand, car.Model, car.Date, car.Description,car.Body, car.Engine, car.HorsePower, car.Name).Scan(&car.ID)
 		if err != nil {
 			return nil, err
 		}
-	}
+	//}
 
 	return user, nil
 }
@@ -69,25 +69,25 @@ func (ur *UsersRepository) SelectByID(userID uint64) (*models.User, error) {
 		return nil, err
 	}
 
-	var cars []*models.CarCard
-
-	q := `SELECT id, owner_id, brand, model,date,description, avatar, body, engine, horse_power, name FROM cars WHERE owner_id = $1`
-	rows, err := ur.sqlConn.Query(q, userID)
-	if err != nil {
-		return nil, err
-	}
-
-	defer rows.Close()
-
-	for rows.Next() {
-		car := &models.CarCard{}
-		err = rows.Scan(&car.ID, &car.OwnerID, &car.Brand, &car.Model, &car.Date, &car.Description, &car.AvatarUrl, user.Garage[0].Body, user.Garage[0].Engine, user.Garage[0].HorsePower, user.Garage[0].Name)
-		if err != nil {
-			return nil, err
-		}
-		cars = append(cars, car)
-	}
-	user.Garage = cars
+	//var cars []*models.CarCard
+	//
+	//q := `SELECT id, owner_id, brand, model,date,description, avatar, body, engine, horse_power, name FROM cars WHERE owner_id = $1`
+	//rows, err := ur.sqlConn.Query(q, userID)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//defer rows.Close()
+	//
+	//for rows.Next() {
+	//	car := &models.CarCard{}
+	//	err = rows.Scan(&car.ID, &car.OwnerID, &car.Brand, &car.Model, &car.Date, &car.Description, &car.AvatarUrl, user.Garage[0].Body, user.Garage[0].Engine, user.Garage[0].HorsePower, user.Garage[0].Name)
+	//	if err != nil {
+	//		return nil, err
+	//	}
+	//	cars = append(cars, car)
+	//}
+	//user.Garage = cars
 
 	return user, nil
 }

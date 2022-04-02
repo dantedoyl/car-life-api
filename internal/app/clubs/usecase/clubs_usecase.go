@@ -62,3 +62,19 @@ func (cu *ClubsUsecase) UpdateAvatar(clubID int64, fileHeader *multipart.FileHea
 func (cu *ClubsUsecase) GetTags() ([]models.Tag, error) {
 	return cu.clubsRepo.GetTags()
 }
+
+func (cu *ClubsUsecase) GetClubsUserByStatus(club_id int64, status string, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.UserCard, error) {
+	return cu.clubsRepo.GetClubsUserByStatus(club_id, status, idGt, idLte, limit)
+}
+
+func (cu *ClubsUsecase) GetClubsCars(club_id int64, idGt *uint64, idLte *uint64, limit *uint64,) ([]*models.CarCard, error) {
+	return cu.clubsRepo.GetClubsCars(club_id, idGt, idLte, limit)
+}
+
+func (cu *ClubsUsecase) GetClubsEvents(club_id int64, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.EventCard, error) {
+	return cu.clubsRepo.GetClubsEvents(club_id, idGt, idLte, limit)
+}
+
+func (cu *ClubsUsecase) SetUserStatusByClubID(clubID int64, userID int64, status string) error {
+	return cu.clubsRepo.SetUserStatusByClubID(clubID, userID, status)
+}

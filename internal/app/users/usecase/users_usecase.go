@@ -18,8 +18,8 @@ func NewUsersUsecase(repo users.IUsersRepository) users.IUsersUsecase {
 	}
 }
 
-func (uu *UsersUsecase) Create(user *models.User) (*models.User, error) {
-	user, err := uu.usersRepo.InsertUser(user)
+func (uu *UsersUsecase) Create(user *models.User, car *models.CarCard) (*models.User, error) {
+	user, err := uu.usersRepo.InsertUser(user, car)
 	if err != nil {
 		return nil, err
 	}

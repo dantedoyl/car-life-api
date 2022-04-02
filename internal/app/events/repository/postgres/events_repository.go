@@ -52,7 +52,7 @@ func (er *EventsRepository) GetEvents(idGt *uint64, idLte *uint64, limit *uint64
 	var events []*models.Event
 	ind := 1
 	var values []interface{}
-	q := `SELECT  id, name, club_id, description, event_date, latitude, longitude, avatar from events WHERE true `
+	q := `SELECT id, name, club_id, description, event_date, latitude, longitude, avatar from events WHERE true `
 
 	if idGt != nil {
 		q += ` AND id > $` + strconv.Itoa(ind)
