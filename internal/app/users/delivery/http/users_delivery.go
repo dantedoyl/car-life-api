@@ -7,6 +7,7 @@ import (
 	"github.com/dantedoyl/car-life-api/internal/app/users"
 	"github.com/dantedoyl/car-life-api/internal/app/utils"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/schema"
 	"net/http"
 	"strconv"
 )
@@ -25,6 +26,7 @@ func (uh *UsersHandler) Configure(r *mux.Router, mw *middleware.Middleware) {
 	r.HandleFunc("/signup", uh.SignUp).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/me", mw.CheckAuthMiddleware(uh.MyProfile)).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/user/{id:[0-9]+}", uh.UserProfile).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc("/user/own_clubs", mw.CheckAuthMiddleware(uh.UserOwnClubs)).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/login", uh.Login).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/garage/{id:[0-9]+}/upload", uh.UploadAvatarHandler).Methods(http.MethodPost, http.MethodOptions)
 }
@@ -282,6 +284,58 @@ func (uh *UsersHandler) MyProfile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	body, err := json.Marshal(user)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: "can't marshal data"}))
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(body)
+}
+
+// UserOwnClubs godoc
+// @Summary      get clubs where user is owner
+// @Description  Handler for getting a user by id
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Param        IdGt query integer false "IdGt"
+// @Param        IdLte query integer false "IdLte"
+// @Param        Limit query integer false "Limit"
+// @Success      200  {object}  []models.ClubCard
+// @Failure      400  {object}  utils.Error
+// @Failure      401
+// @Failure      404  {object}  utils.Error
+// @Failure      500  {object}  utils.Error
+// @Router       /user/own_clubs [get]
+func (uh *UsersHandler) UserOwnClubs(w http.ResponseWriter, r *http.Request) {
+	userID, ok := r.Context().Value("userID").(uint64)
+	if !ok {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write(utils.JSONError(&utils.Error{Message: "you're unauthorized"}))
+		return
+	}
+
+	query := &models.ClubQuery{}
+	decoder := schema.NewDecoder()
+	decoder.IgnoreUnknownKeys(true)
+	err := decoder.Decode(query, r.URL.Query())
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	clubs, err := uh.usersUcase.GetClubsByUserStatus(int64(userID), "admin", query.IdGt, query.IdLte, query.Limit)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	body, err := json.Marshal(clubs)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: "can't marshal data"}))

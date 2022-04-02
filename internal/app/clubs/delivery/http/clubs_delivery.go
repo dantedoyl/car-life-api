@@ -36,6 +36,7 @@ func (ch *ClubsHandler) Configure(r *mux.Router, mw *middleware.Middleware) {
 	r.HandleFunc("/clubs/{id:[0-9]+}/cars", mw.CheckAuthMiddleware(ch.GetClubsCars)).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/clubs/{id:[0-9]+}/events", mw.CheckAuthMiddleware(ch.GetClubsEvents)).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/clubs/{id:[0-9]+}/participants/requests", mw.CheckAuthMiddleware(ch.GetClubsParticipantsRequests)).Methods(http.MethodGet, http.MethodOptions)
+
 }
 
 // CreateClub godoc

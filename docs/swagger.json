@@ -1023,6 +1023,73 @@
                 }
             }
         },
+        "/user/own_clubs": {
+            "get": {
+                "description": "Handler for getting a user by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "get clubs where user is owner",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "IdGt",
+                        "name": "IdGt",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "IdLte",
+                        "name": "IdLte",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit",
+                        "name": "Limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.ClubCard"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "401": {
+                        "description": ""
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/user/{id}": {
             "get": {
                 "description": "Handler for getting a user by id",

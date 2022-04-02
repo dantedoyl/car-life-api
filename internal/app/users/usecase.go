@@ -13,6 +13,6 @@ type IUsersUsecase interface {
 
 	Create(user *models.User, car *models.CarCard) (*models.User, error)
 	GetByID(vkID uint64) (*models.User, error)
-
+	GetClubsByUserStatus(userID int64, status string, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.ClubCard, error)
 	UpdateAvatar(carID uint64, fileHeader *multipart.FileHeader) (*models.User, error)
 }

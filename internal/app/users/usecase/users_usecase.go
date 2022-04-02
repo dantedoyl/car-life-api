@@ -123,3 +123,7 @@ func (uu *UsersUsecase) UpdateAvatar(carID uint64, fileHeader *multipart.FileHea
 	return user, nil
 }
 
+func (uu *UsersUsecase) GetClubsByUserStatus(userID int64, status string, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.ClubCard, error) {
+	return uu.usersRepo.GetClubsByUserStatus(userID, status, idGt, idLte, limit)
+}
+

@@ -8,6 +8,7 @@ import (
 	"github.com/dantedoyl/car-life-api/internal/app/users"
 	"github.com/lib/pq"
 	"github.com/tarantool/go-tarantool"
+	"strconv"
 	"sync"
 )
 
@@ -197,4 +198,47 @@ func (ur *UsersRepository) UpdateCar(car *models.CarCard) (*models.CarCard, erro
 	}
 
 	return car, nil
+}
+
+func (ur *UsersRepository) GetClubsByUserStatus(userID int64, status string, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.ClubCard, error) {
+	var clubs []*models.ClubCard
+	ind := 3
+	var values []interface{}
+	values = append(values, status, userID)
+	q := `SELECT c.id, c.name, c.tags, c.participants_count, c.avatar from users_clubs as uc inner join clubs as c on c.id = uc.club_id WHERE uc.status = $1 and uc.user_id = $2 `
+
+	if idGt != nil {
+		q += ` AND c.id > $` + strconv.Itoa(ind)
+		values = append(values, idGt)
+		ind++
+	}
+
+	if idLte != nil {
+		q += ` AND c.id <= $` + strconv.Itoa(ind)
+		values = append(values, idLte)
+		ind++
+	}
+
+	if limit != nil {
+		q += ` LIMIT $` + strconv.Itoa(ind)
+		values = append(values, limit)
+	}
+
+	q += ` ORDER BY name desc`
+	rows, err := ur.sqlConn.Query(q, values...)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		club := &models.ClubCard{}
+		err = rows.Scan(&club.ID, &club.Name, pq.Array(&club.Tags), &club.ParticipantsCount, &club.AvatarUrl)
+		if err != nil {
+			return nil, err
+		}
+		clubs = append(clubs, club)
+	}
+	return clubs, nil
 }

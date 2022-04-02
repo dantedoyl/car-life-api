@@ -11,6 +11,7 @@ type IUsersRepository interface {
 	SelectByID(userID uint64) (*models.User, error)
 	SelectCarByID(carID uint64) (*models.CarCard, error)
 	UpdateCar(car *models.CarCard) (*models.CarCard, error)
+	GetClubsByUserStatus(userID int64, status string, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.ClubCard, error)
 	//Update(user *models.User) error
 	//Delete(userID uint64) error
 }
