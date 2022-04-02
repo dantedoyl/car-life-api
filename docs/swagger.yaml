@@ -83,6 +83,8 @@ definitions:
         items:
           type: string
         type: array
+      user_status:
+        type: string
     required:
     - avatar
     - description
@@ -92,6 +94,7 @@ definitions:
     - owner_id
     - participants_count
     - tags
+    - user_status
     type: object
   models.ClubCard:
     properties:
@@ -179,6 +182,8 @@ definitions:
         type: string
       participants_count:
         type: integer
+      user_status:
+        type: string
     required:
     - avatar
     - club
@@ -190,6 +195,7 @@ definitions:
     - longitude
     - name
     - participants_count
+    - user_status
     type: object
   models.EventCard:
     properties:
