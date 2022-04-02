@@ -27,6 +27,10 @@ func (eh *EventsHandler) Configure(r *mux.Router, mw *middleware.Middleware) {
 	r.HandleFunc("/events/{id:[0-9]+}", mw.CheckAuthMiddleware(eh.GetEventByID)).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/events", mw.CheckAuthMiddleware(eh.GetEvents)).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/events/{id:[0-9]+}/upload", mw.CheckAuthMiddleware(eh.UploadAvatarHandler)).Methods(http.MethodPost, http.MethodOptions)
+	//r.HandleFunc("/events/{id:[0-9]+}/participants", mw.CheckAuthMiddleware(eh.GetEventsParticipants)).Methods(http.MethodGet, http.MethodOptions)
+	//r.HandleFunc("/events/{id:[0-9]+}/participants/requests", mw.CheckAuthMiddleware(eh.GetEventsParticipantsRequests)).Methods(http.MethodGet, http.MethodOptions)
+	//r.HandleFunc("/clubs/{id:[0-9]+}/participate", mw.CheckAuthMiddleware(eh.ParticipateByEventID)).Methods(http.MethodPost, http.MethodOptions)
+	//r.HandleFunc("/clubs/{cid:[0-9]+}/participate/{uid:[0-9]+}/{type:approve|reject}", mw.CheckAuthMiddleware(eh.ApproveRejectUserParticipateInEvent)).Methods(http.MethodPost, http.MethodOptions)
 }
 
 // CreateEvent godoc

@@ -79,7 +79,7 @@ func (cu *ClubsUsecase) SetUserStatusByClubID(clubID int64, userID int64, status
 	return cu.clubsRepo.SetUserStatusByClubID(clubID, userID, status)
 }
 
-func (cu *ClubsUsecase) ApproveRejectUserParticipate(clubID int64, userID int64, decision string) error {
+func (cu *ClubsUsecase) ApproveRejectUserParticipateInClub(clubID int64, userID int64, decision string) error {
 	if decision == "approve" {
 		return cu.clubsRepo.SetUserStatusByClubID(clubID, userID, "participant")
 	}
