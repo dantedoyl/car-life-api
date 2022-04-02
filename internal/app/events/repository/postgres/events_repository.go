@@ -124,7 +124,7 @@ func (er *EventsRepository) GetEventsUserByStatus(event_id int64, status string,
 	ind := 3
 	var values []interface{}
 	values = append(values, status, event_id)
-	q := `SELECT u.vk_id, u.name, u.surname, u.avatar from users_events as uc INNER JOIN users as u on u.vk_id = ec.user_id WHERE ec.status = $1 and ec.event_id=$2`
+	q := `SELECT u.vk_id, u.name, u.surname, u.avatar from users_events as ue INNER JOIN users as u on u.vk_id = ue.user_id WHERE ue.status = $1 and ue.event_id=$2`
 
 	if idGt != nil {
 		q += ` AND u.vk_id > $` + strconv.Itoa(ind)

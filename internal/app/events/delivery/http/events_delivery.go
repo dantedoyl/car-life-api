@@ -375,7 +375,7 @@ func (eh *EventsHandler) ParticipateByEventID(w http.ResponseWriter, r *http.Req
 // @Tags         Events
 // @Accept       json
 // @Produce      json
-// @Param        cid path int64 true "Event ID"
+// @Param        eid path int64 true "Event ID"
 // @Param        uid path int64 true "User ID"
 // @Param        type path string true "Type" Enums(approve, reject)
 // @Success      200
