@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"github.com/dantedoyl/car-life-api/internal/app/events"
 	"github.com/dantedoyl/car-life-api/internal/app/models"
+	"github.com/lib/pq"
 	"strconv"
 )
 
@@ -45,6 +46,15 @@ func (er *EventsRepository) GetEventByID(id int64) (*models.Event, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	err = er.dbConn.QueryRow(
+		`SELECT  c.id, c.name, c.tags, c.participants_count, c.avatar from clubs as c
+				WHERE c.id = $1`, id).Scan(&event.Club.ID, &event.Club.Name, pq.Array(&event.Club.Tags), &event.Club.ParticipantsCount, &event.Club.AvatarUrl,
+		&event.Latitude, &event.Longitude, &event.AvatarUrl)
+	if err != nil {
+		return nil, err
+	}
+
 	return event, nil
 }
 
