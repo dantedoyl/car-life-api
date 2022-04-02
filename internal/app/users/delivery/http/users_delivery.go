@@ -337,6 +337,9 @@ func (uh *UsersHandler) UserOwnClubs(w http.ResponseWriter, r *http.Request) {
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
 		return
 	}
+	if len(clubs) == 0 {
+		clubs = []*models.ClubCard{}
+	}
 
 	body, err := json.Marshal(clubs)
 	if err != nil {
@@ -385,6 +388,9 @@ func (uh *UsersHandler) UserGarage(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
 		return
+	}
+	if len(cars) == 0 {
+		cars = []*models.CarCard{}
 	}
 
 	body, err := json.Marshal(cars)
@@ -437,6 +443,9 @@ func (uh *UsersHandler) UserClubs(w http.ResponseWriter, r *http.Request) {
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
 		return
 	}
+	if len(clubs) == 0 {
+		clubs = []*models.ClubCard{}
+	}
 
 	body, err := json.Marshal(clubs)
 	if err != nil {
@@ -461,7 +470,7 @@ func (uh *UsersHandler) UserClubs(w http.ResponseWriter, r *http.Request) {
 // @Param        IdLte query integer false "IdLte"
 // @Param        Limit query integer false "Limit"
 // @Param        type path string true "Type" Enums(admin, participant, spectator)
-// @Success      200  {object}  []models.ClubCard
+// @Success      200  {object}  []models.EventCard
 // @Failure      400  {object}  utils.Error
 // @Failure      401
 // @Failure      404  {object}  utils.Error
@@ -482,14 +491,17 @@ func (uh *UsersHandler) UserEvents(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	clubs, err := uh.usersUcase.GetEventsByUserStatus(int64(userID), role, query.IdGt, query.IdLte, query.Limit)
+	events, err := uh.usersUcase.GetEventsByUserStatus(int64(userID), role, query.IdGt, query.IdLte, query.Limit)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
 		return
 	}
+	if len(events) == 0 {
+		events = []*models.EventCard{}
+	}
 
-	body, err := json.Marshal(clubs)
+	body, err := json.Marshal(events)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: "can't marshal data"}))
