@@ -73,6 +73,16 @@ create table if not exists users_clubs
     PRIMARY KEY (user_id, club_id)
     );
 
+CREATE TYPE user_event_status AS ENUM ('participant', 'participant_request', 'spectator');
+
+create table if not exists users_events
+(
+    user_id bigint,
+    event_id bigint,
+    status user_event_status,
+    PRIMARY KEY (user_id, event_id)
+    );
+
 INSERT INTO tags (name, usage_count)
 VALUES ('jdm', 0),
        ('vintage', 0),

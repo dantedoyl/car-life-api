@@ -109,3 +109,59 @@ func (er *EventsRepository) UpdateEvent(event *models.Event) (*models.Event, err
 	}
 	return event, nil
 }
+
+func (er *EventsRepository)	GetEventsUserByStatus(event_id int64, status string, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.UserCard, error) {
+	var users []*models.UserCard
+	ind := 3
+	var values []interface{}
+	values = append(values, status, event_id)
+	q := `SELECT u.vk_id, u.name, u.surname, u.avatar from users_events as uc INNER JOIN users as u on u.vk_id = ec.user_id WHERE ec.status = $1 and ec.event_id=$2`
+
+	if idGt != nil {
+		q += ` AND u.vk_id > $` + strconv.Itoa(ind)
+		values = append(values, idGt)
+		ind++
+	}
+
+	if idLte != nil {
+		q += ` AND u.vk_id <= $` + strconv.Itoa(ind)
+		values = append(values, idLte)
+		ind++
+	}
+
+	if limit != nil {
+		q += ` LIMIT $` + strconv.Itoa(ind)
+		values = append(values, limit)
+	}
+
+	q += ` ORDER BY u.surname desc`
+	rows, err := er.dbConn.Query(q, values...)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		user := &models.UserCard{}
+		err = rows.Scan(&user.VKID, &user.Name, &user.Surname, &user.AvatarUrl)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+	return users, nil
+}
+
+func (er *EventsRepository) SetUserStatusByEventID(eventID int64, userID int64, status string) error {
+	_, err := er.dbConn.Exec(
+		`INSERT INTO users_events (event_id, user_id, status) VALUES ($1, $2, $3)
+				ON CONFLICT (user_id, event_id) DO UPDATE
+			SET status = $3`, eventID, userID, status)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+

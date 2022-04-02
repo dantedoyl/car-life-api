@@ -58,3 +58,18 @@ func (eu *EventsUsecase) UpdateAvatar(eventID int64, fileHeader *multipart.FileH
 
 	return event, nil
 }
+
+func (eu *EventsUsecase)GetEventsUserByStatus(event_id int64, status string, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.UserCard, error) {
+	return eu.eventsRepo.GetEventsUserByStatus(event_id, status, idGt, idLte, limit)
+}
+
+func (eu *EventsUsecase) SetUserStatusByEventID(eventID int64, userID int64, status string) error {
+	return eu.eventsRepo.SetUserStatusByEventID(eventID, userID, status)
+}
+
+func (eu *EventsUsecase) ApproveRejectUserParticipateInEvent(eventID int64, userID int64, decision string) error {
+	if decision == "approve" {
+		return eu.eventsRepo.SetUserStatusByEventID(eventID, userID, "participant")
+	}
+	return eu.eventsRepo.SetUserStatusByEventID(eventID, userID, "spectator")
+}

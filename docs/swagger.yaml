@@ -820,6 +820,52 @@ paths:
       summary: get events list
       tags:
       - Events
+  /events/{eid}/participate/{uid}/{type}:
+    post:
+      consumes:
+      - application/json
+      description: Handler for getting tags list
+      parameters:
+      - description: Event ID
+        in: path
+        name: cid
+        required: true
+        type: integer
+      - description: User ID
+        in: path
+        name: uid
+        required: true
+        type: integer
+      - description: Type
+        enum:
+        - approve
+        - reject
+        in: path
+        name: type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "401":
+          description: ""
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: approve/reject participate in event
+      tags:
+      - Clubs
   /events/{id}:
     get:
       consumes:
@@ -851,6 +897,86 @@ paths:
           schema:
             $ref: '#/definitions/utils.Error'
       summary: get event by id
+      tags:
+      - Events
+  /events/{id}/participants:
+    get:
+      consumes:
+      - application/json
+      description: Handler for getting tags list
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: IdGt
+        in: query
+        name: IdGt
+        type: integer
+      - description: IdLte
+        in: query
+        name: IdLte
+        type: integer
+      - description: Limit
+        in: query
+        name: Limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.UserCard'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: get events participants requestlist
+      tags:
+      - Events
+  /events/{id}/participate:
+    post:
+      consumes:
+      - application/json
+      description: Handler for getting tags list
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "401":
+          description: ""
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: request participate in event
       tags:
       - Events
   /events/{id}/upload:
