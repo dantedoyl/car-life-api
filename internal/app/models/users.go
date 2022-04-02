@@ -11,6 +11,10 @@ type Session struct {
 	ExpiresAt time.Time
 }
 
+type CarIDResponse struct {
+	CarID int64 `json:"car_id" binding:"required"`
+}
+
 type User struct {
 	VKID              uint64      `json:"vkid" binding:"required"`
 	Name              string      `json:"name" binding:"required"`

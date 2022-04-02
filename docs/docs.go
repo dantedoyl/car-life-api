@@ -938,7 +938,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/models.CarIDResponse"
                         }
                     },
                     "400": {
@@ -1061,6 +1061,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "owner_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.CarIDResponse": {
+            "type": "object",
+            "required": [
+                "car_id"
+            ],
+            "properties": {
+                "car_id": {
                     "type": "integer"
                 }
             }

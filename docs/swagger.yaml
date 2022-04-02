@@ -37,6 +37,13 @@ definitions:
     - name
     - owner_id
     type: object
+  models.CarIDResponse:
+    properties:
+      car_id:
+        type: integer
+    required:
+    - car_id
+    type: object
   models.CarRequest:
     properties:
       body:
@@ -898,7 +905,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.User'
+            $ref: '#/definitions/models.CarIDResponse'
         "400":
           description: Bad Request
           schema:

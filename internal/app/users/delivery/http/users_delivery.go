@@ -36,7 +36,7 @@ func (uh *UsersHandler) Configure(r *mux.Router, mw *middleware.Middleware) {
 // @Accept       json
 // @Produce      json
 // @Param        body body models.SignUpRequest true "User"
-// @Success      200 {object} models.User
+// @Success      200 {object} models.CarIDResponse
 // @Failure      400  {object}  utils.Error
 // @Failure      404  {object}  utils.Error
 // @Failure      500  {object}  utils.Error
@@ -99,9 +99,7 @@ func (uh *UsersHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 	}
 
-	body, err := json.Marshal(struct {
-		CarID int64 `json:"car_id"`
-	}{
+	body, err := json.Marshal(models.CarIDResponse{
 		CarID: user.CarID,
 	})
 	if err != nil {
