@@ -823,7 +823,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "Event ID",
-                        "name": "cid",
+                        "name": "eid",
                         "in": "path",
                         "required": true
                     },

@@ -828,7 +828,7 @@ paths:
       parameters:
       - description: Event ID
         in: path
-        name: cid
+        name: eid
         required: true
         type: integer
       - description: User ID
