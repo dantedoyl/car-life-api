@@ -1622,7 +1622,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.ClubCard"
+                                "$ref": "#/definitions/models.EventCard"
                             }
                         }
                     },
@@ -1955,6 +1955,7 @@ const docTemplate = `{
             "required": [
                 "avatar",
                 "club",
+                "creator_id",
                 "description",
                 "event_date",
                 "id",
@@ -1969,6 +1970,9 @@ const docTemplate = `{
                 },
                 "club": {
                     "$ref": "#/definitions/models.Club"
+                },
+                "creator_id": {
+                    "type": "integer"
                 },
                 "description": {
                     "type": "string"

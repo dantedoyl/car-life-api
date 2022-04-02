@@ -21,15 +21,24 @@ func NewProductRepository(conn *sql.DB) events.IEventsRepository {
 func (er *EventsRepository) InsertEvent(event *models.Event) error {
 	err := er.dbConn.QueryRow(
 		`INSERT INTO events
-                (name, club_id, description, event_date, latitude, longitude)
-                VALUES ($1, $2, $3, $4, $5, $6) 
+                (name, club_id, creator_id, description, event_date, latitude, longitude)
+                VALUES ($1, $2, $3, $4, $5, $6, $7) 
                 RETURNING id`,
 		event.Name,
 		event.Club.ID,
+		event.CreatorID,
 		event.Description,
 		event.EventDate,
 		event.Latitude,
 		event.Longitude).Scan(&event.ID)
+	if err != nil {
+		return err
+	}
+
+	_, err = er.dbConn.Exec(
+		`INSERT INTO users_events (event_id, user_id, status) VALUES ($1, $2, $3)
+				ON CONFLICT (user_id, event_id) DO UPDATE
+			SET status = $3`, event.ID, event.CreatorID, "admin")
 	if err != nil {
 		return err
 	}
@@ -40,8 +49,8 @@ func (er *EventsRepository) InsertEvent(event *models.Event) error {
 func (er *EventsRepository) GetEventByID(id int64) (*models.Event, error) {
 	event := &models.Event{}
 	err := er.dbConn.QueryRow(
-		`SELECT  id, name, club_id, description, event_date, latitude, longitude, avatar from events
-				WHERE id = $1`, id).Scan(&event.ID, &event.Name, &event.Club.ID, &event.Description, &event.EventDate,
+		`SELECT  id, name, club_id, creator_id, description, event_date, latitude, longitude, avatar from events
+				WHERE id = $1`, id).Scan(&event.ID, &event.Name, &event.Club.ID, &event.CreatorID, &event.Description, &event.EventDate,
 		&event.Latitude, &event.Longitude, &event.AvatarUrl)
 	if err != nil {
 		return nil, err

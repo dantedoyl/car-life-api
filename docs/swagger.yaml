@@ -163,6 +163,8 @@ definitions:
         type: string
       club:
         $ref: '#/definitions/models.Club'
+      creator_id:
+        type: integer
       description:
         type: string
       event_date:
@@ -180,6 +182,7 @@ definitions:
     required:
     - avatar
     - club
+    - creator_id
     - description
     - event_date
     - id
@@ -1317,7 +1320,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.ClubCard'
+              $ref: '#/definitions/models.EventCard'
             type: array
         "400":
           description: Bad Request

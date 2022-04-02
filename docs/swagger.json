@@ -1615,7 +1615,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.ClubCard"
+                                "$ref": "#/definitions/models.EventCard"
                             }
                         }
                     },
@@ -1948,6 +1948,7 @@
             "required": [
                 "avatar",
                 "club",
+                "creator_id",
                 "description",
                 "event_date",
                 "id",
@@ -1962,6 +1963,9 @@
                 },
                 "club": {
                     "$ref": "#/definitions/models.Club"
+                },
+                "creator_id": {
+                    "type": "integer"
                 },
                 "description": {
                     "type": "string"

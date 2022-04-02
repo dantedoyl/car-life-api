@@ -56,13 +56,13 @@ func main() {
 	userUcase := users_usecase.NewUsersUsecase(userRepo)
 	userHandler := users_delivery.NewUserssHandler(userUcase)
 
-	eventsRepo := events_repository.NewProductRepository(postgresDB.GetDatabase())
-	eventsUcase := events_usecase.NewEventsUsecase(eventsRepo)
-	eventHandler := events_delivery.NewEventsHandler(eventsUcase)
-
 	clubsRepo := clubs_repository.NewClubRepository(postgresDB.GetDatabase())
 	clubsUcase := clubs_usecase.NewClubsUsecase(clubsRepo)
 	clubsHandler := clubs_delivery.NewClubsHandler(clubsUcase)
+
+	eventsRepo := events_repository.NewProductRepository(postgresDB.GetDatabase())
+	eventsUcase := events_usecase.NewEventsUsecase(eventsRepo)
+	eventHandler := events_delivery.NewEventsHandler(eventsUcase, clubsUcase)
 
 	mw := middleware.NewMiddleware(userUcase)
 

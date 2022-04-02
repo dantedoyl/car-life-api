@@ -11,6 +11,7 @@ create table if not exists events
     id        bigserial primary key,
     name      text not null,
     club_id   bigint not null,
+    creator_id bigint not null,
     description text null,
     event_date timestamp not null,
     created_at timestamp default CURRENT_TIMESTAMP,

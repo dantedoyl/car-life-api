@@ -2,6 +2,7 @@ package delivery
 
 import (
 	"encoding/json"
+	clubs "github.com/dantedoyl/car-life-api/internal/app/clubs"
 	"github.com/dantedoyl/car-life-api/internal/app/events"
 	"github.com/dantedoyl/car-life-api/internal/app/middleware"
 	"github.com/dantedoyl/car-life-api/internal/app/models"
@@ -14,11 +15,13 @@ import (
 
 type EventsHandler struct {
 	eventsUcase events.IEventsUsecase
+	clubUcase clubs.IClubsUsecase
 }
 
-func NewEventsHandler(eventsUcase events.IEventsUsecase) *EventsHandler {
+func NewEventsHandler(eventsUcase events.IEventsUsecase, clubUcase clubs.IClubsUsecase) *EventsHandler {
 	return &EventsHandler{
 		eventsUcase: eventsUcase,
+		clubUcase: clubUcase,
 	}
 }
 
@@ -48,11 +51,31 @@ func (eh *EventsHandler) Configure(r *mux.Router, mw *middleware.Middleware) {
 func (eh *EventsHandler) CreateEvent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
+	userID, ok := r.Context().Value("userID").(uint64)
+	if !ok {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write(utils.JSONError(&utils.Error{Message: "you're unauthorized"}))
+		return
+	}
+
 	event := &models.CreateEventRequest{}
 	err := json.NewDecoder(r.Body).Decode(&event)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write(utils.JSONError(&utils.Error{Message: "can't unmarshal data"}))
+		return
+	}
+
+	userClubSatus, err := eh.clubUcase.GetUserStatusInClub(int64(event.ClubID), int64(userID))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	if userClubSatus == nil || userClubSatus.Status != "admin" {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(utils.JSONError(&utils.Error{Message: "user has inappropriate status"}))
 		return
 	}
 
@@ -64,6 +87,7 @@ func (eh *EventsHandler) CreateEvent(w http.ResponseWriter, r *http.Request) {
 		Latitude:    event.Latitude,
 		Longitude:   event.Longitude,
 		AvatarUrl:   event.AvatarUrl,
+		CreatorID: userID,
 	}
 
 	err = eh.eventsUcase.CreateEvent(eventsData)
