@@ -28,14 +28,11 @@ func (ch *ClubsHandler) Configure(r *mux.Router, mw *middleware.Middleware) {
 	r.HandleFunc("/clubs", mw.CheckAuthMiddleware(ch.GetClubs)).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/clubs/tags", mw.CheckAuthMiddleware(ch.GetTags)).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/clubs/{id:[0-9]+}/upload", mw.CheckAuthMiddleware(ch.UploadAvatarHandler)).Methods(http.MethodPost, http.MethodOptions)
-	//r.HandleFunc("/clubs/{id:[0-9]+}/subscribe", mw.CheckAuthMiddleware(ch.SubscribeByClubID)).Methods(http.MethodGet, http.MethodOptions)
-	r.HandleFunc("/clubs/{id:[0-9]+}/participate", mw.CheckAuthMiddleware(ch.ParticipateByClubID)).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/clubs/{id:[0-9]+}/{type:participate|subscribe}", mw.CheckAuthMiddleware(ch.SetUserStatusByClubID)).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/clubs/{cid:[0-9]+}/participate/{uid:[0-9]+}/{type:approve|reject}", mw.CheckAuthMiddleware(ch.ApproveRejectUserParticipateInClub)).Methods(http.MethodPost, http.MethodOptions)
-	//r.HandleFunc("/clubs/{id:[0-9]+}/subscribers", mw.CheckAuthMiddleware(ch.GetClubsSubscribers)).Methods(http.MethodGet, http.MethodOptions)
-	r.HandleFunc("/clubs/{id:[0-9]+}/participants", mw.CheckAuthMiddleware(ch.GetClubsParticipants)).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc("/clubs/{id:[0-9]+}/{type:participant|participant_request|subscriber}", mw.CheckAuthMiddleware(ch.GetClubsUsersByType)).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/clubs/{id:[0-9]+}/cars", mw.CheckAuthMiddleware(ch.GetClubsCars)).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/clubs/{id:[0-9]+}/events", mw.CheckAuthMiddleware(ch.GetClubsEvents)).Methods(http.MethodGet, http.MethodOptions)
-	r.HandleFunc("/clubs/{id:[0-9]+}/participants/requests", mw.CheckAuthMiddleware(ch.GetClubsParticipantsRequests)).Methods(http.MethodGet, http.MethodOptions)
 
 }
 
@@ -284,8 +281,8 @@ func (ch *ClubsHandler) GetTags(w http.ResponseWriter, r *http.Request) {
 	w.Write(body)
 }
 
-// GetClubsParticipants godoc
-// @Summary      get clubs participants list
+// GetClubsUsersByType godoc
+// @Summary      get clubs users list
 // @Description  Handler for getting tags list
 // @Tags         Clubs
 // @Accept       json
@@ -294,14 +291,38 @@ func (ch *ClubsHandler) GetTags(w http.ResponseWriter, r *http.Request) {
 // @Param        IdGt query integer false "IdGt"
 // @Param        IdLte query integer false "IdLte"
 // @Param        Limit query integer false "Limit"
+// @Param        type path string true "Type" Enums(participant, participant_request, subscriber)
 // @Success      200  {object}  []models.UserCard
 // @Failure      400  {object}  utils.Error
 // @Failure      404  {object}  utils.Error
 // @Failure      500  {object}  utils.Error
-// @Router       /clubs/{id}/participants [get]
-func (ch *ClubsHandler) GetClubsParticipants(w http.ResponseWriter, r *http.Request) {
+// @Router       /clubs/{id}/{type} [get]
+func (ch *ClubsHandler) GetClubsUsersByType(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	clubID, _ := strconv.ParseUint(vars["id"], 10, 64)
+	role := vars["type"]
+
+	if role == "participant_request" {
+		userID, ok := r.Context().Value("userID").(uint64)
+		if !ok {
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write(utils.JSONError(&utils.Error{Message: "you're unauthorized"}))
+			return
+		}
+
+		userClubSatus, err := ch.clubsUcase.GetUserStatusInClub(int64(clubID), int64(userID))
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+			return
+		}
+
+		if userClubSatus == nil || userClubSatus.Status != "admin" {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write(utils.JSONError(&utils.Error{Message: "user has inappropriate status"}))
+			return
+		}
+	}
 
 	query := &models.ClubQuery{}
 	decoder := schema.NewDecoder()
@@ -313,7 +334,7 @@ func (ch *ClubsHandler) GetClubsParticipants(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	users, err := ch.clubsUcase.GetClubsUserByStatus(int64(clubID), "participant", query.IdGt, query.IdLte, query.Limit)
+	users, err := ch.clubsUcase.GetClubsUserByStatus(int64(clubID), role, query.IdGt, query.IdLte, query.Limit)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
@@ -386,77 +407,6 @@ func (ch *ClubsHandler) GetClubsCars(w http.ResponseWriter, r *http.Request) {
 	w.Write(body)
 }
 
-// GetClubsParticipantsRequests godoc
-// @Summary      get clubs participants request list
-// @Description  Handler for getting tags list
-// @Tags         Clubs
-// @Accept       json
-// @Produce      json
-// @Param        id path int64 true "Club ID"
-// @Param        IdGt query integer false "IdGt"
-// @Param        IdLte query integer false "IdLte"
-// @Param        Limit query integer false "Limit"
-// @Success      200  {object}  []models.UserCard
-// @Failure      400  {object}  utils.Error
-// @Failure      404  {object}  utils.Error
-// @Failure      500  {object}  utils.Error
-// @Router       /clubs/{id}/participants/requests [get]
-func (ch *ClubsHandler) GetClubsParticipantsRequests(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	clubID, _ := strconv.ParseUint(vars["id"], 10, 64)
-
-	userID, ok := r.Context().Value("userID").(uint64)
-	if !ok {
-		w.WriteHeader(http.StatusUnauthorized)
-		w.Write(utils.JSONError(&utils.Error{Message: "you're unauthorized"}))
-		return
-	}
-
-	userClubSatus, err := ch.clubsUcase.GetUserStatusInClub(int64(clubID), int64(userID))
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
-		return
-	}
-
-	if userClubSatus == nil || userClubSatus.Status != "admin" {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write(utils.JSONError(&utils.Error{Message: "user has inappropriate status"}))
-		return
-	}
-
-	query := &models.ClubQuery{}
-	decoder := schema.NewDecoder()
-	decoder.IgnoreUnknownKeys(true)
-	err = decoder.Decode(query, r.URL.Query())
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
-		return
-	}
-
-	users, err := ch.clubsUcase.GetClubsUserByStatus(int64(clubID), "participant_request", query.IdGt, query.IdLte, query.Limit)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
-		return
-	}
-	if len(users) == 0 {
-		users = []*models.UserCard{}
-	}
-
-	body, err := json.Marshal(users)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(utils.JSONError(&utils.Error{Message: "can't marshal data"}))
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(body)
-}
-
 // GetClubsEvents godoc
 // @Summary      get clubs events list
 // @Description  Handler for getting tags list
@@ -508,22 +458,24 @@ func (ch *ClubsHandler) GetClubsEvents(w http.ResponseWriter, r *http.Request) {
 	w.Write(body)
 }
 
-// ParticipateByClubID godoc
-// @Summary      request participate
+// SetUserStatusByClubID godoc
+// @Summary      set user role in club
 // @Description  Handler for getting tags list
 // @Tags         Clubs
 // @Accept       json
 // @Produce      json
 // @Param        id path int64 true "Club ID"
+// @Param        type path string true "Type" Enums(participate, subscribe)
 // @Success      200
 // @Failure      400  {object}  utils.Error
 // @Failure      401
 // @Failure      404  {object}  utils.Error
 // @Failure      500  {object}  utils.Error
-// @Router       /clubs/{id}/participate [post]
-func (ch *ClubsHandler) ParticipateByClubID(w http.ResponseWriter, r *http.Request) {
+// @Router       /clubs/{id}/{type} [post]
+func (ch *ClubsHandler) SetUserStatusByClubID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	clubID, _ := strconv.ParseUint(vars["id"], 10, 64)
+	decision := vars["type"]
 
 	userID, ok := r.Context().Value("userID").(uint64)
 	if !ok {
@@ -539,13 +491,18 @@ func (ch *ClubsHandler) ParticipateByClubID(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	if userClubSatus != nil && (userClubSatus.Status == "participant" || userClubSatus.Status == "admin" || userClubSatus.Status == "moderator") {
+	if decision == "participate" && userClubSatus != nil && (userClubSatus.Status == "participant" || userClubSatus.Status == "admin" || userClubSatus.Status == "moderator") {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write(utils.JSONError(&utils.Error{Message: "user has inappropriate status"}))
 		return
 	}
 
-	err = ch.clubsUcase.SetUserStatusByClubID(int64(clubID), int64(userID), "participant_request")
+	status := "participant_request"
+	if decision == "subscribe" {
+		status = "subscriber"
+	}
+
+	err = ch.clubsUcase.SetUserStatusByClubID(int64(clubID), int64(userID), status)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))

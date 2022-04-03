@@ -30,9 +30,8 @@ func (eh *EventsHandler) Configure(r *mux.Router, mw *middleware.Middleware) {
 	r.HandleFunc("/events/{id:[0-9]+}", mw.CheckAuthMiddleware(eh.GetEventByID)).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/events", mw.CheckAuthMiddleware(eh.GetEvents)).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/events/{id:[0-9]+}/upload", mw.CheckAuthMiddleware(eh.UploadAvatarHandler)).Methods(http.MethodPost, http.MethodOptions)
-	r.HandleFunc("/events/{id:[0-9]+}/participants", mw.CheckAuthMiddleware(eh.GetEventsParticipants)).Methods(http.MethodGet, http.MethodOptions)
-	r.HandleFunc("/events/{id:[0-9]+}/participants/requests", mw.CheckAuthMiddleware(eh.GetEventsParticipantsRequests)).Methods(http.MethodGet, http.MethodOptions)
-	r.HandleFunc("/events/{id:[0-9]+}/participate", mw.CheckAuthMiddleware(eh.ParticipateByEventID)).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/events/{id:[0-9]+}/{type:participant|participant_request|spectator}", mw.CheckAuthMiddleware(eh.GetEventsUsersByType)).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc("/events/{id:[0-9]+}/{type:participate|spectate}", mw.CheckAuthMiddleware(eh.SetUserStatusByEventID)).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/events/{eid:[0-9]+}/participate/{uid:[0-9]+}/{type:approve|reject}", mw.CheckAuthMiddleware(eh.ApproveRejectUserParticipateInEvent)).Methods(http.MethodPost, http.MethodOptions)
 }
 
@@ -263,8 +262,8 @@ func (eh *EventsHandler) UploadAvatarHandler(w http.ResponseWriter, r *http.Requ
 	w.Write(body)
 }
 
-// GetEventsParticipants godoc
-// @Summary      get events participants list
+// GetEventsUsersByType godoc
+// @Summary      get events users list
 // @Description  Handler for getting tags list
 // @Tags         Events
 // @Accept       json
@@ -273,14 +272,16 @@ func (eh *EventsHandler) UploadAvatarHandler(w http.ResponseWriter, r *http.Requ
 // @Param        IdGt query integer false "IdGt"
 // @Param        IdLte query integer false "IdLte"
 // @Param        Limit query integer false "Limit"
+// @Param        type path string true "Type" Enums(participant, participant_request, spectator)
 // @Success      200  {object}  []models.UserCard
 // @Failure      400  {object}  utils.Error
 // @Failure      404  {object}  utils.Error
 // @Failure      500  {object}  utils.Error
-// @Router       /events/{id}/participants [get]
-func (eh *EventsHandler) GetEventsParticipants(w http.ResponseWriter, r *http.Request) {
+// @Router       /events/{id}/{type} [get]
+func (eh *EventsHandler) GetEventsUsersByType(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	eventID, _ := strconv.ParseUint(vars["id"], 10, 64)
+	role := vars["type"]
 
 	query := &models.ClubQuery{}
 	decoder := schema.NewDecoder()
@@ -292,7 +293,7 @@ func (eh *EventsHandler) GetEventsParticipants(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	users, err := eh.eventsUcase.GetEventsUserByStatus(int64(eventID), "participant", query.IdGt, query.IdLte, query.Limit)
+	users, err := eh.eventsUcase.GetEventsUserByStatus(int64(eventID), role, query.IdGt, query.IdLte, query.Limit)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
@@ -314,73 +315,24 @@ func (eh *EventsHandler) GetEventsParticipants(w http.ResponseWriter, r *http.Re
 	w.Write(body)
 }
 
-// GetEventsParticipantsRequests godoc
-// @Summary      get events participants requestlist
+// SetUserStatusByEventID godoc
+// @Summary      set user role in event
 // @Description  Handler for getting tags list
 // @Tags         Events
 // @Accept       json
 // @Produce      json
 // @Param        id path int64 true "Event ID"
-// @Param        IdGt query integer false "IdGt"
-// @Param        IdLte query integer false "IdLte"
-// @Param        Limit query integer false "Limit"
-// @Success      200  {object}  []models.UserCard
-// @Failure      400  {object}  utils.Error
-// @Failure      404  {object}  utils.Error
-// @Failure      500  {object}  utils.Error
-// @Router       /events/{id}/participants/requests [get]
-func (eh *EventsHandler) GetEventsParticipantsRequests(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	eventID, _ := strconv.ParseUint(vars["id"], 10, 64)
-
-	query := &models.ClubQuery{}
-	decoder := schema.NewDecoder()
-	decoder.IgnoreUnknownKeys(true)
-	err := decoder.Decode(query, r.URL.Query())
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
-		return
-	}
-
-	users, err := eh.eventsUcase.GetEventsUserByStatus(int64(eventID), "participant_request", query.IdGt, query.IdLte, query.Limit)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
-		return
-	}
-	if len(users) == 0 {
-		users = []*models.UserCard{}
-	}
-
-	body, err := json.Marshal(users)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(utils.JSONError(&utils.Error{Message: "can't marshal data"}))
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(body)
-}
-
-// ParticipateByEventID godoc
-// @Summary      request participate in event
-// @Description  Handler for getting tags list
-// @Tags         Events
-// @Accept       json
-// @Produce      json
-// @Param        id path int64 true "Event ID"
+// @Param        type path string true "Type" Enums(participate, spectate)
 // @Success      200
 // @Failure      400  {object}  utils.Error
 // @Failure      401
 // @Failure      404  {object}  utils.Error
 // @Failure      500  {object}  utils.Error
-// @Router       /events/{id}/participate [post]
-func (eh *EventsHandler) ParticipateByEventID(w http.ResponseWriter, r *http.Request) {
+// @Router       /events/{id}/{type} [post]
+func (eh *EventsHandler) SetUserStatusByEventID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	eventID, _ := strconv.ParseUint(vars["id"], 10, 64)
+	decision := vars["type"]
 
 	userID, ok := r.Context().Value("userID").(uint64)
 	if !ok {
@@ -389,7 +341,12 @@ func (eh *EventsHandler) ParticipateByEventID(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	err := eh.eventsUcase.SetUserStatusByEventID(int64(eventID), int64(userID), "participant_request")
+	status := "participant_request"
+	if decision == "spectate" {
+		status = "spectator"
+	}
+
+	err := eh.eventsUcase.SetUserStatusByEventID(int64(eventID), int64(userID), status)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))

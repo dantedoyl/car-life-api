@@ -466,6 +466,102 @@ paths:
       summary: get club by id
       tags:
       - Clubs
+  /clubs/{id}/{type}:
+    get:
+      consumes:
+      - application/json
+      description: Handler for getting tags list
+      parameters:
+      - description: Club ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: IdGt
+        in: query
+        name: IdGt
+        type: integer
+      - description: IdLte
+        in: query
+        name: IdLte
+        type: integer
+      - description: Limit
+        in: query
+        name: Limit
+        type: integer
+      - description: Type
+        enum:
+        - participant
+        - participant_request
+        - subscriber
+        in: path
+        name: type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.UserCard'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: get clubs users list
+      tags:
+      - Clubs
+    post:
+      consumes:
+      - application/json
+      description: Handler for getting tags list
+      parameters:
+      - description: Club ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Type
+        enum:
+        - participate
+        - subscribe
+        in: path
+        name: type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "401":
+          description: ""
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: set user role in club
+      tags:
+      - Clubs
   /clubs/{id}/cars:
     get:
       consumes:
@@ -558,133 +654,6 @@ paths:
           schema:
             $ref: '#/definitions/utils.Error'
       summary: get clubs events list
-      tags:
-      - Clubs
-  /clubs/{id}/participants:
-    get:
-      consumes:
-      - application/json
-      description: Handler for getting tags list
-      parameters:
-      - description: Club ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: IdGt
-        in: query
-        name: IdGt
-        type: integer
-      - description: IdLte
-        in: query
-        name: IdLte
-        type: integer
-      - description: Limit
-        in: query
-        name: Limit
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.UserCard'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/utils.Error'
-      summary: get clubs participants list
-      tags:
-      - Clubs
-  /clubs/{id}/participants/requests:
-    get:
-      consumes:
-      - application/json
-      description: Handler for getting tags list
-      parameters:
-      - description: Club ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: IdGt
-        in: query
-        name: IdGt
-        type: integer
-      - description: IdLte
-        in: query
-        name: IdLte
-        type: integer
-      - description: Limit
-        in: query
-        name: Limit
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.UserCard'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/utils.Error'
-      summary: get clubs participants request list
-      tags:
-      - Clubs
-  /clubs/{id}/participate:
-    post:
-      consumes:
-      - application/json
-      description: Handler for getting tags list
-      parameters:
-      - description: Club ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: ""
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "401":
-          description: ""
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/utils.Error'
-      summary: request participate
       tags:
       - Clubs
   /clubs/{id}/upload:
@@ -908,7 +877,7 @@ paths:
       summary: get event by id
       tags:
       - Events
-  /events/{id}/participants:
+  /events/{id}/{type}:
     get:
       consumes:
       - application/json
@@ -931,53 +900,15 @@ paths:
         in: query
         name: Limit
         type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.UserCard'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/utils.Error'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/utils.Error'
-      summary: get events participants list
-      tags:
-      - Events
-  /events/{id}/participants/requests:
-    get:
-      consumes:
-      - application/json
-      description: Handler for getting tags list
-      parameters:
-      - description: Event ID
+      - description: Type
+        enum:
+        - participant
+        - participant_request
+        - spectator
         in: path
-        name: id
+        name: type
         required: true
-        type: integer
-      - description: IdGt
-        in: query
-        name: IdGt
-        type: integer
-      - description: IdLte
-        in: query
-        name: IdLte
-        type: integer
-      - description: Limit
-        in: query
-        name: Limit
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -999,10 +930,9 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/utils.Error'
-      summary: get events participants requestlist
+      summary: get events users list
       tags:
       - Events
-  /events/{id}/participate:
     post:
       consumes:
       - application/json
@@ -1013,6 +943,14 @@ paths:
         name: id
         required: true
         type: integer
+      - description: Type
+        enum:
+        - participate
+        - spectate
+        in: path
+        name: type
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1032,7 +970,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/utils.Error'
-      summary: request participate in event
+      summary: set user role in event
       tags:
       - Events
   /events/{id}/upload:
