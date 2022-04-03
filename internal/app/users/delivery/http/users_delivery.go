@@ -248,6 +248,10 @@ func (uh *UsersHandler) UserProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if user.Tags == nil {
+		user.Tags = []string{}
+	}
+
 	body, err := json.Marshal(user)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -284,6 +288,10 @@ func (uh *UsersHandler) MyProfile(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
 		return
+	}
+
+	if user.Tags == nil {
+		user.Tags = []string{}
 	}
 
 	body, err := json.Marshal(user)
