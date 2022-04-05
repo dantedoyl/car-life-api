@@ -26,6 +26,7 @@ func (uh *UsersHandler) Configure(r *mux.Router, mw *middleware.Middleware) {
 	r.HandleFunc("/signup", uh.SignUp).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/me", mw.CheckAuthMiddleware(uh.MyProfile)).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/user/{id:[0-9]+}", uh.UserProfile).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc("/new_car", mw.CheckAuthMiddleware(uh.NewUserCar)).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/user/{id:[0-9]+}/garage", uh.UserGarage).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/user/{id:[0-9]+}/events/{type:admin|participant|spectator}", uh.UserEvents).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/user/{id:[0-9]+}/clubs/{type:admin|participant|subscriber}", uh.UserClubs).Methods(http.MethodGet, http.MethodOptions)
@@ -517,6 +518,67 @@ func (uh *UsersHandler) UserEvents(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(body)
+}
+
+// NewUserCar godoc
+// @Summary      add new car to user
+// @Description  Handler for signing up new user
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Param        body body models.CarRequest true "Car"
+// @Success      200 {object} models.CarCard
+// @Failure      400  {object}  utils.Error
+// @Failure      401
+// @Failure      404  {object}  utils.Error
+// @Failure      500  {object}  utils.Error
+// @Router       /new_car [post]
+func (uh *UsersHandler) NewUserCar(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+
+	userID, ok := r.Context().Value("userID").(uint64)
+	if !ok {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write(utils.JSONError(&utils.Error{Message: "you're unauthorized"}))
+		return
+	}
+
+	car := models.CarRequest{}
+	err := json.NewDecoder(r.Body).Decode(&car)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(utils.JSONError(&utils.Error{Message: "unable to decode data"}))
+		return
+	}
+
+		carData := &models.CarCard{
+			Brand:       car.Brand,
+			Model:       car.Model,
+			Date:        car.Date,
+			Description: car.Description,
+			Body:        car.Body,
+			Engine:      car.Engine,
+			HorsePower:  car.HorsePower,
+			Name:        car.Name,
+			OwnerID:     userID,
+		}
+
+	carData, err = uh.usersUcase.AddNewUserCar(carData)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	body, err := json.Marshal(carData)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: "can't marshal data"}))
+		return
+	}
+
 	w.WriteHeader(http.StatusOK)
 	w.Write(body)
 }

@@ -14,6 +14,7 @@ type IUsersRepository interface {
 	GetClubsByUserStatus(userID int64, status string, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.ClubCard, error)
 	SelectCarByUserID(userID int64, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.CarCard, error)
 	GetEventsByUserStatus(userID int64, status string, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.EventCard, error)
+	InsertCar(car *models.CarCard) (*models.CarCard, error)
 	//Update(user *models.User) error
 	//Delete(userID uint64) error
 }

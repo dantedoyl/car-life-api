@@ -135,3 +135,7 @@ func (uu *UsersUsecase) GetEventsByUserStatus(userID int64, status string, idGt 
 	return uu.usersRepo.GetEventsByUserStatus(userID, status, idGt, idLte, limit)
 }
 
+func (uu *UsersUsecase) AddNewUserCar(car *models.CarCard) (*models.CarCard, error) {
+	return uu.usersRepo.InsertCar(car)
+}
+

@@ -59,6 +59,19 @@ func (ur *UsersRepository) InsertUser(user *models.User, car *models.CarCard) (*
 	return user, nil
 }
 
+func (ur *UsersRepository) InsertCar(car *models.CarCard) (*models.CarCard, error) {
+	err := ur.sqlConn.QueryRow(
+		`INSERT INTO cars
+               (owner_id, brand, model,date,description, body, engine, horse_power, name)
+               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+               RETURNING id`,
+		car.OwnerID, car.Brand, car.Model, car.Date, car.Description, car.Body, car.Engine, car.HorsePower, car.Name).Scan(&car.ID)
+	if err != nil {
+		return nil, err
+	}
+	return car, nil
+}
+
 func (ur *UsersRepository) SelectByID(userID uint64) (*models.User, error) {
 	user := &models.User{}
 	err := ur.sqlConn.QueryRow(

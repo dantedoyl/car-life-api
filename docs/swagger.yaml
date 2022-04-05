@@ -1269,6 +1269,42 @@ paths:
       summary: get mini event by id
       tags:
       - MiniEvents
+  /new_car:
+    post:
+      consumes:
+      - application/json
+      description: Handler for signing up new user
+      parameters:
+      - description: Car
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.CarRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CarCard'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "401":
+          description: ""
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: add new car to user
+      tags:
+      - Users
   /signup:
     post:
       consumes:
