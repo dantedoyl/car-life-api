@@ -160,6 +160,25 @@ definitions:
     - longitude
     - name
     type: object
+  models.CreateMiniEventRequest:
+    properties:
+      description:
+        type: string
+      ended_at:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      type_id:
+        type: integer
+    required:
+    - description
+    - ended_at
+    - latitude
+    - longitude
+    - type_id
+    type: object
   models.Event:
     properties:
       avatar:
@@ -223,6 +242,47 @@ definitions:
     properties:
       vkid:
         type: integer
+    type: object
+  models.MiniEvent:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      ended_at:
+        type: string
+      id:
+        type: integer
+      latitude:
+        type: number
+      longitude:
+        type: number
+      type:
+        $ref: '#/definitions/models.MiniEventType'
+      user:
+        $ref: '#/definitions/models.UserCard'
+    required:
+    - created_at
+    - description
+    - ended_at
+    - id
+    - latitude
+    - longitude
+    - type
+    - user
+    type: object
+  models.MiniEventType:
+    properties:
+      id:
+        type: integer
+      public_description:
+        type: string
+      public_name:
+        type: string
+    required:
+    - id
+    - public_description
+    - public_name
     type: object
   models.SignUpRequest:
     properties:
@@ -1100,6 +1160,115 @@ paths:
       summary: get user by id
       tags:
       - Users
+  /mini_event/create:
+    post:
+      consumes:
+      - application/json
+      description: Handler for creating an event
+      parameters:
+      - description: Event
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateMiniEventRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MiniEvent'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: create a mini event
+      tags:
+      - MiniEvents
+  /mini_events:
+    get:
+      consumes:
+      - application/json
+      description: Handler for getting events list
+      parameters:
+      - description: IdGt
+        in: query
+        name: IdGt
+        type: integer
+      - description: IdLte
+        in: query
+        name: IdLte
+        type: integer
+      - description: Limit
+        in: query
+        name: Limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.MiniEvent'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: get mini events list
+      tags:
+      - MiniEvents
+  /mini_events/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Handler for creating an event
+      parameters:
+      - description: Mini Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MiniEvent'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: get mini event by id
+      tags:
+      - MiniEvents
   /signup:
     post:
       consumes:

@@ -84,6 +84,30 @@ create table if not exists users_events
     PRIMARY KEY (user_id, event_id)
     );
 
+create table if not exists mini_event_type
+(
+    id bigserial primary key,
+    public_name text,
+    public_description text
+    );
+
+insert into mini_event_type (public_name,public_description) VALUES
+('Помощь', 'Помоги товарищу'),
+('Кофе', 'Кофе с товарищу')
+
+create table if not exists mini_events
+(
+    id bigserial primary key,
+    type_id bigint not null,
+    user_id bigint not null,
+    description text,
+    created_at timestamp,
+    ended_at timestamp,
+    latitude  float                 DEFAULT 55.753808,
+    longitude float                 DEFAULT 37.620017,
+);
+
+
 INSERT INTO tags (name, usage_count)
 VALUES ('jdm', 0),
        ('vintage', 0),

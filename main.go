@@ -9,6 +9,9 @@ import (
 	events_delivery "github.com/dantedoyl/car-life-api/internal/app/events/delivery/http"
 	events_repository "github.com/dantedoyl/car-life-api/internal/app/events/repository/postgres"
 	events_usecase "github.com/dantedoyl/car-life-api/internal/app/events/usecase"
+	mini_events_delivery "github.com/dantedoyl/car-life-api/internal/app/mini_events/delivery/http"
+	mini_events_repository "github.com/dantedoyl/car-life-api/internal/app/mini_events/repository/postgres"
+	mini_events_usecase "github.com/dantedoyl/car-life-api/internal/app/mini_events/usecase"
 	users_delivery "github.com/dantedoyl/car-life-api/internal/app/users/delivery/http"
 	users_repository "github.com/dantedoyl/car-life-api/internal/app/users/repository/postgres"
 	users_usecase "github.com/dantedoyl/car-life-api/internal/app/users/usecase"
@@ -64,6 +67,10 @@ func main() {
 	eventsUcase := events_usecase.NewEventsUsecase(eventsRepo)
 	eventHandler := events_delivery.NewEventsHandler(eventsUcase, clubsUcase)
 
+	miniEventsRepo := mini_events_repository.NewMiniEventsRepository(postgresDB.GetDatabase())
+	miniEventsUcase := mini_events_usecase.NewMiniEventsUsecase(miniEventsRepo)
+	miniEventHandler := mini_events_delivery.NewMiniEventsHandler(miniEventsUcase)
+
 	mw := middleware.NewMiddleware(userUcase)
 
 	router := mux.NewRouter()
@@ -78,6 +85,7 @@ func main() {
 	eventHandler.Configure(api, mw)
 	clubsHandler.Configure(api, mw)
 	userHandler.Configure(api, mw)
+	miniEventHandler.Configure(api, mw)
 	api.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
 
 	server := http.Server{

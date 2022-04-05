@@ -1202,6 +1202,172 @@
                 }
             }
         },
+        "/mini_event/create": {
+            "post": {
+                "description": "Handler for creating an event",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "MiniEvents"
+                ],
+                "summary": "create a mini event",
+                "parameters": [
+                    {
+                        "description": "Event",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateMiniEventRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.MiniEvent"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/mini_events": {
+            "get": {
+                "description": "Handler for getting events list",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "MiniEvents"
+                ],
+                "summary": "get mini events list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "IdGt",
+                        "name": "IdGt",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "IdLte",
+                        "name": "IdLte",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit",
+                        "name": "Limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.MiniEvent"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/mini_events/{id}": {
+            "get": {
+                "description": "Handler for creating an event",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "MiniEvents"
+                ],
+                "summary": "get mini event by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Mini Event ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.MiniEvent"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/signup": {
             "post": {
                 "description": "Handler for signing up new user",
@@ -1847,6 +2013,33 @@
                 }
             }
         },
+        "models.CreateMiniEventRequest": {
+            "type": "object",
+            "required": [
+                "description",
+                "ended_at",
+                "latitude",
+                "longitude",
+                "type_id"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "ended_at": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "type_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "models.Event": {
             "type": "object",
             "required": [
@@ -1934,6 +2127,64 @@
             "properties": {
                 "vkid": {
                     "type": "integer"
+                }
+            }
+        },
+        "models.MiniEvent": {
+            "type": "object",
+            "required": [
+                "created_at",
+                "description",
+                "ended_at",
+                "id",
+                "latitude",
+                "longitude",
+                "type",
+                "user"
+            ],
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "ended_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "type": {
+                    "$ref": "#/definitions/models.MiniEventType"
+                },
+                "user": {
+                    "$ref": "#/definitions/models.UserCard"
+                }
+            }
+        },
+        "models.MiniEventType": {
+            "type": "object",
+            "required": [
+                "id",
+                "public_description",
+                "public_name"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "public_description": {
+                    "type": "string"
+                },
+                "public_name": {
+                    "type": "string"
                 }
             }
         },
