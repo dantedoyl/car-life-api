@@ -19,7 +19,7 @@ func NewMiniEventsRepository(conn *sql.DB) mini_events.IMiniEventsRepository {
 
 func (mr *MiniEventsRepository) InsertMiniEvent(event *models.MiniEvent) error {
 	err := mr.dbConn.QueryRow(
-		`INSERT INTO events
+		`INSERT INTO mini_events
                 (type_id, user_id, description, created_at, ended_at, latitude, longitude)
                 VALUES ($1, $2, $3, $4, $5, $6, $7) 
                 RETURNING id`,
@@ -40,7 +40,7 @@ func (mr *MiniEventsRepository) InsertMiniEvent(event *models.MiniEvent) error {
 func (mr *MiniEventsRepository) GetMiniEventByID(id int64) (*models.MiniEvent, error) {
 	event := &models.MiniEvent{}
 	err := mr.dbConn.QueryRow(
-		`SELECT  id, type_id, user_id, description, created_at, ended_at, latitude, longitude, from mini_events
+		`SELECT  id, type_id, user_id, description, created_at, ended_at, latitude, longitude from mini_events
 				WHERE id = $1`, id).Scan(&event.ID, &event.Type.ID, &event.User.VKID, &event.Description, &event.CreatedAt, &event.EndedAt,
 		&event.Latitude, &event.Longitude)
 	if err != nil {
