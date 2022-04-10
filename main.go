@@ -19,6 +19,7 @@ import (
 	users_repository "github.com/dantedoyl/car-life-api/internal/app/users/repository/postgres"
 	users_usecase "github.com/dantedoyl/car-life-api/internal/app/users/usecase"
 	"github.com/gorilla/mux"
+	httpSwagger "github.com/swaggo/http-swagger"
 	"github.com/tarantool/go-tarantool"
 	"log"
 	"net/http"

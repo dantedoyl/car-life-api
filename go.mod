@@ -8,12 +8,14 @@ require (
 	github.com/gorilla/schema v1.2.0
 	github.com/jackc/pgx v3.6.2+incompatible
 	github.com/lib/pq v1.10.4
+	github.com/swaggo/http-swagger v1.2.5
 	github.com/swaggo/swag v1.8.0
 )
 
 require (
 	github.com/golang/protobuf v1.3.1 // indirect
 	github.com/klauspost/compress v1.14.2 // indirect
+	github.com/swaggo/files v0.0.0-20210815190702-a29dd2bc99b2 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	google.golang.org/appengine v1.6.6 // indirect
