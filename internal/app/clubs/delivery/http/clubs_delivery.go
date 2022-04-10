@@ -226,9 +226,15 @@ func (ch *ClubsHandler) GetClubByID(w http.ResponseWriter, r *http.Request) {
 // @Router       /clubs/{id}/upload [post]
 func (ch *ClubsHandler) UploadAvatarHandler(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-
 	vars := mux.Vars(r)
 	clubID, _ := strconv.ParseInt(vars["id"], 10, 64)
+
+	userID, ok := r.Context().Value("userID").(uint64)
+	if !ok {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write(utils.JSONError(&utils.Error{Message: "you're unauthorized"}))
+		return
+	}
 
 	r.Body = http.MaxBytesReader(w, r.Body, 3*1024*1024)
 	err := r.ParseMultipartForm(3 * 1024 * 1024)
@@ -246,6 +252,20 @@ func (ch *ClubsHandler) UploadAvatarHandler(w http.ResponseWriter, r *http.Reque
 
 	file := r.MultipartForm.File["file-upload"][0]
 	club, err := ch.clubsUcase.UpdateAvatar(clubID, file)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	chatID, err := ch.clubsUcase.GetClubChatID(clubID, int64(userID))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	err = ch.vk.UploadChatPhoto(int(chatID), file)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))

@@ -247,6 +247,13 @@ func (eh *EventsHandler) UploadAvatarHandler(w http.ResponseWriter, r *http.Requ
 	vars := mux.Vars(r)
 	eventID, _ := strconv.ParseInt(vars["id"], 10, 64)
 
+	userID, ok := r.Context().Value("userID").(uint64)
+	if !ok {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write(utils.JSONError(&utils.Error{Message: "you're unauthorized"}))
+		return
+	}
+
 	r.Body = http.MaxBytesReader(w, r.Body, 3*1024*1024)
 	err := r.ParseMultipartForm(3 * 1024 * 1024)
 	if err != nil {
@@ -263,6 +270,20 @@ func (eh *EventsHandler) UploadAvatarHandler(w http.ResponseWriter, r *http.Requ
 
 	file := r.MultipartForm.File["file-upload"][0]
 	event, err := eh.eventsUcase.UpdateAvatar(eventID, file)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	chatID, err := eh.eventsUcase.GetEventChatID(eventID, int64(userID))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	err = eh.vk.UploadChatPhoto(int(chatID), file)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
