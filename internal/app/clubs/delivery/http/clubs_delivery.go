@@ -2,6 +2,7 @@ package delivery
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/dantedoyl/car-life-api/internal/app/clients/vk"
 	clubs "github.com/dantedoyl/car-life-api/internal/app/clubs"
 	"github.com/dantedoyl/car-life-api/internal/app/middleware"
@@ -546,6 +547,27 @@ func (ch *ClubsHandler) SetUserStatusByClubID(w http.ResponseWriter, r *http.Req
 		return
 	}
 
+	if status == "participant_request" {
+		club, err := ch.clubsUcase.GetClubByID(clubID, userID)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+			return
+		}
+
+		clubUrl := fmt.Sprintf("https://vk.com/app8099557#main/club/%d", clubID)
+		userUrl := fmt.Sprintf("https://vk.com/app8099557#main/user/%d", userID)
+
+		err = ch.vk.CreatMessage(int(club.OwnerID),
+			fmt.Sprintf("Привет! Новый пользователь хочет поучаствовать в %s: %s\nСсылка на профиль: %s", club.Name, clubUrl, userUrl),
+		)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+			return
+		}
+	}
+
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -591,6 +613,27 @@ func (ch *ClubsHandler) ApproveRejectUserParticipateInClub(w http.ResponseWriter
 	}
 
 	err = ch.clubsUcase.ApproveRejectUserParticipateInClub(int64(clubID), int64(userID), decision)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	club, err := ch.clubsUcase.GetClubByID(clubID, userID)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	clubUrl := fmt.Sprintf("https://vk.com/app8099557#main/club/%d", clubID)
+
+	msg := 	fmt.Sprintf("Привет! Администратор принял вас в %s: %s\n", club.Name, clubUrl)
+	if decision == "reject" {
+		msg = 	fmt.Sprintf("Привет! К сожалению, администратор отклонил ваш запрос на участие в %s: %s\n", club.Name, clubUrl)
+	}
+
+	err = ch.vk.CreatMessage(int(userID), msg)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))

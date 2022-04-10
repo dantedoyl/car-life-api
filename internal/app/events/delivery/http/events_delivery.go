@@ -2,6 +2,7 @@ package delivery
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/dantedoyl/car-life-api/internal/app/clients/vk"
 	clubs "github.com/dantedoyl/car-life-api/internal/app/clubs"
 	"github.com/dantedoyl/car-life-api/internal/app/events"
@@ -393,6 +394,27 @@ func (eh *EventsHandler) SetUserStatusByEventID(w http.ResponseWriter, r *http.R
 		return
 	}
 
+	if status == "participant_request" {
+		event, err := eh.eventsUcase.GetEventByID(eventID, userID)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+			return
+		}
+
+		eventUrl := fmt.Sprintf("https://vk.com/app8099557#main/event/%d", eventID)
+		userUrl := fmt.Sprintf("https://vk.com/app8099557#main/user/%d", userID)
+
+		err = eh.vk.CreatMessage(int(event.CreatorID),
+			fmt.Sprintf("Привет! Новый участник хочет поучаствовать в %s: %s\nСсылка на профиль: %s", event.Name, eventUrl, userUrl),
+		)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+			return
+		}
+	}
+
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -425,6 +447,27 @@ func (eh *EventsHandler) ApproveRejectUserParticipateInEvent(w http.ResponseWrit
 	}
 
 	err := eh.eventsUcase.ApproveRejectUserParticipateInEvent(int64(eventID), int64(userID), decision)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	event, err := eh.eventsUcase.GetEventByID(eventID, userID)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	eventUrl := fmt.Sprintf("https://vk.com/app8099557#main/event/%d", eventID)
+
+	msg := 	fmt.Sprintf("Привет! Администратор принял вас в %s: %s\n", event.Name, eventUrl)
+	if decision == "reject" {
+		msg = 	fmt.Sprintf("Привет! К сожалению, администратор отклонил ваш запрос на участие в %s: %s\n", event.Name, eventUrl)
+	}
+
+	err = eh.vk.CreatMessage(int(userID), msg)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
