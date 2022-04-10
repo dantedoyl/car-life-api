@@ -14,18 +14,18 @@ import (
 )
 
 type VKClient struct {
-	 serviceClient *api.VK
-	 groupClient *api.VK
+	serviceClient *api.VK
+	groupClient   *api.VK
 }
 
 func NewVKClient(serviceKey string, groupKey string) *VKClient {
 	return &VKClient{
 		serviceClient: api.NewVK(serviceKey),
-		groupClient: api.NewVK(groupKey),
+		groupClient:   api.NewVK(groupKey),
 	}
 }
 
-func (vk *VKClient) CreatChat(title string) (int, error){
+func (vk *VKClient) CreatChat(title string) (int, error) {
 	chat := params.NewMessagesCreateChatBuilder()
 	chat.Title(title)
 	chatInfo, err := vk.groupClient.MessagesCreateChat(chat.Params)
@@ -48,7 +48,7 @@ func (vk *VKClient) UploadChatPhoto(id int, fileHeader *multipart.FileHeader) er
 	}
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
-	fw, err := writer.CreateFormField("file")
+	fw, err := writer.CreateFormFile("file", fileHeader.Filename)
 	if err != nil {
 		return err
 	}
@@ -100,7 +100,7 @@ func (vk *VKClient) UploadChatPhoto(id int, fileHeader *multipart.FileHeader) er
 	return nil
 }
 
-func (vk *VKClient) GetChatLink(id int) (string, error){
+func (vk *VKClient) GetChatLink(id int) (string, error) {
 	chat := params.NewMessagesGetInviteLinkBuilder()
 	chat.PeerID(2000000000 + id)
 	chat.Reset(true)
