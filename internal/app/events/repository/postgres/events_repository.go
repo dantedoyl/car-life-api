@@ -200,7 +200,7 @@ func (er *EventsRepository) SetUserStatusByEventID(eventID int64, userID int64, 
 
 func (er *EventsRepository) GetEventChatID(eventID int64, userID int64) (int64, error) {
 	var chatID int64
-	err := er.dbConn.QueryRow(`SELECT c.chat_id FROM events as e inner join users_events as ue on e.id = ue.event_id WHERE e.id = $1 and ue.user_id = $2`, eventID, userID).Scan(&chatID)
+	err := er.dbConn.QueryRow(`SELECT e.chat_id FROM events as e inner join users_events as ue on e.id = ue.event_id WHERE e.id = $1 and ue.user_id = $2`, eventID, userID).Scan(&chatID)
 	if err == sql.ErrNoRows {
 		return 0, nil
 	}
