@@ -16,15 +16,15 @@ import (
 
 type EventsHandler struct {
 	eventsUcase events.IEventsUsecase
-	clubUcase clubs.IClubsUsecase
-	vk *vk.VKClient
+	clubUcase   clubs.IClubsUsecase
+	vk          *vk.VKClient
 }
 
 func NewEventsHandler(eventsUcase events.IEventsUsecase, clubUcase clubs.IClubsUsecase, vk *vk.VKClient) *EventsHandler {
 	return &EventsHandler{
 		eventsUcase: eventsUcase,
-		clubUcase: clubUcase,
-		vk: vk,
+		clubUcase:   clubUcase,
+		vk:          vk,
 	}
 }
 
@@ -91,7 +91,7 @@ func (eh *EventsHandler) CreateEvent(w http.ResponseWriter, r *http.Request) {
 		Latitude:    event.Latitude,
 		Longitude:   event.Longitude,
 		AvatarUrl:   event.AvatarUrl,
-		CreatorID: userID,
+		CreatorID:   userID,
 	}
 
 	err = eh.eventsUcase.CreateEvent(eventsData)
@@ -425,7 +425,7 @@ func (eh *EventsHandler) ApproveRejectUserParticipateInEvent(w http.ResponseWrit
 // @Failure      401
 // @Failure      404  {object}  utils.Error
 // @Failure      500  {object}  utils.Error
-// @Router       /events/{id}/chat_link [post]
+// @Router       /events/{id}/chat_link [get]
 func (eh *EventsHandler) GetEventChatLink(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	eventID, _ := strconv.ParseUint(vars["id"], 10, 64)

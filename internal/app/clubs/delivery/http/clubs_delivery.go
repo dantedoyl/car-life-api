@@ -15,13 +15,13 @@ import (
 
 type ClubsHandler struct {
 	clubsUcase clubs.IClubsUsecase
-	vk *vk.VKClient
+	vk         *vk.VKClient
 }
 
 func NewClubsHandler(clubsUcase clubs.IClubsUsecase, vkCl *vk.VKClient) *ClubsHandler {
 	return &ClubsHandler{
 		clubsUcase: clubsUcase,
-		vk: vkCl,
+		vk:         vkCl,
 	}
 }
 
@@ -592,7 +592,7 @@ func (ch *ClubsHandler) ApproveRejectUserParticipateInClub(w http.ResponseWriter
 // @Failure      401
 // @Failure      404  {object}  utils.Error
 // @Failure      500  {object}  utils.Error
-// @Router       /clubs/{id}/chat_link [post]
+// @Router       /clubs/{id}/chat_link [get]
 func (ch *ClubsHandler) GetClubChatLink(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	clubID, _ := strconv.ParseUint(vars["id"], 10, 64)
