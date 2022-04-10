@@ -316,7 +316,7 @@ func (cr *ClubsRepository) GetUserStatusInClub(clubID int64, userID int64) (*mod
 
 func (cr *ClubsRepository) GetClubChatID(clubID int64, userID int64) (int64, error) {
 	var chatID int64
-	err := cr.dbConn.QueryRow(`SELECT c.chat_id FROM clubs as c inner join users_clubs as uc on c.id = uc.club_id WHERE c.club_id = $1 and uc.user_id = $2`, clubID, userID).Scan(&chatID)
+	err := cr.dbConn.QueryRow(`SELECT c.chat_id FROM clubs as c inner join users_clubs as uc on c.id = uc.club_id WHERE c.id = $1 and uc.user_id = $2`, clubID, userID).Scan(&chatID)
 	if err == sql.ErrNoRows {
 		return 0, nil
 	}
