@@ -52,8 +52,8 @@ func (cr *ClubsRepository) InsertClub(club *models.Club) error {
 func (cr *ClubsRepository) GetClubByID(id int64, userID uint64) (*models.Club, error) {
 	club := &models.Club{}
 	err := cr.dbConn.QueryRow(
-		`SELECT  id, name, description, tags, events_count, participants_count, avatar from clubs
-				WHERE id = $1`, id).Scan(&club.ID, &club.Name, &club.Description, pq.Array(&club.Tags), &club.EventsCount, &club.ParticipantsCount, &club.AvatarUrl)
+		`SELECT  id, name, description, tags, events_count, participants_count, avatar, owner_id from clubs
+				WHERE id = $1`, id).Scan(&club.ID, &club.Name, &club.Description, pq.Array(&club.Tags), &club.EventsCount, &club.ParticipantsCount, &club.AvatarUrl, &club.OwnerID)
 	if err != nil {
 		return nil, err
 	}
