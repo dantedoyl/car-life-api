@@ -53,7 +53,7 @@ func (cr *ClubsRepository) GetClubByID(id int64, userID uint64) (*models.Club, e
 	club := &models.Club{}
 	err := cr.dbConn.QueryRow(
 		`SELECT  c.id, c.name, c.description, c.tags, c.events_count, c.participants_count, c.avatar, uc.user_id as owner_id from clubs as c inner join users_clubs as uc on uc.club_id = c.id
-				WHERE c.id = $1 and uc.user_id = 'admin'`, id).Scan(&club.ID, &club.Name, &club.Description, pq.Array(&club.Tags), &club.EventsCount, &club.ParticipantsCount, &club.AvatarUrl, &club.OwnerID)
+				WHERE c.id = $1 and uc.status = 'admin'`, id).Scan(&club.ID, &club.Name, &club.Description, pq.Array(&club.Tags), &club.EventsCount, &club.ParticipantsCount, &club.AvatarUrl, &club.OwnerID)
 	if err != nil {
 		return nil, err
 	}
