@@ -198,22 +198,22 @@ func (er *EventsRepository) SetUserStatusByEventID(eventID int64, userID int64, 
 	return nil
 }
 
-//func (er *EventsRepository) GetClubChatID(eventID int64, userID int64) (int64, error) {
-//	var chatID int64
-//	err := er.dbConn.QueryRow(`SELECT c.chat_id FROM events as e inner join users_events as ue on e.id = ue.event_id WHERE e.club_id = $1 and uc.user_id = $2`, clubID, userID).Scan(&chatID)
-//	if err == sql.ErrNoRows {
-//		return 0, nil
-//	}
-//	if err != nil {
-//		return 0, err
-//	}
-//	return chatID, nil
-//}
-//
-//func (cr *ClubsRepository) SetClubChatID(clubID int64, chatID int64) error {
-//	_, err := cr.dbConn.Exec(`UPDATE clubs SET chat_id = $1 WHERE id = $2`, chatID, clubID)
-//	if err != nil {
-//		return err
-//	}
-//	return nil
-//}
+func (er *EventsRepository) GetEventChatID(eventID int64, userID int64) (int64, error) {
+	var chatID int64
+	err := er.dbConn.QueryRow(`SELECT c.chat_id FROM events as e inner join users_events as ue on e.id = ue.event_id WHERE e.id = $1 and ue.user_id = $2`, eventID, userID).Scan(&chatID)
+	if err == sql.ErrNoRows {
+		return 0, nil
+	}
+	if err != nil {
+		return 0, err
+	}
+	return chatID, nil
+}
+
+func (er *EventsRepository) SetEventChatID(eventID int64, chatID int64) error {
+	_, err := er.dbConn.Exec(`UPDATE events SET chat_id = $1 WHERE id = $2`, chatID, eventID)
+	if err != nil {
+		return err
+	}
+	return nil
+}

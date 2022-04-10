@@ -73,3 +73,11 @@ func (eu *EventsUsecase) ApproveRejectUserParticipateInEvent(eventID int64, user
 	}
 	return eu.eventsRepo.SetUserStatusByEventID(eventID, userID, "spectator")
 }
+
+func (eu *EventsUsecase) GetEventChatID(eventID int64, userID int64) (int64, error) {
+	return eu.eventsRepo.GetEventChatID(eventID, userID)
+}
+
+func (eu *EventsUsecase) SetEventChatID(eventID int64, chatID int64) error {
+	return eu.eventsRepo.SetEventChatID(eventID, chatID)
+}

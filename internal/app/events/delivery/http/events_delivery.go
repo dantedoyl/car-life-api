@@ -36,6 +36,8 @@ func (eh *EventsHandler) Configure(r *mux.Router, mw *middleware.Middleware) {
 	r.HandleFunc("/events/{id:[0-9]+}/{type:participant|participant_request|spectator}", mw.CheckAuthMiddleware(eh.GetEventsUsersByType)).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/events/{id:[0-9]+}/{type:participate|spectate}", mw.CheckAuthMiddleware(eh.SetUserStatusByEventID)).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/events/{eid:[0-9]+}/participate/{uid:[0-9]+}/{type:approve|reject}", mw.CheckAuthMiddleware(eh.ApproveRejectUserParticipateInEvent)).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/events/{id:[0-9]+}/chat_link", mw.CheckAuthMiddleware(eh.GetEventChatLink)).Methods(http.MethodGet, http.MethodOptions)
+
 }
 
 // CreateEvent godoc
@@ -99,7 +101,19 @@ func (eh *EventsHandler) CreateEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	id, err := eh.vk.CreatChat(eventsData.Name)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
 
+	err = eh.eventsUcase.SetEventChatID(int64(eventsData.ID), int64(id))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
 
 	body, err := json.Marshal(eventsData)
 	if err != nil {
@@ -397,4 +411,60 @@ func (eh *EventsHandler) ApproveRejectUserParticipateInEvent(w http.ResponseWrit
 	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+// GetEventChatLink godoc
+// @Summary      get event chat link
+// @Description  Handler for getting tags list
+// @Tags         Events
+// @Accept       json
+// @Produce      json
+// @Param        id path int64 true "Event ID"
+// @Success      200  {object}  models.ChatLink
+// @Failure      400  {object}  utils.Error
+// @Failure      401
+// @Failure      404  {object}  utils.Error
+// @Failure      500  {object}  utils.Error
+// @Router       /events/{id}/chat_link [post]
+func (eh *EventsHandler) GetEventChatLink(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	eventID, _ := strconv.ParseUint(vars["id"], 10, 64)
+
+	userID, ok := r.Context().Value("userID").(uint64)
+	if !ok {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write(utils.JSONError(&utils.Error{Message: "you're unauthorized"}))
+		return
+	}
+
+	chatID, err := eh.eventsUcase.GetEventChatID(int64(eventID), int64(userID))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	if chatID == 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(utils.JSONError(&utils.Error{Message: "no chat for this club"}))
+		return
+	}
+
+	chatLink, err := eh.vk.GetChatLink(int(chatID))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	body, err := json.Marshal(models.ChatLink{ChatLink: chatLink})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: "can't marshal data"}))
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(body)
 }
