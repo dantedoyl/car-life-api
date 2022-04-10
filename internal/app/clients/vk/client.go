@@ -127,7 +127,7 @@ func (vk *VKClient) CreatMessage(userID int, msg string) error {
 	not := params.NewMessagesSendBuilder()
 	not.Message(msg)
 	not.UserID(userID)
-	_, err := vk.serviceClient.MessagesSend(not.Params)
+	_, err := vk.groupClient.MessagesSend(not.Params)
 	if err != nil {
 		return err
 	}
