@@ -2,6 +2,7 @@ package delivery
 
 import (
 	"encoding/json"
+	"github.com/dantedoyl/car-life-api/internal/app/clients/vk"
 	clubs "github.com/dantedoyl/car-life-api/internal/app/clubs"
 	"github.com/dantedoyl/car-life-api/internal/app/events"
 	"github.com/dantedoyl/car-life-api/internal/app/middleware"
@@ -16,12 +17,14 @@ import (
 type EventsHandler struct {
 	eventsUcase events.IEventsUsecase
 	clubUcase clubs.IClubsUsecase
+	vk *vk.VKClient
 }
 
-func NewEventsHandler(eventsUcase events.IEventsUsecase, clubUcase clubs.IClubsUsecase) *EventsHandler {
+func NewEventsHandler(eventsUcase events.IEventsUsecase, clubUcase clubs.IClubsUsecase, vk *vk.VKClient) *EventsHandler {
 	return &EventsHandler{
 		eventsUcase: eventsUcase,
 		clubUcase: clubUcase,
+		vk: vk,
 	}
 }
 
@@ -95,6 +98,8 @@ func (eh *EventsHandler) CreateEvent(w http.ResponseWriter, r *http.Request) {
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
 		return
 	}
+
+
 
 	body, err := json.Marshal(eventsData)
 	if err != nil {

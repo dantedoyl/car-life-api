@@ -89,3 +89,12 @@ func (cu *ClubsUsecase) ApproveRejectUserParticipateInClub(clubID int64, userID 
 func (cu *ClubsUsecase) GetUserStatusInClub(clubID int64, userID int64) (*models.ClubUser, error) {
 	return cu.clubsRepo.GetUserStatusInClub(clubID, userID)
 }
+
+func (cu *ClubsUsecase) SetClubChatID(clubID int64, chatID int64) error {
+	return cu.clubsRepo.SetClubChatID(clubID, chatID)
+}
+
+func (cu *ClubsUsecase) GetClubChatID(clubID int64, userID int64) (int64, error) {
+	return cu.clubsRepo.GetClubChatID(clubID, userID)
+}
+

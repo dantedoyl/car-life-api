@@ -3,18 +3,19 @@ module github.com/dantedoyl/car-life-api
 go 1.17
 
 require (
+	github.com/SevereCloud/vksdk/v2 v2.13.1
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/schema v1.2.0
 	github.com/jackc/pgx v3.6.2+incompatible
 	github.com/lib/pq v1.10.4
-	github.com/swaggo/http-swagger v1.2.5
 	github.com/swaggo/swag v1.8.0
 )
 
 require (
-	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/golang/protobuf v1.3.1 // indirect
-	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
+	github.com/klauspost/compress v1.14.2 // indirect
+	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
+	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	google.golang.org/appengine v1.6.6 // indirect
 	gopkg.in/vmihailenco/msgpack.v2 v2.9.1 // indirect
 )
@@ -35,7 +36,6 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect
-	github.com/swaggo/files v0.0.0-20210815190702-a29dd2bc99b2 // indirect
 	github.com/tarantool/go-tarantool v0.0.0-20201220111423-77ce7d9a407a
 	golang.org/x/crypto v0.0.0-20220307211146-efcb8507fb70 // indirect
 	golang.org/x/net v0.0.0-20220225172249-27dd8689420f // indirect

@@ -2,30 +2,27 @@ package main
 
 import (
 	"fmt"
+	_ "github.com/dantedoyl/car-life-api/docs"
 	"github.com/dantedoyl/car-life-api/internal/app/clients/database"
+	"github.com/dantedoyl/car-life-api/internal/app/clients/vk"
 	clubs_delivery "github.com/dantedoyl/car-life-api/internal/app/clubs/delivery/http"
 	clubs_repository "github.com/dantedoyl/car-life-api/internal/app/clubs/repository/postgres"
 	clubs_usecase "github.com/dantedoyl/car-life-api/internal/app/clubs/usecase"
 	events_delivery "github.com/dantedoyl/car-life-api/internal/app/events/delivery/http"
 	events_repository "github.com/dantedoyl/car-life-api/internal/app/events/repository/postgres"
 	events_usecase "github.com/dantedoyl/car-life-api/internal/app/events/usecase"
+	"github.com/dantedoyl/car-life-api/internal/app/middleware"
 	mini_events_delivery "github.com/dantedoyl/car-life-api/internal/app/mini_events/delivery/http"
 	mini_events_repository "github.com/dantedoyl/car-life-api/internal/app/mini_events/repository/postgres"
 	mini_events_usecase "github.com/dantedoyl/car-life-api/internal/app/mini_events/usecase"
 	users_delivery "github.com/dantedoyl/car-life-api/internal/app/users/delivery/http"
 	users_repository "github.com/dantedoyl/car-life-api/internal/app/users/repository/postgres"
 	users_usecase "github.com/dantedoyl/car-life-api/internal/app/users/usecase"
-
+	"github.com/gorilla/mux"
 	"github.com/tarantool/go-tarantool"
-
-	"github.com/dantedoyl/car-life-api/internal/app/middleware"
-	httpSwagger "github.com/swaggo/http-swagger"
 	"log"
 	"net/http"
 	"time"
-
-	_ "github.com/dantedoyl/car-life-api/docs"
-	"github.com/gorilla/mux"
 )
 
 // @title           Swagger Example API
@@ -51,6 +48,11 @@ func main() {
 		return
 	}
 
+	vkCl := vk.NewVKClient(
+			"0918a4f20918a4f20918a4f27909633217009180918a4f26b34f910640ea9466b2c60dd",
+		"1778a9046f1d83c8716dffe78116e0ce119cde5d96f7a2a8557299d0983bd349e91e13dea9cd920a2b5ed",
+		)
+
 	//________________________________
 	//session map
 	//var tarConn *tarantool.Connection = nil
@@ -61,11 +63,11 @@ func main() {
 
 	clubsRepo := clubs_repository.NewClubRepository(postgresDB.GetDatabase())
 	clubsUcase := clubs_usecase.NewClubsUsecase(clubsRepo)
-	clubsHandler := clubs_delivery.NewClubsHandler(clubsUcase)
+	clubsHandler := clubs_delivery.NewClubsHandler(clubsUcase, vkCl)
 
 	eventsRepo := events_repository.NewProductRepository(postgresDB.GetDatabase())
 	eventsUcase := events_usecase.NewEventsUsecase(eventsRepo)
-	eventHandler := events_delivery.NewEventsHandler(eventsUcase, clubsUcase)
+	eventHandler := events_delivery.NewEventsHandler(eventsUcase, clubsUcase, vkCl)
 
 	miniEventsRepo := mini_events_repository.NewMiniEventsRepository(postgresDB.GetDatabase())
 	miniEventsUcase := mini_events_usecase.NewMiniEventsUsecase(miniEventsRepo)

@@ -17,4 +17,6 @@ type IClubsUsecase interface {
 	SetUserStatusByClubID(clubID int64, userID int64, status string) error
 	ApproveRejectUserParticipateInClub(clubID int64, userID int64, decision string) error
 	GetUserStatusInClub(clubID int64, userID int64) (*models.ClubUser, error)
+	SetClubChatID(clubID int64, chatID int64) error
+	GetClubChatID(clubID int64, userID int64) (int64, error)
 }

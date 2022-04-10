@@ -313,3 +313,23 @@ func (cr *ClubsRepository) GetUserStatusInClub(clubID int64, userID int64) (*mod
 	}
 	return userClub, nil
 }
+
+func (cr *ClubsRepository) GetClubChatID(clubID int64, userID int64) (int64, error) {
+	var chatID int64
+	err := cr.dbConn.QueryRow(`SELECT c.chat_id FROM clubs as c inner join users_clubs as uc on c.id = uc.club_id WHERE c.club_id = $1 and uc.user_id = $2`, clubID, userID).Scan(&chatID)
+	if err == sql.ErrNoRows {
+		return 0, nil
+	}
+	if err != nil {
+		return 0, err
+	}
+	return chatID, nil
+}
+
+func (cr *ClubsRepository) SetClubChatID(clubID int64, chatID int64) error {
+	_, err := cr.dbConn.Exec(`UPDATE clubs SET chat_id = $1 WHERE id = $2`, chatID, clubID)
+	if err != nil {
+		return err
+	}
+	return nil
+}

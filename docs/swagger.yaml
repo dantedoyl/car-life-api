@@ -63,6 +63,13 @@ definitions:
       name:
         type: string
     type: object
+  models.ChatLink:
+    properties:
+      chat_link:
+        type: string
+    required:
+    - chat_link
+    type: object
   models.Club:
     properties:
       avatar:
@@ -667,6 +674,41 @@ paths:
           schema:
             $ref: '#/definitions/utils.Error'
       summary: get clubs cars list
+      tags:
+      - Clubs
+  /clubs/{id}/chat_link:
+    post:
+      consumes:
+      - application/json
+      description: Handler for getting tags list
+      parameters:
+      - description: Club ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ChatLink'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "401":
+          description: ""
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: get club chat link
       tags:
       - Clubs
   /clubs/{id}/events:
