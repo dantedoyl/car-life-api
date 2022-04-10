@@ -677,7 +677,7 @@ paths:
       tags:
       - Clubs
   /clubs/{id}/chat_link:
-    post:
+    get:
       consumes:
       - application/json
       description: Handler for getting tags list
@@ -1073,6 +1073,41 @@ paths:
           schema:
             $ref: '#/definitions/utils.Error'
       summary: set user role in event
+      tags:
+      - Events
+  /events/{id}/chat_link:
+    get:
+      consumes:
+      - application/json
+      description: Handler for getting tags list
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ChatLink'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "401":
+          description: ""
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: get event chat link
       tags:
       - Events
   /events/{id}/upload:
