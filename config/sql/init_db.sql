@@ -105,8 +105,9 @@ create table if not exists mini_events
 );
 
 insert into mini_event_type (public_name, public_description)
-VALUES ('Помощь', 'Помоги товарищу'),
-       ('Кофе', 'Кофе с товарищу');
+VALUES ('Помощь', 'Нужна помощь'),
+       ('Мини-сходка', 'Организуй встречу с друзьями'),
+       ('Проишествие', 'Оставь, если что-то произошло на дороге');
 
 INSERT INTO tags (name, usage_count)
 VALUES ('jdm', 0),
