@@ -37,13 +37,6 @@ definitions:
     - name
     - owner_id
     type: object
-  models.CarIDResponse:
-    properties:
-      car_id:
-        type: integer
-    required:
-    - car_id
-    type: object
   models.CarRequest:
     properties:
       body:
@@ -291,6 +284,15 @@ definitions:
     - public_description
     - public_name
     type: object
+  models.Session:
+    properties:
+      expiresAt:
+        type: string
+      userID:
+        type: integer
+      value:
+        type: string
+    type: object
   models.SignUpRequest:
     properties:
       avatarUrl:
@@ -311,6 +313,16 @@ definitions:
         type: array
       vkid:
         type: integer
+    type: object
+  models.SignUpResponse:
+    properties:
+      car_id:
+        type: integer
+      session:
+        $ref: '#/definitions/models.Session'
+    required:
+    - car_id
+    - session
     type: object
   models.Tag:
     properties:
@@ -1192,7 +1204,9 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Session'
         "400":
           description: Bad Request
           schema:
@@ -1400,7 +1414,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.CarIDResponse'
+            $ref: '#/definitions/models.SignUpResponse'
         "400":
           description: Bad Request
           schema:

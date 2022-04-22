@@ -11,8 +11,9 @@ type Session struct {
 	ExpiresAt time.Time
 }
 
-type CarIDResponse struct {
+type SignUpResponse struct {
 	CarID int64 `json:"car_id" binding:"required"`
+	Session *Session `json:"session" binding:"required"`
 }
 
 type User struct {

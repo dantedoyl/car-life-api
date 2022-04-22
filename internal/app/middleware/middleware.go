@@ -52,13 +52,13 @@ func CorsControlMiddleware(next http.Handler) http.Handler {
 
 func (m *Middleware) CheckAuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		cookie, err := r.Cookie("session_id")
-		if err != nil {
+		header := r.Header.Values("auth")
+		if len(header) == 0 {
 			next.ServeHTTP(w, r)
 			return
 		}
 
-		session, errE := m.userUcase.CheckSession(cookie.Value)
+		session, errE := m.userUcase.CheckSession(header[0])
 		if errE != nil {
 			next.ServeHTTP(w, r)
 			return

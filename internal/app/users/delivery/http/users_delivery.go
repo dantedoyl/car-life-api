@@ -42,7 +42,7 @@ func (uh *UsersHandler) Configure(r *mux.Router, mw *middleware.Middleware) {
 // @Accept       json
 // @Produce      json
 // @Param        body body models.SignUpRequest true "User"
-// @Success      200 {object} models.CarIDResponse
+// @Success      200 {object} models.SignUpResponse
 // @Failure      400  {object}  utils.Error
 // @Failure      404  {object}  utils.Error
 // @Failure      500  {object}  utils.Error
@@ -105,8 +105,9 @@ func (uh *UsersHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 	}
 
-	body, err := json.Marshal(models.CarIDResponse{
+	body, err := json.Marshal(models.SignUpResponse{
 		CarID: user.CarID,
+		Session: session,
 	})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -126,7 +127,7 @@ func (uh *UsersHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Param        body body models.LoginRequest true "User"
-// @Success      200
+// @Success      200  {object}  models.Session
 // @Failure      400  {object}  utils.Error
 // @Failure      401
 // @Failure      404  {object}  utils.Error
@@ -170,8 +171,16 @@ func (uh *UsersHandler) Login(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 	}
 
+	body, err := json.Marshal(session)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: "can't marshal data"}))
+		return
+	}
+
 	http.SetCookie(w, &cookie)
 	w.WriteHeader(http.StatusOK)
+	w.Write(body)
 }
 
 // UploadAvatarHandler godoc

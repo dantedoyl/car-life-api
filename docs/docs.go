@@ -1248,7 +1248,10 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Session"
+                        }
                     },
                     "400": {
                         "description": "Bad Request",
@@ -1564,7 +1567,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.CarIDResponse"
+                            "$ref": "#/definitions/models.SignUpResponse"
                         }
                     },
                     "400": {
@@ -2004,17 +2007,6 @@ const docTemplate = `{
                 }
             }
         },
-        "models.CarIDResponse": {
-            "type": "object",
-            "required": [
-                "car_id"
-            ],
-            "properties": {
-                "car_id": {
-                    "type": "integer"
-                }
-            }
-        },
         "models.CarRequest": {
             "type": "object",
             "properties": {
@@ -2367,6 +2359,20 @@ const docTemplate = `{
                 }
             }
         },
+        "models.Session": {
+            "type": "object",
+            "properties": {
+                "expiresAt": {
+                    "type": "string"
+                },
+                "userID": {
+                    "type": "integer"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
         "models.SignUpRequest": {
             "type": "object",
             "properties": {
@@ -2396,6 +2402,21 @@ const docTemplate = `{
                 },
                 "vkid": {
                     "type": "integer"
+                }
+            }
+        },
+        "models.SignUpResponse": {
+            "type": "object",
+            "required": [
+                "car_id",
+                "session"
+            ],
+            "properties": {
+                "car_id": {
+                    "type": "integer"
+                },
+                "session": {
+                    "$ref": "#/definitions/models.Session"
                 }
             }
         },

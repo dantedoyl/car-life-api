@@ -1241,7 +1241,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Session"
+                        }
                     },
                     "400": {
                         "description": "Bad Request",
@@ -1557,7 +1560,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.CarIDResponse"
+                            "$ref": "#/definitions/models.SignUpResponse"
                         }
                     },
                     "400": {
@@ -1997,17 +2000,6 @@
                 }
             }
         },
-        "models.CarIDResponse": {
-            "type": "object",
-            "required": [
-                "car_id"
-            ],
-            "properties": {
-                "car_id": {
-                    "type": "integer"
-                }
-            }
-        },
         "models.CarRequest": {
             "type": "object",
             "properties": {
@@ -2360,6 +2352,20 @@
                 }
             }
         },
+        "models.Session": {
+            "type": "object",
+            "properties": {
+                "expiresAt": {
+                    "type": "string"
+                },
+                "userID": {
+                    "type": "integer"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
         "models.SignUpRequest": {
             "type": "object",
             "properties": {
@@ -2389,6 +2395,21 @@
                 },
                 "vkid": {
                     "type": "integer"
+                }
+            }
+        },
+        "models.SignUpResponse": {
+            "type": "object",
+            "required": [
+                "car_id",
+                "session"
+            ],
+            "properties": {
+                "car_id": {
+                    "type": "integer"
+                },
+                "session": {
+                    "$ref": "#/definitions/models.Session"
                 }
             }
         },
