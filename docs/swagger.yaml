@@ -286,12 +286,16 @@ definitions:
     type: object
   models.Session:
     properties:
-      expiresAt:
+      expires_at:
         type: string
-      userID:
+      user_id:
         type: integer
       value:
         type: string
+    required:
+    - expires_at
+    - user_id
+    - value
     type: object
   models.SignUpRequest:
     properties:
