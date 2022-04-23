@@ -104,6 +104,22 @@ create table if not exists mini_events
     longitude   float DEFAULT 37.620017
 );
 
+create table if not exists events_posts
+(
+    id          bigserial primary key,
+    text        text null,
+    user_id     bigint not null,
+    event_id    bigint not null,
+    created_at  timestamp default CURRENT_TIMESTAMP
+);
+
+create table if not exists events_posts_attachments
+(
+    id          bigserial primary key,
+    url         text null,
+    post_id     bigint not null
+);
+
 insert into mini_event_type (public_name, public_description)
 VALUES ('Помощь', 'Нужна помощь'),
        ('Мини-сходка', 'Организуй встречу с друзьями'),

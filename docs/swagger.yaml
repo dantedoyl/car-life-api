@@ -179,6 +179,13 @@ definitions:
     - longitude
     - type_id
     type: object
+  models.CreatePostRequest:
+    properties:
+      text:
+        type: string
+    required:
+    - text
+    type: object
   models.Event:
     properties:
       avatar:
@@ -237,6 +244,30 @@ definitions:
     - latitude
     - longitude
     - name
+    type: object
+  models.EventPost:
+    properties:
+      attachments:
+        items:
+          type: string
+        type: array
+      created_at:
+        type: string
+      event_id:
+        type: integer
+      id:
+        type: integer
+      text:
+        type: string
+      user_id:
+        type: integer
+    required:
+    - attachments
+    - created_at
+    - event_id
+    - id
+    - text
+    - user_id
     type: object
   models.LoginRequest:
     properties:
@@ -866,6 +897,87 @@ paths:
       summary: create an event
       tags:
       - Events
+  /event_posts/{event_id}:
+    get:
+      consumes:
+      - application/json
+      description: Handler for getting events posts list
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: IdGt
+        in: query
+        name: IdGt
+        type: integer
+      - description: IdLte
+        in: query
+        name: IdLte
+        type: integer
+      - description: Limit
+        in: query
+        name: Limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.EventPost'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: get events posts list
+      tags:
+      - EventsPosts
+  /event_posts/{event_id}/create:
+    post:
+      consumes:
+      - application/json
+      description: Handler for creating an event post
+      parameters:
+      - description: EventPost
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreatePostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.EventPost'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: create an event post
+      tags:
+      - EventsPosts
   /events:
     get:
       consumes:
@@ -1155,6 +1267,39 @@ paths:
       summary: upload avatar for event
       tags:
       - Events
+  /events_posts/{post_id}/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Handler for uploading an event post attachment
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.EventPost'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: upload attachments for event post
+      tags:
+      - EventsPosts
   /garage/{id}/upload:
     post:
       consumes:
