@@ -515,6 +515,13 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Image to upload",
+                        "name": "file-upload",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1123,6 +1130,13 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Image to upload",
+                        "name": "file-upload",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1364,6 +1378,13 @@ const docTemplate = `{
                         "description": "Car ID",
                         "name": "id",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Image to upload",
+                        "name": "file-upload",
+                        "in": "formData",
                         "required": true
                     }
                 ],
