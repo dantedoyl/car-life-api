@@ -2579,11 +2579,16 @@ const docTemplate = `{
         },
         "models.Session": {
             "type": "object",
+            "required": [
+                "expires_at",
+                "user_id",
+                "value"
+            ],
             "properties": {
-                "expiresAt": {
+                "expires_at": {
                     "type": "string"
                 },
-                "userID": {
+                "user_id": {
                     "type": "integer"
                 },
                 "value": {
