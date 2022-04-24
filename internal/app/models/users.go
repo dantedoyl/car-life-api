@@ -68,6 +68,11 @@ type SignUpRequest struct {
 	Description string
 }
 
+type UpdateRequest struct {
+	Tags        []string
+	Description string
+}
+
 type LoginRequest struct {
 	VKID uint64
 }

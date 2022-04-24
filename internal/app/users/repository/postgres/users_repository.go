@@ -342,3 +342,15 @@ func (ur *UsersRepository) GetEventsByUserStatus(userID int64, status string, id
 	}
 	return events, nil
 }
+
+func (ur *UsersRepository) Update(user *models.User) (*models.User, error) {
+	err := ur.sqlConn.QueryRow(`UPDATE users SET tags = $1, description = $2 WHERE vk_id = $3
+RETURNING vk_id, name, surname, avatar, tags, description`, pq.Array(user.Tags), user.Description, user.VKID).Scan(
+		&user.VKID, &user.Name, &user.Surname, &user.AvatarUrl, pq.Array(&user.Tags), &user.Description)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+

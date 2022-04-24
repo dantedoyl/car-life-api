@@ -139,3 +139,11 @@ func (uu *UsersUsecase) AddNewUserCar(car *models.CarCard) (*models.CarCard, err
 	return uu.usersRepo.InsertCar(car)
 }
 
+func (uu *UsersUsecase) UpdateUserInfo(user *models.User) (*models.User, error) {
+	return uu.usersRepo.Update(user)
+}
+
+func(uu *UsersUsecase)	SelectCarByID(carID int64) (*models.CarCard, error) {
+	return uu.usersRepo.SelectCarByID(uint64(carID))
+}
+

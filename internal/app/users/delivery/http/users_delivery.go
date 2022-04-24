@@ -26,6 +26,7 @@ func (uh *UsersHandler) Configure(r *mux.Router, mw *middleware.Middleware) {
 	r.HandleFunc("/signup", uh.SignUp).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/me", mw.CheckAuthMiddleware(uh.MyProfile)).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/user/{id:[0-9]+}", uh.UserProfile).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc("/me/update", uh.UpdateUserProfile).Methods(http.MethodPut, http.MethodOptions)
 	r.HandleFunc("/new_car", mw.CheckAuthMiddleware(uh.NewUserCar)).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/user/{id:[0-9]+}/garage", uh.UserGarage).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/user/{id:[0-9]+}/events/{type:admin|participant|spectator}", uh.UserEvents).Methods(http.MethodGet, http.MethodOptions)
@@ -33,6 +34,7 @@ func (uh *UsersHandler) Configure(r *mux.Router, mw *middleware.Middleware) {
 	r.HandleFunc("/user/own_clubs", mw.CheckAuthMiddleware(uh.UserOwnClubs)).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/login", uh.Login).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/garage/{id:[0-9]+}/upload", uh.UploadAvatarHandler).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/garage/{id:[0-9]+}", uh.GetCarByID).Methods(http.MethodGet, http.MethodOptions)
 }
 
 // SignUp godoc
@@ -270,6 +272,60 @@ func (uh *UsersHandler) UserProfile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(body)
+}
+
+// UpdateUserProfile godoc
+// @Summary      get user by id
+// @Description  Handler for getting a user by id
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Param        body body models.UpdateRequest true "User"
+// @Success      200  {object}  models.User
+// @Failure      400  {object}  utils.Error
+// @Failure      404  {object}  utils.Error
+// @Failure      500  {object}  utils.Error
+// @Router       /me/update [get]
+func (uh *UsersHandler) UpdateUserProfile(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+
+	userID, ok := r.Context().Value("userID").(uint64)
+	if !ok {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write(utils.JSONError(&utils.Error{Message: "you're unauthorized"}))
+		return
+	}
+
+	signUp := models.UpdateRequest{}
+	err := json.NewDecoder(r.Body).Decode(&signUp)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(utils.JSONError(&utils.Error{Message: "unable to decode data"}))
+		return
+	}
+
+	user := &models.User{
+		VKID: 		 userID,
+		Tags:        signUp.Tags,
+		Description: signUp.Description,
+	}
+
+	user, err = uh.usersUcase.UpdateUserInfo(user)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	body, err := json.Marshal(user)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: "can't marshal data"}))
+		return
+	}
+
 	w.WriteHeader(http.StatusOK)
 	w.Write(body)
 }
@@ -588,6 +644,42 @@ func (uh *UsersHandler) NewUserCar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.WriteHeader(http.StatusOK)
+	w.Write(body)
+}
+
+// GetCarByID godoc
+// @Summary      get car
+// @Description  Handler for getting a user by id
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Param        id path int64 true "Car ID"
+// @Success      200  {object}  []models.CarCard
+// @Failure      400  {object}  utils.Error
+// @Failure      401
+// @Failure      404  {object}  utils.Error
+// @Failure      500  {object}  utils.Error
+// @Router       /garage/{id} [get]
+func (uh *UsersHandler) GetCarByID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	carID, _ := strconv.ParseUint(vars["id"], 10, 64)
+
+	cars, err := uh.usersUcase.SelectCarByID(int64(carID))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	body, err := json.Marshal(cars)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: "can't marshal data"}))
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(body)
 }

@@ -369,6 +369,15 @@ definitions:
     - id
     - name
     type: object
+  models.UpdateRequest:
+    properties:
+      description:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+    type: object
   models.User:
     properties:
       avatar_url:
@@ -1304,6 +1313,43 @@ paths:
       summary: upload attachments for event post
       tags:
       - EventsPosts
+  /garage/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Handler for getting a user by id
+      parameters:
+      - description: Car ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.CarCard'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "401":
+          description: ""
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: get car
+      tags:
+      - Users
   /garage/{id}/upload:
     post:
       consumes:
@@ -1378,6 +1424,40 @@ paths:
       consumes:
       - application/json
       description: Handler for getting a user by id
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: get user by id
+      tags:
+      - Users
+  /me/update:
+    get:
+      consumes:
+      - application/json
+      description: Handler for getting a user by id
+      parameters:
+      - description: User
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateRequest'
       produces:
       - application/json
       responses:
