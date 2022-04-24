@@ -2614,7 +2614,7 @@ const docTemplate = `{
                 "event_id",
                 "id",
                 "text",
-                "user_id"
+                "user"
             ],
             "properties": {
                 "attachments": {
@@ -2635,8 +2635,8 @@ const docTemplate = `{
                 "text": {
                     "type": "string"
                 },
-                "user_id": {
-                    "type": "integer"
+                "user": {
+                    "$ref": "#/definitions/models.UserCard"
                 }
             }
         },

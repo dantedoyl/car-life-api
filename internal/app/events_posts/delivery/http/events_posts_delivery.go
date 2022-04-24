@@ -63,7 +63,9 @@ func (eph *EventsPostsHandler) CreateEventPost(w http.ResponseWriter, r *http.Re
 
 	eventsData := &models.EventPost{
 		Text:        event.Text,
-		UserID:      userID,
+		User:        models.UserCard{
+			VKID:      userID,
+		},
 		EventID:     eventID,
 	}
 
