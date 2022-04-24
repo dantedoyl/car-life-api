@@ -72,14 +72,14 @@ func (uh *UsersHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	var car *models.CarCard
 	if len(signUp.Garage) != 0 {
 		car = &models.CarCard{
-				Brand:       signUp.Garage[0].Brand,
-				Model:       signUp.Garage[0].Model,
-				Date:        signUp.Garage[0].Date,
-				Description: signUp.Garage[0].Description,
-				Body:        signUp.Garage[0].Body,
-				Engine:      signUp.Garage[0].Engine,
-				HorsePower:  signUp.Garage[0].HorsePower,
-				Name:        signUp.Garage[0].Name,
+			Brand:       signUp.Garage[0].Brand,
+			Model:       signUp.Garage[0].Model,
+			Date:        signUp.Garage[0].Date,
+			Description: signUp.Garage[0].Description,
+			Body:        signUp.Garage[0].Body,
+			Engine:      signUp.Garage[0].Engine,
+			HorsePower:  signUp.Garage[0].HorsePower,
+			Name:        signUp.Garage[0].Name,
 		}
 	}
 
@@ -108,7 +108,7 @@ func (uh *UsersHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	body, err := json.Marshal(models.SignUpResponse{
-		CarID: user.CarID,
+		CarID:   user.CarID,
 		Session: session,
 	})
 	if err != nil {
@@ -192,6 +192,7 @@ func (uh *UsersHandler) Login(w http.ResponseWriter, r *http.Request) {
 // @Accept       mpfd
 // @Produce      json
 // @Param        id path int64 true "Car ID"
+// @Param 		 file-upload formData file true "Image to upload"
 // @Success      200  {object}  models.User
 // @Failure      400  {object}  utils.Error
 // @Failure      404  {object}  utils.Error
@@ -618,17 +619,17 @@ func (uh *UsersHandler) NewUserCar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-		carData := &models.CarCard{
-			Brand:       car.Brand,
-			Model:       car.Model,
-			Date:        car.Date,
-			Description: car.Description,
-			Body:        car.Body,
-			Engine:      car.Engine,
-			HorsePower:  car.HorsePower,
-			Name:        car.Name,
-			OwnerID:     userID,
-		}
+	carData := &models.CarCard{
+		Brand:       car.Brand,
+		Model:       car.Model,
+		Date:        car.Date,
+		Description: car.Description,
+		Body:        car.Body,
+		Engine:      car.Engine,
+		HorsePower:  car.HorsePower,
+		Name:        car.Name,
+		OwnerID:     userID,
+	}
 
 	carData, err = uh.usersUcase.AddNewUserCar(carData)
 	if err != nil {

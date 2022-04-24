@@ -220,6 +220,7 @@ func (ch *ClubsHandler) GetClubByID(w http.ResponseWriter, r *http.Request) {
 // @Accept       mpfd
 // @Produce      json
 // @Param        id path int64 true "Club ID"
+// @Param 		 file-upload formData file true "Image to upload"
 // @Success      200  {object}  models.Club
 // @Failure      400  {object}  utils.Error
 // @Failure      404  {object}  utils.Error
@@ -628,9 +629,9 @@ func (ch *ClubsHandler) ApproveRejectUserParticipateInClub(w http.ResponseWriter
 
 	clubUrl := fmt.Sprintf("https://vk.com/app8099557#main/club/%d", clubID)
 
-	msg := 	fmt.Sprintf("Привет! Администратор принял вас в %s: %s\n", club.Name, clubUrl)
+	msg := fmt.Sprintf("Привет! Администратор принял вас в %s: %s\n", club.Name, clubUrl)
 	if decision == "reject" {
-		msg = 	fmt.Sprintf("Привет! К сожалению, администратор отклонил ваш запрос на участие в %s: %s\n", club.Name, clubUrl)
+		msg = fmt.Sprintf("Привет! К сожалению, администратор отклонил ваш запрос на участие в %s: %s\n", club.Name, clubUrl)
 	}
 
 	err = ch.vk.CreatMessage(int(userID), msg)

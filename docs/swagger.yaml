@@ -825,6 +825,11 @@ paths:
         name: id
         required: true
         type: integer
+      - description: Image to upload
+        in: formData
+        name: file-upload
+        required: true
+        type: file
       produces:
       - application/json
       responses:
@@ -1258,6 +1263,11 @@ paths:
         name: id
         required: true
         type: integer
+      - description: Image to upload
+        in: formData
+        name: file-upload
+        required: true
+        type: file
       produces:
       - application/json
       responses:
@@ -1361,6 +1371,11 @@ paths:
         name: id
         required: true
         type: integer
+      - description: Image to upload
+        in: formData
+        name: file-upload
+        required: true
+        type: file
       produces:
       - application/json
       responses:

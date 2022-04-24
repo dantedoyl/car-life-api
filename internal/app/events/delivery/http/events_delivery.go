@@ -237,6 +237,7 @@ func (eh *EventsHandler) GetEventByID(w http.ResponseWriter, r *http.Request) {
 // @Accept       mpfd
 // @Produce      json
 // @Param        id path int64 true "Account ID"
+// @Param 		 file-upload formData file true "Image to upload"
 // @Success      200  {object}  models.Event
 // @Failure      400  {object}  utils.Error
 // @Failure      404  {object}  utils.Error
@@ -462,9 +463,9 @@ func (eh *EventsHandler) ApproveRejectUserParticipateInEvent(w http.ResponseWrit
 
 	eventUrl := fmt.Sprintf("https://vk.com/app8099557#main/event/%d", eventID)
 
-	msg := 	fmt.Sprintf("Привет! Администратор принял вас в %s: %s\n", event.Name, eventUrl)
+	msg := fmt.Sprintf("Привет! Администратор принял вас в %s: %s\n", event.Name, eventUrl)
 	if decision == "reject" {
-		msg = 	fmt.Sprintf("Привет! К сожалению, администратор отклонил ваш запрос на участие в %s: %s\n", event.Name, eventUrl)
+		msg = fmt.Sprintf("Привет! К сожалению, администратор отклонил ваш запрос на участие в %s: %s\n", event.Name, eventUrl)
 	}
 
 	err = eh.vk.CreatMessage(int(userID), msg)
