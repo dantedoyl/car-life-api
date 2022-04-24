@@ -1340,9 +1340,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/models.CarCard'
-            type: array
+            $ref: '#/definitions/models.CarCard'
         "400":
           description: Bad Request
           schema:
@@ -1462,7 +1460,7 @@ paths:
       tags:
       - Users
   /me/update:
-    get:
+    put:
       consumes:
       - application/json
       description: Handler for getting a user by id

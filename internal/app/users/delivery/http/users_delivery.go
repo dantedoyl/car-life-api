@@ -26,7 +26,7 @@ func (uh *UsersHandler) Configure(r *mux.Router, mw *middleware.Middleware) {
 	r.HandleFunc("/signup", uh.SignUp).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/me", mw.CheckAuthMiddleware(uh.MyProfile)).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/user/{id:[0-9]+}", uh.UserProfile).Methods(http.MethodGet, http.MethodOptions)
-	r.HandleFunc("/me/update", uh.UpdateUserProfile).Methods(http.MethodPut, http.MethodOptions)
+	r.HandleFunc("/me/update", mw.CheckAuthMiddleware(uh.UpdateUserProfile)).Methods(http.MethodPut, http.MethodOptions)
 	r.HandleFunc("/new_car", mw.CheckAuthMiddleware(uh.NewUserCar)).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/user/{id:[0-9]+}/garage", uh.UserGarage).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/user/{id:[0-9]+}/events/{type:admin|participant|spectator}", uh.UserEvents).Methods(http.MethodGet, http.MethodOptions)
@@ -288,7 +288,7 @@ func (uh *UsersHandler) UserProfile(w http.ResponseWriter, r *http.Request) {
 // @Failure      400  {object}  utils.Error
 // @Failure      404  {object}  utils.Error
 // @Failure      500  {object}  utils.Error
-// @Router       /me/update [get]
+// @Router       /me/update [put]
 func (uh *UsersHandler) UpdateUserProfile(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
@@ -308,7 +308,7 @@ func (uh *UsersHandler) UpdateUserProfile(w http.ResponseWriter, r *http.Request
 	}
 
 	user := &models.User{
-		VKID: 		 userID,
+		VKID:        userID,
 		Tags:        signUp.Tags,
 		Description: signUp.Description,
 	}
@@ -656,7 +656,7 @@ func (uh *UsersHandler) NewUserCar(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Param        id path int64 true "Car ID"
-// @Success      200  {object}  []models.CarCard
+// @Success      200  {object}  models.CarCard
 // @Failure      400  {object}  utils.Error
 // @Failure      401
 // @Failure      404  {object}  utils.Error

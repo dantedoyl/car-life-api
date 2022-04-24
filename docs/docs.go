@@ -1385,10 +1385,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.CarCard"
-                            }
+                            "$ref": "#/definitions/models.CarCard"
                         }
                     },
                     "400": {
@@ -1569,7 +1566,7 @@ const docTemplate = `{
             }
         },
         "/me/update": {
-            "get": {
+            "put": {
                 "description": "Handler for getting a user by id",
                 "consumes": [
                     "application/json"

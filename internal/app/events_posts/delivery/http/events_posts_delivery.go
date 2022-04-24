@@ -62,9 +62,9 @@ func (eph *EventsPostsHandler) CreateEventPost(w http.ResponseWriter, r *http.Re
 	}
 
 	eventsData := &models.EventPost{
-		Text:        event.Text,
-		UserID:      userID,
-		EventID:     eventID,
+		Text:    event.Text,
+		UserID:  userID,
+		EventID: eventID,
 	}
 
 	err = eph.eventsUcase.CreateEventPost(eventsData)
