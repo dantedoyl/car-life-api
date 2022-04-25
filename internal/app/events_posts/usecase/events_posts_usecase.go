@@ -31,7 +31,12 @@ func (epu *EventsPostsUsecase) UploadAttachments(postID uint64, fileHeader []*mu
 		return nil, err
 	}
 
-	imgUrl, err := filesystem.InsertPhotos(fileHeader, "img/events_posts/")
+	imgUrl, err := filesystem.InsertPhotos(fileHeader, "img/events-posts/")
+	if err != nil {
+		return nil, err
+	}
+
+	err = epu.eventsPostsRepo.InsertEventPostAttachments(postID, imgUrl)
 	if err != nil {
 		return nil, err
 	}
