@@ -111,7 +111,7 @@ func (epr *EventsPostsRepository) GetEventPostByPostID(postID uint64) (*models.E
     			left join events_posts_attachments as epa on ep.id = epa.post_id
 				left join users as u on u.vk_id = ep.user_id
 				WHERE ep.id = $1 
-				GROUP BY ep.id, u.name, u.surname, u.avatar `, postID).Scan(&post.ID, &post.Text, &post.User.VKID, &post.User.Name, &post.User.Surname, &post.User.VKID, &post.EventID, &post.CreatedAt, pq.Array(&post.Attachments))
+				GROUP BY ep.id, u.name, u.surname, u.avatar `, postID).Scan(&post.ID, &post.Text, &post.User.VKID, &post.User.Name, &post.User.Surname, &post.User.AvatarUrl, &post.EventID, &post.CreatedAt, pq.Array(&post.Attachments))
 	if err != nil {
 		return nil, err
 	}
