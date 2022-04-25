@@ -23,7 +23,7 @@ func (epr *EventsPostsRepository) InsertEventPost(eventPost *models.EventPost) e
 	err := epr.dbConn.QueryRow(
 		`INSERT INTO events_posts
                 (text, user_id, event_id)
-                VALUES ($1, $2, $3, $4, $5, $6, $7) 
+                VALUES ($1, $2, $3) 
                 RETURNING id, created_at`,
 		eventPost.Text,
 		eventPost.User.VKID,
@@ -87,7 +87,7 @@ func (epr *EventsPostsRepository) InsertEventPostAttachments(postID uint64, atta
 
 	for i, attachment := range attachments {
 		if i > 0 {
-			query +=`,`
+			query += `,`
 		}
 		query += fmt.Sprintf(` ($%d, $%d)`, ind, ind+1)
 		values = append(values, attachment, postID)
@@ -108,7 +108,7 @@ func (epr *EventsPostsRepository) GetEventPostByPostID(postID uint64) (*models.E
 		`SELECT ep.id, ep.text, ep.user_id, u.name, u.surname, u.avatar, ep.event_id, ep.created_at, array_agg(epa.url) from events_posts as ep 
     left join events_posts_attachments as epa on ep.id = epa.post_id
 			left join users as u on u.vk_id = ep.user_id
-			WHERE ep.id = $1 `, postID).Scan(&post.ID, &post.Text, &post.User.VKID, &post.User.Name, &post.User.Surname, &post.User.VKID,&post.EventID, &post.CreatedAt, pq.Array(&post.Attachments))
+			WHERE ep.id = $1 `, postID).Scan(&post.ID, &post.Text, &post.User.VKID, &post.User.Name, &post.User.Surname, &post.User.VKID, &post.EventID, &post.CreatedAt, pq.Array(&post.Attachments))
 	if err != nil {
 		return nil, err
 	}
