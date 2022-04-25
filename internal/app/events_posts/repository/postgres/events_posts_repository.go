@@ -61,7 +61,7 @@ func (epr *EventsPostsRepository) GetEventsPostsByEventID(eventID uint64, idGt *
 		values = append(values, limit)
 	}
 
-	q += ` GROUP BY ep.id ORDER BY ep.created_at desc`
+	q += ` GROUP BY ep.id, u.name ORDER BY ep.created_at desc`
 	rows, err := epr.dbConn.Query(q, values...)
 	if err != nil {
 		return nil, err
