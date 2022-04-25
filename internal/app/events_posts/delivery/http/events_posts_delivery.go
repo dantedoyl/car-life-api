@@ -95,7 +95,7 @@ func (eph *EventsPostsHandler) CreateEventPost(w http.ResponseWriter, r *http.Re
 // @Tags         EventsPosts
 // @Accept       json
 // @Produce      json
-// @Param        id path int64 true "Event ID"
+// @Param        event_id path int64 true "Event ID"
 // @Param        IdGt query integer false "IdGt"
 // @Param        IdLte query integer false "IdLte"
 // @Param        Limit query integer false "Limit"

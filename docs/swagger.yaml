@@ -923,7 +923,7 @@ paths:
       parameters:
       - description: Event ID
         in: path
-        name: id
+        name: event_id
         required: true
         type: integer
       - description: IdGt

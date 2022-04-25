@@ -763,7 +763,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "Event ID",
-                        "name": "id",
+                        "name": "event_id",
                         "in": "path",
                         "required": true
                     },
