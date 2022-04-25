@@ -71,7 +71,7 @@ func (epr *EventsPostsRepository) GetEventsPostsByEventID(eventID uint64, idGt *
 
 	for rows.Next() {
 		post := &models.EventPost{}
-		err = rows.Scan(&post.ID, &post.Text, &post.User.VKID, &post.User.Name, &post.User.Surname, &post.User.VKID, &post.EventID, &post.CreatedAt, pq.Array(&post.Attachments))
+		err = rows.Scan(&post.ID, &post.Text, &post.User.VKID, &post.User.Name, &post.User.Surname, &post.User.AvatarUrl, &post.EventID, &post.CreatedAt, pq.Array(&post.Attachments))
 		if err != nil {
 			return nil, err
 		}
