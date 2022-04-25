@@ -832,6 +832,13 @@ const docTemplate = `{
                 "summary": "create an event post",
                 "parameters": [
                     {
+                        "type": "integer",
+                        "description": "Event ID",
+                        "name": "event_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
                         "description": "EventPost",
                         "name": "body",
                         "in": "body",
@@ -1326,7 +1333,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "Post ID",
-                        "name": "id",
+                        "name": "post_id",
                         "in": "path",
                         "required": true
                     }

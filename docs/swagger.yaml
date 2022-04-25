@@ -968,6 +968,11 @@ paths:
       - application/json
       description: Handler for creating an event post
       parameters:
+      - description: Event ID
+        in: path
+        name: event_id
+        required: true
+        type: integer
       - description: EventPost
         in: body
         name: body
@@ -1298,7 +1303,7 @@ paths:
       parameters:
       - description: Post ID
         in: path
-        name: id
+        name: post_id
         required: true
         type: integer
       produces:

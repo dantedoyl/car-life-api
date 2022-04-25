@@ -35,6 +35,7 @@ func (eph *EventsPostsHandler) Configure(r *mux.Router, mw *middleware.Middlewar
 // @Tags         EventsPosts
 // @Accept       json
 // @Produce      json
+// @Param        event_id path int64 true "Event ID"
 // @Param        body body models.CreatePostRequest true "EventPost"
 // @Success      200  {object}  models.EventPost
 // @Failure      400  {object}  utils.Error
@@ -146,7 +147,7 @@ func (eph *EventsPostsHandler) GetEventsPostsByEventID(w http.ResponseWriter, r 
 // @Tags         EventsPosts
 // @Accept       mpfd
 // @Produce      json
-// @Param        id path int64 true "Post ID"
+// @Param        post_id path int64 true "Post ID"
 // @Success      200  {object}  models.EventPost
 // @Failure      400  {object}  utils.Error
 // @Failure      404  {object}  utils.Error

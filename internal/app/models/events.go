@@ -30,6 +30,10 @@ type EventQuery struct {
 	IdLte *uint64
 	Limit *uint64
 	Query *string
+	UpperRightLatitude *float32
+	UpperRightLongitude *float32
+	DownLeftLatitude *float32
+	DownLeftLongitude *float32
 }
 
 type CreateEventRequest struct {
