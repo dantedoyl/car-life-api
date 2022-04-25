@@ -39,7 +39,7 @@ func (epr *EventsPostsRepository) GetEventsPostsByEventID(eventID uint64, idGt *
 	var eventsPosts []*models.EventPost
 	ind := 1
 	var values []interface{}
-	q := `SELECT ep.id, ep.text, ep.user_id, u.name, u.surname, u.avatar, ep.event_id, ep.created_at, array_agg(epa.url) from events_posts as ep 
+	q := `SELECT ep.id, ep.text, ep.user_id, u.name, u.surname, u.avatar, ep.event_id, ep.created_at, array_agg(COALESCE(epa.url, '')) from events_posts as ep 
     		left join events_posts_attachments as epa on ep.id = epa.post_id
 			left join users as u on u.vk_id = ep.user_id
 			WHERE true `
