@@ -81,7 +81,7 @@ func (er *EventsRepository) GetEventByID(id int64, userID uint64) (*models.Event
 	return event, nil
 }
 
-func (er *EventsRepository) GetEvents(idGt *uint64, idLte *uint64, limit *uint64, query *string) ([]*models.Event, error) {
+func (er *EventsRepository) GetEvents(idGt *uint64, idLte *uint64, limit *uint64, query *string, onlyActual bool, downLeftLongitude *float32, downLeftLatitude *float32, upperRightLongitude *float32, upperRightLatitude *float32) ([]*models.Event, error) {
 	var events []*models.Event
 	ind := 1
 	var values []interface{}
@@ -103,6 +103,17 @@ func (er *EventsRepository) GetEvents(idGt *uint64, idLte *uint64, limit *uint64
 		q += ` AND name like '%' || $` + strconv.Itoa(ind) + ` || '%'`
 		values = append(values, query)
 		ind++
+	}
+
+	if onlyActual {
+		q += ` AND event_date >= now()`
+	}
+
+	if downLeftLongitude != nil && downLeftLatitude != nil && upperRightLongitude != nil && upperRightLatitude != nil {
+		q += ` AND latitude >= $`+ strconv.Itoa(ind) + ` AND latitude <= $`+ strconv.Itoa(ind+1) +
+			` AND longitude >= $`+ strconv.Itoa(ind + 2) + ` AND longitude <= $`+ strconv.Itoa(ind + 3)
+		values =append(values, downLeftLatitude, upperRightLatitude, downLeftLongitude, upperRightLongitude)
+		ind = ind + 4
 	}
 
 	if limit != nil {

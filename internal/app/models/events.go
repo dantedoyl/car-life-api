@@ -34,6 +34,7 @@ type EventQuery struct {
 	UpperRightLongitude *float32
 	DownLeftLatitude *float32
 	DownLeftLongitude *float32
+	OnlyActual bool
 }
 
 type CreateEventRequest struct {

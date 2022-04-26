@@ -139,6 +139,11 @@ func (eh *EventsHandler) CreateEvent(w http.ResponseWriter, r *http.Request) {
 // @Param        IdLte query integer false "IdLte"
 // @Param        Limit query integer false "Limit"
 // @Param        Query query string false "Query"
+// @Param        OnlyActual query boolean false "OnlyActual"
+// @Param        UpperRightLatitude query number false "UpperRightLatitude"
+// @Param        UpperRightLongitude query number false "UpperRightLongitude"
+// @Param        DownLeftLatitude query number false "DownLeftLatitude"
+// @Param        DownLeftLongitude query number false "DownLeftLongitude"
 // @Success      200  {object}  []models.EventCard
 // @Failure      400  {object}  utils.Error
 // @Failure      404  {object}  utils.Error
@@ -155,7 +160,7 @@ func (eh *EventsHandler) GetEvents(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	events, err := eh.eventsUcase.GetEvents(query.IdGt, query.IdLte, query.Limit, query.Query)
+	events, err := eh.eventsUcase.GetEvents(query.IdGt, query.IdLte, query.Limit, query.Query, query.OnlyActual, query.DownLeftLongitude, query.DownLeftLatitude, query.UpperRightLongitude, query.UpperRightLatitude)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
