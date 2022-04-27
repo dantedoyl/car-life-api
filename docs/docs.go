@@ -913,6 +913,36 @@ const docTemplate = `{
                         "description": "Query",
                         "name": "Query",
                         "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "OnlyActual",
+                        "name": "OnlyActual",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "UpperRightLatitude",
+                        "name": "UpperRightLatitude",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "UpperRightLongitude",
+                        "name": "UpperRightLongitude",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "DownLeftLatitude",
+                        "name": "DownLeftLatitude",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "DownLeftLongitude",
+                        "name": "DownLeftLongitude",
+                        "in": "query"
                     }
                 ],
                 "responses": {

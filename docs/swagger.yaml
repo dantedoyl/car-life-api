@@ -1023,6 +1023,26 @@ paths:
         in: query
         name: Query
         type: string
+      - description: OnlyActual
+        in: query
+        name: OnlyActual
+        type: boolean
+      - description: UpperRightLatitude
+        in: query
+        name: UpperRightLatitude
+        type: number
+      - description: UpperRightLongitude
+        in: query
+        name: UpperRightLongitude
+        type: number
+      - description: DownLeftLatitude
+        in: query
+        name: DownLeftLatitude
+        type: number
+      - description: DownLeftLongitude
+        in: query
+        name: DownLeftLongitude
+        type: number
       produces:
       - application/json
       responses:
