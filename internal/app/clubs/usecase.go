@@ -19,4 +19,5 @@ type IClubsUsecase interface {
 	GetUserStatusInClub(clubID int64, userID int64) (*models.ClubUser, error)
 	SetClubChatID(clubID int64, chatID int64) error
 	GetClubChatID(clubID int64, userID int64) (int64, error)
+	DeleteUserFromClub(clubID int64, userID int64) error
 }

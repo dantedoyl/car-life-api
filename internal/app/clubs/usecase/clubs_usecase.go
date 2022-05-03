@@ -98,3 +98,8 @@ func (cu *ClubsUsecase) GetClubChatID(clubID int64, userID int64) (int64, error)
 	return cu.clubsRepo.GetClubChatID(clubID, userID)
 }
 
+func (cu *ClubsUsecase)	DeleteUserFromClub(clubID int64, userID int64) error {
+	return cu.clubsRepo.DeleteUserFromClub(clubID, userID)
+}
+
+

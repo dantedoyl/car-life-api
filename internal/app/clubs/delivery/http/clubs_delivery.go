@@ -35,6 +35,7 @@ func (ch *ClubsHandler) Configure(r *mux.Router, mw *middleware.Middleware) {
 	r.HandleFunc("/clubs/{id:[0-9]+}/{type:participate|subscribe}", mw.CheckAuthMiddleware(ch.SetUserStatusByClubID)).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/clubs/{cid:[0-9]+}/participate/{uid:[0-9]+}/{type:approve|reject}", mw.CheckAuthMiddleware(ch.ApproveRejectUserParticipateInClub)).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/clubs/{id:[0-9]+}/{type:participant|participant_request|subscriber}", mw.CheckAuthMiddleware(ch.GetClubsUsersByType)).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc("/clubs/{id:[0-9]+}/leave", mw.CheckAuthMiddleware(ch.LeaveClub)).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/clubs/{id:[0-9]+}/cars", mw.CheckAuthMiddleware(ch.GetClubsCars)).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/clubs/{id:[0-9]+}/events", mw.CheckAuthMiddleware(ch.GetClubsEvents)).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/clubs/{id:[0-9]+}/chat_link", mw.CheckAuthMiddleware(ch.GetClubChatLink)).Methods(http.MethodGet, http.MethodOptions)
@@ -565,6 +566,53 @@ func (ch *ClubsHandler) SetUserStatusByClubID(w http.ResponseWriter, r *http.Req
 			w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
 			return
 		}
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+// LeaveClub godoc
+// @Summary      leave club
+// @Description  Handler for leaving club
+// @Tags         Clubs
+// @Accept       json
+// @Produce      json
+// @Param        id path int64 true "Club ID"
+// @Success      200
+// @Failure      400  {object}  utils.Error
+// @Failure      401
+// @Failure      404  {object}  utils.Error
+// @Failure      500  {object}  utils.Error
+// @Router       /clubs/{id}/leave [post]
+func (ch *ClubsHandler) LeaveClub(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	clubID, _ := strconv.ParseUint(vars["id"], 10, 64)
+
+	userID, ok := r.Context().Value("userID").(uint64)
+	if !ok {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write(utils.JSONError(&utils.Error{Message: "you're unauthorized"}))
+		return
+	}
+
+	userClubSatus, err := ch.clubsUcase.GetUserStatusInClub(int64(clubID), int64(userID))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	if userClubSatus == nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(utils.JSONError(&utils.Error{Message: "user has inappropriate status"}))
+		return
+	}
+
+	err = ch.clubsUcase.DeleteUserFromClub(int64(clubID), int64(userID))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
 	}
 
 	w.WriteHeader(http.StatusOK)

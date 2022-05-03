@@ -15,4 +15,5 @@ type IEventsUsecase interface {
 	ApproveRejectUserParticipateInEvent(eventID int64, userID int64, decision string) error
 	GetEventChatID(eventID int64, userID int64) (int64, error)
 	SetEventChatID(eventID int64, chatID int64) error
+	DeleteUserFromEvent(eventID int64, userID int64) error
 }

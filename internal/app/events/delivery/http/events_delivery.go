@@ -38,6 +38,7 @@ func (eh *EventsHandler) Configure(r *mux.Router, mw *middleware.Middleware) {
 	r.HandleFunc("/events/{id:[0-9]+}/{type:participate|spectate}", mw.CheckAuthMiddleware(eh.SetUserStatusByEventID)).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/events/{eid:[0-9]+}/participate/{uid:[0-9]+}/{type:approve|reject}", mw.CheckAuthMiddleware(eh.ApproveRejectUserParticipateInEvent)).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/events/{id:[0-9]+}/chat_link", mw.CheckAuthMiddleware(eh.GetEventChatLink)).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc("/events/{id:[0-9]+}/leave", mw.CheckAuthMiddleware(eh.LeaveEvent)).Methods(http.MethodPost, http.MethodOptions)
 
 }
 
@@ -535,4 +536,51 @@ func (eh *EventsHandler) GetEventChatLink(w http.ResponseWriter, r *http.Request
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(body)
+}
+
+// LeaveEvent godoc
+// @Summary      leave event
+// @Description  Handler for leaving event
+// @Tags         Events
+// @Accept       json
+// @Produce      json
+// @Param        id path int64 true "Event ID"
+// @Success      200
+// @Failure      400  {object}  utils.Error
+// @Failure      401
+// @Failure      404  {object}  utils.Error
+// @Failure      500  {object}  utils.Error
+// @Router       /events/{id}/leave [post]
+func (eh *EventsHandler) LeaveEvent(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	clubID, _ := strconv.ParseUint(vars["id"], 10, 64)
+
+	userID, ok := r.Context().Value("userID").(uint64)
+	if !ok {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write(utils.JSONError(&utils.Error{Message: "you're unauthorized"}))
+		return
+	}
+
+	userClubSatus, err := eh.clubUcase.GetUserStatusInClub(int64(clubID), int64(userID))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	if userClubSatus == nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(utils.JSONError(&utils.Error{Message: "user has inappropriate status"}))
+		return
+	}
+
+	err = eh.eventsUcase.DeleteUserFromEvent(int64(clubID), int64(userID))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }

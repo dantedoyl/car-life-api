@@ -333,3 +333,12 @@ func (cr *ClubsRepository) SetClubChatID(clubID int64, chatID int64) error {
 	}
 	return nil
 }
+
+func (cr *ClubsRepository) DeleteUserFromClub(clubID int64, userID int64) error {
+	_, err := cr.dbConn.Exec(`DELETE FROM users_clubs WHERE club_id = $1 and user_id = $2`, clubID, userID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+

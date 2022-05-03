@@ -228,3 +228,11 @@ func (er *EventsRepository) SetEventChatID(eventID int64, chatID int64) error {
 	}
 	return nil
 }
+
+func (er *EventsRepository) DeleteUserFromEvent(eventID int64, userID int64) error {
+	_, err := er.dbConn.Exec(`DELETE FROM users_events WHERE event_id = $1 and user_id = $2`, eventID, userID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
