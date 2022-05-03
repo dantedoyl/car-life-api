@@ -180,6 +180,8 @@ func (eh *EventsHandler) GetEvents(w http.ResponseWriter, r *http.Request) {
 			AvatarUrl: event.AvatarUrl,
 			Latitude:  event.Latitude,
 			Longitude: event.Longitude,
+			ParticipantsCount: event.ParticipantsCount,
+			SpectatorsCount: event.SpectatorsCount,
 		})
 	}
 

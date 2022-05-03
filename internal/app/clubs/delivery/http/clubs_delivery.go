@@ -158,6 +158,7 @@ func (ch *ClubsHandler) GetClubs(w http.ResponseWriter, r *http.Request) {
 			AvatarUrl:         club.AvatarUrl,
 			Tags:              club.Tags,
 			ParticipantsCount: club.ParticipantsCount,
+			SubscribersCount: club.SubscribersCount,
 		})
 	}
 

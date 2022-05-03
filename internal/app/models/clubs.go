@@ -25,6 +25,7 @@ type ClubCard struct {
 	AvatarUrl         string   `json:"avatar" binding:"required"`
 	Tags              []string `json:"tags" binding:"required"`
 	ParticipantsCount int      `json:"participants_count" binding:"required"`
+	SubscribersCount int          `json:"subscribers_count" binding:"required"`
 }
 
 type ClubQuery struct {
