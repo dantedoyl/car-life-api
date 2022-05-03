@@ -21,8 +21,8 @@ func NewProductRepository(conn *sql.DB) events.IEventsRepository {
 func (er *EventsRepository) InsertEvent(event *models.Event) error {
 	err := er.dbConn.QueryRow(
 		`INSERT INTO events
-                (name, club_id, creator_id, description, event_date, latitude, longitude)
-                VALUES ($1, $2, $3, $4, $5, $6, $7) 
+                (name, club_id, creator_id, description, event_date, latitude, longitude, participants_count)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, 1) 
                 RETURNING id`,
 		event.Name,
 		event.Club.ID,
@@ -49,9 +49,9 @@ func (er *EventsRepository) InsertEvent(event *models.Event) error {
 func (er *EventsRepository) GetEventByID(id int64, userID uint64) (*models.Event, error) {
 	event := &models.Event{}
 	err := er.dbConn.QueryRow(
-		`SELECT  id, name, club_id, creator_id, description, event_date, latitude, longitude, avatar from events
+		`SELECT  id, name, club_id, creator_id, description, event_date, latitude, longitude, avatar, participants_count, spectators_count from events
 				WHERE id = $1`, id).Scan(&event.ID, &event.Name, &event.Club.ID, &event.CreatorID, &event.Description, &event.EventDate,
-		&event.Latitude, &event.Longitude, &event.AvatarUrl)
+		&event.Latitude, &event.Longitude, &event.AvatarUrl, &event.ParticipantsCount, &event.SpectatorsCount)
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +85,7 @@ func (er *EventsRepository) GetEvents(idGt *uint64, idLte *uint64, limit *uint64
 	var events []*models.Event
 	ind := 1
 	var values []interface{}
-	q := `SELECT id, name, club_id, description, event_date, latitude, longitude, avatar from events WHERE true `
+	q := `SELECT id, name, club_id, description, event_date, latitude, longitude, avatar, participants_count, spectators_count from events WHERE true `
 
 	if idGt != nil {
 		q += ` AND id > $` + strconv.Itoa(ind)
@@ -132,7 +132,7 @@ func (er *EventsRepository) GetEvents(idGt *uint64, idLte *uint64, limit *uint64
 	for rows.Next() {
 		event := &models.Event{}
 		err = rows.Scan(&event.ID, &event.Name, &event.Club.ID, &event.Description, &event.EventDate,
-			&event.Latitude, &event.Longitude, &event.AvatarUrl)
+			&event.Latitude, &event.Longitude, &event.AvatarUrl, &event.ParticipantsCount, &event.SpectatorsCount)
 		if err != nil {
 			return nil, err
 		}
@@ -145,9 +145,9 @@ func (er *EventsRepository) UpdateEvent(event *models.Event) (*models.Event, err
 	err := er.dbConn.QueryRow(
 		`UPDATE events SET name = $1, description = $2, event_date = $3, latitude = $4, longitude = $5, avatar = $6
 				WHERE id = $7
-				RETURNING id, name, club_id, description, event_date, latitude, longitude, avatar`,
+				RETURNING id, name, club_id, description, event_date, latitude, longitude, avatar, participants_count, spectators_count`,
 		event.Name, event.Description, event.EventDate, event.Latitude, event.Longitude, event.AvatarUrl, event.ID).Scan(&event.ID, &event.Name, &event.Club.ID, &event.Description, &event.EventDate,
-		&event.Latitude, &event.Longitude, &event.AvatarUrl)
+		&event.Latitude, &event.Longitude, &event.AvatarUrl, &event.ParticipantsCount, &event.SpectatorsCount)
 	if err != nil {
 		return nil, err
 	}
@@ -206,6 +206,20 @@ func (er *EventsRepository) SetUserStatusByEventID(eventID int64, userID int64, 
 		return err
 	}
 
+	var query string
+	switch status {
+	case "spectator":
+		query = `UPDATE events SET spectators_count = spectators_count + 1 WHERE id = $1`
+	case "participant":
+		query = `UPDATE events SET participants_count = participants_count + 1 WHERE id = $1`
+	case "participant_request":
+		return nil
+	}
+	_, err = er.dbConn.Exec(query, eventID)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -230,9 +244,25 @@ func (er *EventsRepository) SetEventChatID(eventID int64, chatID int64) error {
 }
 
 func (er *EventsRepository) DeleteUserFromEvent(eventID int64, userID int64) error {
-	_, err := er.dbConn.Exec(`DELETE FROM users_events WHERE event_id = $1 and user_id = $2`, eventID, userID)
+	var status string
+	err := er.dbConn.QueryRow(`DELETE FROM users_events WHERE event_id = $1 and user_id = $2 RETURNING status`, eventID, userID).Scan(&status)
 	if err != nil {
 		return err
 	}
+
+	var query string
+	switch status {
+	case "spectator":
+		query = `UPDATE events SET spectators_count = spectators_count + 1 WHERE id = $1`
+	case "participant":
+		query = `UPDATE events SET participants_count = participants_count + 1 WHERE id = $1`
+	case "participant_request":
+		return nil
+	}
+	_, err = er.dbConn.Exec(query, eventID)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

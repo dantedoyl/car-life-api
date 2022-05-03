@@ -14,6 +14,7 @@ type Event struct {
 	AvatarUrl   string    `json:"avatar" binding:"required"`
 	ParticipantsCount int         `json:"participants_count" binding:"required"`
 	UserStatus string `json:"user_status" binding:"required"`
+	SpectatorsCount int `json:"spectators_count" binding:"required"`
 }
 
 type EventCard struct {
@@ -23,6 +24,8 @@ type EventCard struct {
 	AvatarUrl string    `json:"avatar" binding:"required"`
 	Latitude    float32   `json:"latitude" binding:"required"`
 	Longitude   float32   `json:"longitude" binding:"required"`
+	ParticipantsCount int         `json:"participants_count" binding:"required"`
+	SpectatorsCount int `json:"spectators_count" binding:"required"`
 }
 
 type EventQuery struct {

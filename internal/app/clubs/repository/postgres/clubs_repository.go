@@ -21,8 +21,8 @@ func NewClubRepository(conn *sql.DB) clubs.IClubsRepository {
 func (cr *ClubsRepository) InsertClub(club *models.Club) error {
 	err := cr.dbConn.QueryRow(
 		`INSERT INTO clubs
-                (name, description, tags)
-                VALUES ($1, $2, $3) 
+                (name, description, tags, participants_count)
+                VALUES ($1, $2, $3, 1) 
                 RETURNING id`,
 		club.Name,
 		club.Description,
@@ -52,8 +52,8 @@ func (cr *ClubsRepository) InsertClub(club *models.Club) error {
 func (cr *ClubsRepository) GetClubByID(id int64, userID uint64) (*models.Club, error) {
 	club := &models.Club{}
 	err := cr.dbConn.QueryRow(
-		`SELECT  c.id, c.name, c.description, c.tags, c.events_count, c.participants_count, c.avatar, uc.user_id as owner_id from clubs as c inner join users_clubs as uc on uc.club_id = c.id
-				WHERE c.id = $1 and uc.status = 'admin'`, id).Scan(&club.ID, &club.Name, &club.Description, pq.Array(&club.Tags), &club.EventsCount, &club.ParticipantsCount, &club.AvatarUrl, &club.OwnerID)
+		`SELECT  c.id, c.name, c.description, c.tags, c.events_count, c.participants_count, c.avatar, uc.user_id as owner_id, c.participants_count, c.subscribers_count from clubs as c inner join users_clubs as uc on uc.club_id = c.id
+				WHERE c.id = $1 and uc.status = 'admin'`, id).Scan(&club.ID, &club.Name, &club.Description, pq.Array(&club.Tags), &club.EventsCount, &club.ParticipantsCount, &club.AvatarUrl, &club.OwnerID, &club.ParticipantsCount, &club.SubscribersCount)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +80,7 @@ func (cr *ClubsRepository) GetClubs(idGt *uint64, idLte *uint64, limit *uint64, 
 	var clubs []*models.Club
 	ind := 1
 	var values []interface{}
-	q := `SELECT  id, name, description, tags, events_count, participants_count, avatar from clubs WHERE true `
+	q := `SELECT  id, name, description, tags, events_count, participants_count, avatar, participants_count, subscribers_count from clubs WHERE true `
 
 	if idGt != nil {
 		q += ` AND id > $` + strconv.Itoa(ind)
@@ -118,7 +118,7 @@ func (cr *ClubsRepository) GetClubs(idGt *uint64, idLte *uint64, limit *uint64, 
 
 	for rows.Next() {
 		club := &models.Club{}
-		err = rows.Scan(&club.ID, &club.Name, &club.Description, pq.Array(&club.Tags), &club.EventsCount, &club.ParticipantsCount, &club.AvatarUrl)
+		err = rows.Scan(&club.ID, &club.Name, &club.Description, pq.Array(&club.Tags), &club.EventsCount, &club.ParticipantsCount, &club.AvatarUrl, &club.ParticipantsCount, &club.SubscribersCount)
 		if err != nil {
 			return nil, err
 		}
@@ -250,7 +250,7 @@ func (cr *ClubsRepository) GetClubsEvents(club_id int64, idGt *uint64, idLte *ui
 	ind := 2
 	var values []interface{}
 	values = append(values, club_id)
-	q := `SELECT e.id, e.name, e.event_date, e.latitude, e.longitude, e.avatar from events as e WHERE e.club_id=$1`
+	q := `SELECT e.id, e.name, e.event_date, e.latitude, e.longitude, e.avatar, e.participants_count, e.spectators_count from events as e WHERE e.club_id=$1`
 
 	if idGt != nil {
 		q += ` AND e.id > $` + strconv.Itoa(ind)
@@ -280,7 +280,7 @@ func (cr *ClubsRepository) GetClubsEvents(club_id int64, idGt *uint64, idLte *ui
 	for rows.Next() {
 		event := &models.EventCard{}
 		err = rows.Scan(&event.ID, &event.Name, &event.EventDate,
-			&event.Latitude, &event.Longitude, &event.AvatarUrl)
+			&event.Latitude, &event.Longitude, &event.AvatarUrl, &event.ParticipantsCount, &event.SpectatorsCount)
 		if err != nil {
 			return nil, err
 		}
@@ -294,6 +294,20 @@ func (cr *ClubsRepository) SetUserStatusByClubID(clubID int64, userID int64, sta
 		`INSERT INTO users_clubs (club_id, user_id, status) VALUES ($1, $2, $3)
 				ON CONFLICT (user_id, club_id) DO UPDATE
 			SET status = $3`, clubID, userID, status)
+	if err != nil {
+		return err
+	}
+
+	var query string
+	switch status {
+	case "subscriber":
+		query = `UPDATE clubs SET subscribers_count = subscribers_count + 1 WHERE id = $1`
+	case "participant":
+		query = `UPDATE clubs SET participants_count = participants_count + 1 WHERE id = $1`
+	case "participant_request":
+		return nil
+	}
+	_, err = cr.dbConn.Exec(query, clubID)
 	if err != nil {
 		return err
 	}
@@ -335,7 +349,21 @@ func (cr *ClubsRepository) SetClubChatID(clubID int64, chatID int64) error {
 }
 
 func (cr *ClubsRepository) DeleteUserFromClub(clubID int64, userID int64) error {
-	_, err := cr.dbConn.Exec(`DELETE FROM users_clubs WHERE club_id = $1 and user_id = $2`, clubID, userID)
+	var status string
+	err := cr.dbConn.QueryRow(`DELETE FROM users_clubs WHERE club_id = $1 and user_id = $2 RETURNING status`, clubID, userID).Scan(&status)
+	if err != nil {
+		return err
+	}
+	var query string
+	switch status {
+	case "subscriber":
+		query = `UPDATE clubs SET subscribers_count = subscribers_count + 1 WHERE id = $1`
+	case "participant":
+		query = `UPDATE clubs SET participants_count = participants_count + 1 WHERE id = $1`
+	case "participant_request":
+		return nil
+	}
+	_, err = cr.dbConn.Exec(query, clubID)
 	if err != nil {
 		return err
 	}

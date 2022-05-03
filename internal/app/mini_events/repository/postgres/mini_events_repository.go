@@ -71,7 +71,7 @@ func (mr *MiniEventsRepository) GetMiniEvents(idGt *uint64, idLte *uint64, limit
 	q := `SELECT me.id, me.type_id, met.public_name, met.public_description, me.user_id, u.name, u.surname, u.avatar, me.description, me.created_at, me.ended_at, me.latitude, me.longitude from mini_events as me 
 			left join mini_event_type as met on me.type_id = met.id 
 			left join users as u on me.user_id = u.vk_id
-			WHERE true `
+			WHERE me.ended_at>=now() `
 
 	if idGt != nil {
 		q += ` AND me.id > $` + strconv.Itoa(ind)

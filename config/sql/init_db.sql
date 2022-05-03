@@ -17,7 +17,9 @@ create table if not exists events
     latitude    float                 DEFAULT 55.753808,
     longitude   float                 DEFAULT 37.620017,
     avatar      varchar(512) NOT NULL DEFAULT '/img/events/default.jpeg',
-    chat_id     bigint
+    chat_id     bigint,
+    spectators_count int default 0,
+    participants_count int default 0
 );
 
 create table if not exists clubs
@@ -28,6 +30,7 @@ create table if not exists clubs
     tags               text[],
     events_count       int                   default 0,
     participants_count int                   default 0,
+    subscribers_count int default 0,
     created_at         timestamp             default CURRENT_TIMESTAMP,
     avatar             varchar(512) NOT NULL DEFAULT '/img/clubs/default.jpeg',
     chat_id            bigint

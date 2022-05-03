@@ -8,6 +8,7 @@ type Club struct {
 	Tags              []string    `json:"tags" binding:"required"`
 	EventsCount       int         `json:"events_count" binding:"required"`
 	ParticipantsCount int         `json:"participants_count" binding:"required"`
+	SubscribersCount int          `json:"subscribers_count" binding:"required"`
 	OwnerID           uint64      `json:"owner_id" binding:"required"`
 	UserStatus string `json:"user_status" binding:"required"`
 }
