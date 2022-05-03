@@ -562,20 +562,7 @@ func (eh *EventsHandler) LeaveEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userClubSatus, err := eh.clubUcase.GetUserStatusInClub(int64(clubID), int64(userID))
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
-		return
-	}
-
-	if userClubSatus == nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write(utils.JSONError(&utils.Error{Message: "user has inappropriate status"}))
-		return
-	}
-
-	err = eh.eventsUcase.DeleteUserFromEvent(int64(clubID), int64(userID))
+	err := eh.eventsUcase.DeleteUserFromEvent(int64(clubID), int64(userID))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
