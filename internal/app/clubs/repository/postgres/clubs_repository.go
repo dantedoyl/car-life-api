@@ -95,10 +95,10 @@ func (cr *ClubsRepository) GetClubs(idGt *uint64, idLte *uint64, limit *uint64, 
 	}
 
 	if query != nil {
-		q += ` AND (name like '%' || $` + strconv.Itoa(ind) + ` || '%' OR EXISTS (
+		q += ` AND (lower(name) like '%' || $` + strconv.Itoa(ind) + ` || '%' OR EXISTS (
     			SELECT 
 				FROM   unnest(tags) elem
-   				 WHERE  elem LIKE '%' || $` + strconv.Itoa(ind) + ` || '%'))`
+   				 WHERE  elem LIKE '%' || lower($` + strconv.Itoa(ind) + `) || '%'))`
 		values = append(values, query)
 		ind++
 	}

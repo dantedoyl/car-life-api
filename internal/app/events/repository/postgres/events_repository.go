@@ -100,7 +100,7 @@ func (er *EventsRepository) GetEvents(idGt *uint64, idLte *uint64, limit *uint64
 	}
 
 	if query != nil {
-		q += ` AND name like '%' || $` + strconv.Itoa(ind) + ` || '%'`
+		q += ` AND lower(name) like '%' || lower($` + strconv.Itoa(ind) + `) || '%'`
 		values = append(values, query)
 		ind++
 	}
