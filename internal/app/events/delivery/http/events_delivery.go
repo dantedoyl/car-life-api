@@ -408,11 +408,9 @@ func (eh *EventsHandler) SetUserStatusByEventID(w http.ResponseWriter, r *http.R
 			return
 		}
 
-		eventUrl := fmt.Sprintf("https://vk.com/app8099557#main/event/%d", eventID)
-		userUrl := fmt.Sprintf("https://vk.com/app8099557#main/user/%d", userID)
-
+		eventUrl := "https://vk.com/app8099557"
 		err = eh.vk.CreatMessage(int(event.CreatorID),
-			fmt.Sprintf("Привет! Новый участник хочет поучаствовать в %s: %s\nСсылка на профиль: %s", event.Name, eventUrl, userUrl),
+			fmt.Sprintf("Привет! Новый участник хочет поучаствовать в %s: %s", event.Name, eventUrl),
 		)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -466,7 +464,7 @@ func (eh *EventsHandler) ApproveRejectUserParticipateInEvent(w http.ResponseWrit
 		return
 	}
 
-	eventUrl := fmt.Sprintf("https://vk.com/app8099557#main/event/%d", eventID)
+	eventUrl := "https://vk.com/app8099557"
 
 	msg := fmt.Sprintf("Привет! Администратор принял вас в %s: %s\n", event.Name, eventUrl)
 	if decision == "reject" {

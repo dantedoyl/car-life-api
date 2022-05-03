@@ -556,11 +556,9 @@ func (ch *ClubsHandler) SetUserStatusByClubID(w http.ResponseWriter, r *http.Req
 			return
 		}
 
-		clubUrl := fmt.Sprintf("https://vk.com/app8099557#main/club/%d", clubID)
-		userUrl := fmt.Sprintf("https://vk.com/app8099557#main/user/%d", userID)
-
+		clubUrl := "https://vk.com/app8099557"
 		err = ch.vk.CreatMessage(int(club.OwnerID),
-			fmt.Sprintf("Привет! Новый пользователь хочет поучаствовать в %s: %s\nСсылка на профиль: %s", club.Name, clubUrl, userUrl),
+			fmt.Sprintf("Привет! Новый пользователь хочет поучаствовать в %s: %s\n", club.Name, clubUrl),
 		)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -627,7 +625,7 @@ func (ch *ClubsHandler) ApproveRejectUserParticipateInClub(w http.ResponseWriter
 		return
 	}
 
-	clubUrl := fmt.Sprintf("https://vk.com/app8099557#main/club/%d", clubID)
+	clubUrl := "https://vk.com/app8099557"
 
 	msg := fmt.Sprintf("Привет! Администратор принял вас в %s: %s\n", club.Name, clubUrl)
 	if decision == "reject" {
