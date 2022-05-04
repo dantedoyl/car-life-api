@@ -79,6 +79,8 @@ definitions:
         type: integer
       participants_count:
         type: integer
+      subscribers_count:
+        type: integer
       tags:
         items:
           type: string
@@ -93,6 +95,7 @@ definitions:
     - name
     - owner_id
     - participants_count
+    - subscribers_count
     - tags
     - user_status
     type: object
@@ -106,6 +109,8 @@ definitions:
         type: string
       participants_count:
         type: integer
+      subscribers_count:
+        type: integer
       tags:
         items:
           type: string
@@ -115,6 +120,7 @@ definitions:
     - id
     - name
     - participants_count
+    - subscribers_count
     - tags
     type: object
   models.CreateClubRequest:
@@ -208,6 +214,8 @@ definitions:
         type: string
       participants_count:
         type: integer
+      spectators_count:
+        type: integer
       user_status:
         type: string
     required:
@@ -221,6 +229,7 @@ definitions:
     - longitude
     - name
     - participants_count
+    - spectators_count
     - user_status
     type: object
   models.EventCard:
@@ -237,6 +246,10 @@ definitions:
         type: number
       name:
         type: string
+      participants_count:
+        type: integer
+      spectators_count:
+        type: integer
     required:
     - avatar
     - event_date
@@ -244,6 +257,8 @@ definitions:
     - latitude
     - longitude
     - name
+    - participants_count
+    - spectators_count
     type: object
   models.EventPost:
     properties:

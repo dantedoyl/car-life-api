@@ -2486,6 +2486,7 @@
                 "name",
                 "owner_id",
                 "participants_count",
+                "subscribers_count",
                 "tags",
                 "user_status"
             ],
@@ -2511,6 +2512,9 @@
                 "participants_count": {
                     "type": "integer"
                 },
+                "subscribers_count": {
+                    "type": "integer"
+                },
                 "tags": {
                     "type": "array",
                     "items": {
@@ -2529,6 +2533,7 @@
                 "id",
                 "name",
                 "participants_count",
+                "subscribers_count",
                 "tags"
             ],
             "properties": {
@@ -2542,6 +2547,9 @@
                     "type": "string"
                 },
                 "participants_count": {
+                    "type": "integer"
+                },
+                "subscribers_count": {
                     "type": "integer"
                 },
                 "tags": {
@@ -2664,6 +2672,7 @@
                 "longitude",
                 "name",
                 "participants_count",
+                "spectators_count",
                 "user_status"
             ],
             "properties": {
@@ -2697,6 +2706,9 @@
                 "participants_count": {
                     "type": "integer"
                 },
+                "spectators_count": {
+                    "type": "integer"
+                },
                 "user_status": {
                     "type": "string"
                 }
@@ -2710,7 +2722,9 @@
                 "id",
                 "latitude",
                 "longitude",
-                "name"
+                "name",
+                "participants_count",
+                "spectators_count"
             ],
             "properties": {
                 "avatar": {
@@ -2730,6 +2744,12 @@
                 },
                 "name": {
                     "type": "string"
+                },
+                "participants_count": {
+                    "type": "integer"
+                },
+                "spectators_count": {
+                    "type": "integer"
                 }
             }
         },

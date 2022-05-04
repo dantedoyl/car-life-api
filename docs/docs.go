@@ -2493,6 +2493,7 @@ const docTemplate = `{
                 "name",
                 "owner_id",
                 "participants_count",
+                "subscribers_count",
                 "tags",
                 "user_status"
             ],
@@ -2518,6 +2519,9 @@ const docTemplate = `{
                 "participants_count": {
                     "type": "integer"
                 },
+                "subscribers_count": {
+                    "type": "integer"
+                },
                 "tags": {
                     "type": "array",
                     "items": {
@@ -2536,6 +2540,7 @@ const docTemplate = `{
                 "id",
                 "name",
                 "participants_count",
+                "subscribers_count",
                 "tags"
             ],
             "properties": {
@@ -2549,6 +2554,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "participants_count": {
+                    "type": "integer"
+                },
+                "subscribers_count": {
                     "type": "integer"
                 },
                 "tags": {
@@ -2671,6 +2679,7 @@ const docTemplate = `{
                 "longitude",
                 "name",
                 "participants_count",
+                "spectators_count",
                 "user_status"
             ],
             "properties": {
@@ -2704,6 +2713,9 @@ const docTemplate = `{
                 "participants_count": {
                     "type": "integer"
                 },
+                "spectators_count": {
+                    "type": "integer"
+                },
                 "user_status": {
                     "type": "string"
                 }
@@ -2717,7 +2729,9 @@ const docTemplate = `{
                 "id",
                 "latitude",
                 "longitude",
-                "name"
+                "name",
+                "participants_count",
+                "spectators_count"
             ],
             "properties": {
                 "avatar": {
@@ -2737,6 +2751,12 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "participants_count": {
+                    "type": "integer"
+                },
+                "spectators_count": {
+                    "type": "integer"
                 }
             }
         },
