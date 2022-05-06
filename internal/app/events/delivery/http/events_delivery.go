@@ -140,7 +140,6 @@ func (eh *EventsHandler) CreateEvent(w http.ResponseWriter, r *http.Request) {
 // @Param        IdLte query integer false "IdLte"
 // @Param        Limit query integer false "Limit"
 // @Param        Query query string false "Query"
-// @Param        OnlyActual query boolean false "OnlyActual"
 // @Param        UpperRightLatitude query number false "UpperRightLatitude"
 // @Param        UpperRightLongitude query number false "UpperRightLongitude"
 // @Param        DownLeftLatitude query number false "DownLeftLatitude"
@@ -161,7 +160,7 @@ func (eh *EventsHandler) GetEvents(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	events, err := eh.eventsUcase.GetEvents(query.IdGt, query.IdLte, query.Limit, query.Query, query.OnlyActual, query.DownLeftLongitude, query.DownLeftLatitude, query.UpperRightLongitude, query.UpperRightLatitude)
+	events, err := eh.eventsUcase.GetEvents(query.IdGt, query.IdLte, query.Limit, query.Query, query.DownLeftLongitude, query.DownLeftLatitude, query.UpperRightLongitude, query.UpperRightLatitude)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
@@ -174,14 +173,14 @@ func (eh *EventsHandler) GetEvents(w http.ResponseWriter, r *http.Request) {
 	eventCards := make([]models.EventCard, 0, len(events))
 	for _, event := range events {
 		eventCards = append(eventCards, models.EventCard{
-			ID:        event.ID,
-			Name:      event.Name,
-			EventDate: event.EventDate,
-			AvatarUrl: event.AvatarUrl,
-			Latitude:  event.Latitude,
-			Longitude: event.Longitude,
+			ID:                event.ID,
+			Name:              event.Name,
+			EventDate:         event.EventDate,
+			AvatarUrl:         event.AvatarUrl,
+			Latitude:          event.Latitude,
+			Longitude:         event.Longitude,
 			ParticipantsCount: event.ParticipantsCount,
-			SpectatorsCount: event.SpectatorsCount,
+			SpectatorsCount:   event.SpectatorsCount,
 		})
 	}
 

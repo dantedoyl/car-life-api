@@ -1071,10 +1071,6 @@ paths:
         in: query
         name: Query
         type: string
-      - description: OnlyActual
-        in: query
-        name: OnlyActual
-        type: boolean
       - description: UpperRightLatitude
         in: query
         name: UpperRightLatitude

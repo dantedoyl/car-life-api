@@ -81,11 +81,12 @@ func (er *EventsRepository) GetEventByID(id int64, userID uint64) (*models.Event
 	return event, nil
 }
 
-func (er *EventsRepository) GetEvents(idGt *uint64, idLte *uint64, limit *uint64, query *string, onlyActual bool, downLeftLongitude *float32, downLeftLatitude *float32, upperRightLongitude *float32, upperRightLatitude *float32) ([]*models.Event, error) {
+func (er *EventsRepository) GetEvents(idGt *uint64, idLte *uint64, limit *uint64, query *string, downLeftLongitude *float32, downLeftLatitude *float32, upperRightLongitude *float32, upperRightLatitude *float32) ([]*models.Event, error) {
 	var events []*models.Event
 	ind := 1
 	var values []interface{}
-	q := `SELECT id, name, club_id, description, event_date, latitude, longitude, avatar, participants_count, spectators_count from events WHERE true `
+	q := `SELECT id, name, club_id, description, event_date, latitude, longitude, avatar, participants_count, spectators_count from events
+        	WHERE event_date >= now() `
 
 	if idGt != nil {
 		q += ` AND id > $` + strconv.Itoa(ind)
@@ -105,14 +106,10 @@ func (er *EventsRepository) GetEvents(idGt *uint64, idLte *uint64, limit *uint64
 		ind++
 	}
 
-	if onlyActual {
-		q += ` AND event_date >= now()`
-	}
-
 	if downLeftLongitude != nil && downLeftLatitude != nil && upperRightLongitude != nil && upperRightLatitude != nil {
-		q += ` AND latitude >= $`+ strconv.Itoa(ind) + ` AND latitude <= $`+ strconv.Itoa(ind+1) +
-			` AND longitude >= $`+ strconv.Itoa(ind + 2) + ` AND longitude <= $`+ strconv.Itoa(ind + 3)
-		values =append(values, downLeftLatitude, upperRightLatitude, downLeftLongitude, upperRightLongitude)
+		q += ` AND latitude >= $` + strconv.Itoa(ind) + ` AND latitude <= $` + strconv.Itoa(ind+1) +
+			` AND longitude >= $` + strconv.Itoa(ind+2) + ` AND longitude <= $` + strconv.Itoa(ind+3)
+		values = append(values, downLeftLatitude, upperRightLatitude, downLeftLongitude, upperRightLongitude)
 		ind = ind + 4
 	}
 

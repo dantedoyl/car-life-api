@@ -25,8 +25,8 @@ func (eu *EventsUsecase) GetEventByID(id uint64, userID uint64) (*models.Event, 
 	return eu.eventsRepo.GetEventByID(int64(id), userID)
 }
 
-func (eu *EventsUsecase) GetEvents(idGt *uint64, idLte *uint64, limit *uint64, query *string, onlyActual bool, downLeftLongitude *float32, downLeftLatitude *float32, upperRightLongitude *float32, upperRightLatitude *float32) ([]*models.Event, error) {
-	return eu.eventsRepo.GetEvents(idGt, idLte, limit, query, onlyActual, downLeftLongitude, downLeftLatitude, upperRightLongitude, upperRightLatitude)
+func (eu *EventsUsecase) GetEvents(idGt *uint64, idLte *uint64, limit *uint64, query *string, downLeftLongitude *float32, downLeftLatitude *float32, upperRightLongitude *float32, upperRightLatitude *float32) ([]*models.Event, error) {
+	return eu.eventsRepo.GetEvents(idGt, idLte, limit, query, downLeftLongitude, downLeftLatitude, upperRightLongitude, upperRightLatitude)
 }
 
 func (eu *EventsUsecase) UpdateAvatar(eventID int64, fileHeader *multipart.FileHeader) (*models.Event, error) {
@@ -59,7 +59,7 @@ func (eu *EventsUsecase) UpdateAvatar(eventID int64, fileHeader *multipart.FileH
 	return event, nil
 }
 
-func (eu *EventsUsecase)GetEventsUserByStatus(event_id int64, status string, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.UserCard, error) {
+func (eu *EventsUsecase) GetEventsUserByStatus(event_id int64, status string, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.UserCard, error) {
 	return eu.eventsRepo.GetEventsUserByStatus(event_id, status, idGt, idLte, limit)
 }
 
