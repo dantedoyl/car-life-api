@@ -1,9 +1,9 @@
 CREATE EXTENSION postgis;
 CREATE EXTENSION postgis_topology;
 
-
 -- GRANT ALL PRIVILEGES ON database car_life_api TO postgres;
 -- ALTER USER postgres WITH PASSWORD 'ysnpkoyapassword';
+
 
 CREATE TABLE IF NOT EXISTS clubs
 (
@@ -33,7 +33,10 @@ CREATE TABLE IF NOT EXISTS events
     avatar             VARCHAR(512) NOT NULL DEFAULT '/img/events/default.webp',
     chat_id            BIGINT,
     spectators_count   INT                   DEFAULT 0,
-    participants_count INT                   DEFAULT 0
+    participants_count INT                   DEFAULT 0,
+
+    FOREIGN KEY (club_id) REFERENCES clubs (id) ON DELETE CASCADE,
+    FOREIGN KEY (creator_id) REFERENCES users (vk_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS tags
@@ -66,7 +69,9 @@ CREATE TABLE IF NOT EXISTS cars
     body        TEXT,
     engine      TEXT,
     horse_power TEXT,
-    avatar      VARCHAR(512) NOT NULL DEFAULT '/img/cars/default.webp'
+    avatar      VARCHAR(512) NOT NULL DEFAULT '/img/cars/default.webp',
+
+    FOREIGN KEY (owner_id) REFERENCES users (vk_id) ON DELETE CASCADE
 );
 
 CREATE TYPE user_club_status AS ENUM ('admin', 'participant', 'participant_request', 'subscriber', 'moderator');
@@ -76,7 +81,9 @@ CREATE TABLE IF NOT EXISTS users_clubs
     club_id BIGINT,
     status  user_club_status,
 
-    PRIMARY KEY (user_id, club_id)
+    PRIMARY KEY (user_id, club_id),
+    FOREIGN KEY (user_id) REFERENCES users (vk_id) ON DELETE CASCADE,
+    FOREIGN KEY (club_id) REFERENCES clubs (id) ON DELETE CASCADE
 );
 
 CREATE TYPE user_event_status AS ENUM ('admin', 'participant', 'participant_request', 'spectator');
@@ -86,7 +93,9 @@ CREATE TABLE IF NOT EXISTS users_events
     event_id BIGINT,
     status   user_event_status,
 
-    PRIMARY KEY (user_id, event_id)
+    PRIMARY KEY (user_id, event_id),
+    FOREIGN KEY (user_id) REFERENCES users (vk_id) ON DELETE CASCADE,
+    FOREIGN KEY (event_id) REFERENCES events (id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS mini_event_type
@@ -105,7 +114,10 @@ CREATE TABLE IF NOT EXISTS mini_events
     created_at  TIMESTAMP,
     ended_at    TIMESTAMP,
     latitude    FLOAT DEFAULT 55.753808,
-    longitude   FLOAT DEFAULT 37.620017
+    longitude   FLOAT DEFAULT 37.620017,
+
+    FOREIGN KEY (type_id) REFERENCES mini_event_type (id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users (vk_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS events_posts
@@ -114,14 +126,19 @@ CREATE TABLE IF NOT EXISTS events_posts
     text       TEXT   NULL,
     user_id    BIGINT NOT NULL,
     event_id   BIGINT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (event_id) REFERENCES events (id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users (vk_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS events_posts_attachments
 (
     id      BIGSERIAL PRIMARY KEY,
     post_id BIGINT       NOT NULL,
-    url     VARCHAR(512) NOT NULL DEFAULT '/img/events-posts/default.webp'
+    url     VARCHAR(512) NOT NULL DEFAULT '/img/events-posts/default.webp',
+
+    FOREIGN KEY (post_id) REFERENCES events_posts (id) ON DELETE CASCADE
 );
 
 CREATE TYPE target_type AS ENUM ('club', 'event', 'post', 'car', 'user');
@@ -131,7 +148,9 @@ CREATE TABLE IF NOT EXISTS complaints
     target_type target_type NOT NULL,
     target_id   BIGINT      NOT NULL,
     user_id     BIGINT      NOT NULL,
-    text        TEXT        NULL
+    text        TEXT        NULL,
+
+    FOREIGN KEY (user_id) REFERENCES users (vk_id) ON DELETE CASCADE
 );
 
 INSERT INTO mini_event_type (public_name, public_description)
