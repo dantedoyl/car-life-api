@@ -1138,7 +1138,7 @@ paths:
       parameters:
       - description: Post ID
         in: path
-        name: id
+        name: post_id
         required: true
         type: integer
       - description: Event

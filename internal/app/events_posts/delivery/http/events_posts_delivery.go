@@ -65,11 +65,11 @@ func (eph *EventsPostsHandler) CreateEventPost(w http.ResponseWriter, r *http.Re
 	}
 
 	eventsData := &models.EventPost{
-		Text:        event.Text,
-		User:        models.UserCard{
-			VKID:      userID,
+		Text: event.Text,
+		User: models.UserCard{
+			VKID: userID,
 		},
-		EventID:     eventID,
+		EventID: eventID,
 	}
 
 	err = eph.eventsUcase.CreateEventPost(eventsData)
@@ -219,7 +219,6 @@ func (eph *EventsPostsHandler) DeletePost(w http.ResponseWriter, r *http.Request
 	vars := mux.Vars(r)
 	postID, _ := strconv.ParseUint(vars["post_id"], 10, 64)
 
-
 	userID, ok := r.Context().Value("userID").(uint64)
 	if !ok {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -256,7 +255,7 @@ func (eph *EventsPostsHandler) DeletePost(w http.ResponseWriter, r *http.Request
 // @Tags         EventsPosts
 // @Accept       json
 // @Produce      json
-// @Param        id path int64 true "Post ID"
+// @Param        post_id path int64 true "Post ID"
 // @Param        body body models.ComplaintReq true "Event"
 // @Success      200
 // @Failure      400  {object}  utils.Error

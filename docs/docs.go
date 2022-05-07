@@ -1058,7 +1058,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "Post ID",
-                        "name": "id",
+                        "name": "post_id",
                         "in": "path",
                         "required": true
                     },
