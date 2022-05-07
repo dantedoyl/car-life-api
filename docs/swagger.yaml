@@ -75,8 +75,8 @@ definitions:
         type: integer
       name:
         type: string
-      owner_id:
-        type: integer
+      owner:
+        $ref: '#/definitions/models.UserCard'
       participants_count:
         type: integer
       subscribers_count:
@@ -93,7 +93,7 @@ definitions:
     - events_count
     - id
     - name
-    - owner_id
+    - owner
     - participants_count
     - subscribers_count
     - tags
@@ -122,6 +122,11 @@ definitions:
     - participants_count
     - subscribers_count
     - tags
+    type: object
+  models.ComplaintReq:
+    properties:
+      text:
+        type: string
     type: object
   models.CreateClubRequest:
     properties:
@@ -198,8 +203,8 @@ definitions:
         type: string
       club:
         $ref: '#/definitions/models.Club'
-      creator_id:
-        type: integer
+      creator:
+        $ref: '#/definitions/models.UserCard'
       description:
         type: string
       event_date:
@@ -221,7 +226,7 @@ definitions:
     required:
     - avatar
     - club
-    - creator_id
+    - creator
     - description
     - event_date
     - id
@@ -782,6 +787,82 @@ paths:
       summary: get club chat link
       tags:
       - Clubs
+  /clubs/{id}/complain:
+    post:
+      consumes:
+      - application/json
+      description: Handler for complaining club
+      parameters:
+      - description: Club ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Club
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.ComplaintReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: complain club
+      tags:
+      - Clubs
+  /clubs/{id}/delete:
+    post:
+      consumes:
+      - application/json
+      description: Handler for deleting club
+      parameters:
+      - description: Club ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: delete club
+      tags:
+      - Clubs
   /clubs/{id}/events:
     get:
       consumes:
@@ -1047,6 +1128,82 @@ paths:
           schema:
             $ref: '#/definitions/utils.Error'
       summary: create an event post
+      tags:
+      - EventsPosts
+  /event_posts/{post_id}/complain:
+    post:
+      consumes:
+      - application/json
+      description: Handler for complaining post
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Event
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.ComplaintReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: complain post
+      tags:
+      - EventsPosts
+  /event_posts/{post_id}/delete:
+    post:
+      consumes:
+      - application/json
+      description: Handler for deleting post
+      parameters:
+      - description: Post ID
+        in: path
+        name: post_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: delete post
       tags:
       - EventsPosts
   /events:
@@ -1321,6 +1478,82 @@ paths:
       summary: get event chat link
       tags:
       - Events
+  /events/{id}/complain:
+    post:
+      consumes:
+      - application/json
+      description: Handler for complaining event
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Event
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.ComplaintReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: complain event
+      tags:
+      - Events
+  /events/{id}/delete:
+    post:
+      consumes:
+      - application/json
+      description: Handler for deleting event
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: delete event
+      tags:
+      - Events
   /events/{id}/leave:
     post:
       consumes:
@@ -1458,6 +1691,82 @@ paths:
           schema:
             $ref: '#/definitions/utils.Error'
       summary: get car
+      tags:
+      - Users
+  /garage/{id}/complain:
+    post:
+      consumes:
+      - application/json
+      description: Handler for complaining car
+      parameters:
+      - description: Car ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Car
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.ComplaintReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: complain car
+      tags:
+      - Users
+  /garage/{id}/delete:
+    post:
+      consumes:
+      - application/json
+      description: Handler for deleting car
+      parameters:
+      - description: Car ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: delete car
       tags:
       - Users
   /garage/{id}/upload:
@@ -1863,6 +2172,47 @@ paths:
           schema:
             $ref: '#/definitions/utils.Error'
       summary: get clubs where user is in status
+      tags:
+      - Users
+  /user/{id}/complain:
+    post:
+      consumes:
+      - application/json
+      description: Handler for complaining user
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: User
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.ComplaintReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Error'
+      summary: complain user
       tags:
       - Users
   /user/{id}/events/{type}:
