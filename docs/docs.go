@@ -965,12 +965,6 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "type": "boolean",
-                        "description": "OnlyActual",
-                        "name": "OnlyActual",
-                        "in": "query"
-                    },
-                    {
                         "type": "number",
                         "description": "UpperRightLatitude",
                         "name": "UpperRightLatitude",
