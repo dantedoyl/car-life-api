@@ -29,12 +29,15 @@ func (uh *UsersHandler) Configure(r *mux.Router, mw *middleware.Middleware) {
 	r.HandleFunc("/me/update", mw.CheckAuthMiddleware(uh.UpdateUserProfile)).Methods(http.MethodPut, http.MethodOptions)
 	r.HandleFunc("/new_car", mw.CheckAuthMiddleware(uh.NewUserCar)).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/user/{id:[0-9]+}/garage", uh.UserGarage).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc("/user/{id:[0-9]+}/complain", mw.CheckAuthMiddleware(uh.ComplainUser)).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/user/{id:[0-9]+}/events/{type:admin|participant|spectator}", uh.UserEvents).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/user/{id:[0-9]+}/clubs/{type:admin|participant|subscriber}", uh.UserClubs).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/user/own_clubs", mw.CheckAuthMiddleware(uh.UserOwnClubs)).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/login", uh.Login).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/garage/{id:[0-9]+}/upload", uh.UploadAvatarHandler).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/garage/{id:[0-9]+}", uh.GetCarByID).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc("/garage/{id:[0-9]+}/delete", mw.CheckAuthMiddleware(uh.DeleteCar)).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/garage/{id:[0-9]+}/complain", mw.CheckAuthMiddleware(uh.ComplainCar)).Methods(http.MethodPost, http.MethodOptions)
 }
 
 // SignUp godoc
@@ -683,4 +686,146 @@ func (uh *UsersHandler) GetCarByID(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(body)
+}
+
+// DeleteCar godoc
+// @Summary      delete car
+// @Description  Handler for deleting car
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Param        id path int64 true "Car ID"
+// @Success      200
+// @Failure      400  {object}  utils.Error
+// @Failure      401  {object}  utils.Error
+// @Failure      404  {object}  utils.Error
+// @Failure      500  {object}  utils.Error
+// @Router       /garage/{id}/delete [post]
+func (uh *UsersHandler) DeleteCar(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	carID, _ := strconv.ParseUint(vars["id"], 10, 64)
+
+	userID, ok := r.Context().Value("userID").(uint64)
+	if !ok {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write(utils.JSONError(&utils.Error{Message: "you're unauthorized"}))
+		return
+	}
+
+	car, err := uh.usersUcase.SelectCarByID(int64(carID))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	if car.OwnerID != userID {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(utils.JSONError(&utils.Error{Message: "user has inappropriate status"}))
+		return
+	}
+
+	err = uh.usersUcase.DeleteCarByID(int64(carID))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+
+// ComplainUser godoc
+// @Summary      complain user
+// @Description  Handler for complaining user
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Param        id path int64 true "User ID"
+// @Param        body body models.ComplaintReq true "User"
+// @Success      200
+// @Failure      400  {object}  utils.Error
+// @Failure      401  {object}  utils.Error
+// @Failure      404  {object}  utils.Error
+// @Failure      500  {object}  utils.Error
+// @Router       /user/{id}/complain [post]
+func (uh *UsersHandler) ComplainUser(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	clubID, _ := strconv.ParseUint(vars["id"], 10, 64)
+
+	userID, ok := r.Context().Value("userID").(uint64)
+	if !ok {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write(utils.JSONError(&utils.Error{Message: "you're unauthorized"}))
+		return
+	}
+
+	req := &models.ComplaintReq{}
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(utils.JSONError(&utils.Error{Message: "can't unmarshal data"}))
+		return
+	}
+
+	err = uh.usersUcase.ComplainByID("user", models.Complaint{
+		UserID:   int64(userID),
+		Text:     req.Text,
+		TargetID: int64(clubID),
+	})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+// ComplainCar godoc
+// @Summary      complain car
+// @Description  Handler for complaining car
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Param        id path int64 true "Car ID"
+// @Param        body body models.ComplaintReq true "Car"
+// @Success      200
+// @Failure      400  {object}  utils.Error
+// @Failure      401  {object}  utils.Error
+// @Failure      404  {object}  utils.Error
+// @Failure      500  {object}  utils.Error
+// @Router       /garage/{id}/complain [post]
+func (uh *UsersHandler) ComplainCar(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	clubID, _ := strconv.ParseUint(vars["id"], 10, 64)
+
+	userID, ok := r.Context().Value("userID").(uint64)
+	if !ok {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write(utils.JSONError(&utils.Error{Message: "you're unauthorized"}))
+		return
+	}
+
+	req := &models.ComplaintReq{}
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(utils.JSONError(&utils.Error{Message: "can't unmarshal data"}))
+		return
+	}
+
+	err = uh.usersUcase.ComplainByID("car", models.Complaint{
+		UserID:   int64(userID),
+		Text:     req.Text,
+		TargetID: int64(clubID),
+	})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }

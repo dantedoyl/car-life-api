@@ -354,3 +354,19 @@ RETURNING vk_id, name, surname, avatar, tags, description`, pq.Array(user.Tags),
 	return user, nil
 }
 
+func (ur *UsersRepository) DeleteCarByID(carID int64) error {
+	_, err := ur.sqlConn.Exec(`DELETE FROM cars WHERE id = $1`, carID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ur *UsersRepository) ComplainByID(target string, complaint models.Complaint) error {
+	_, err := ur.sqlConn.Exec(`INSERT INTO complaints(target_type, target_id, user_id, text) VALUES ($4, $1, $2, $3)`, complaint.TargetID, complaint.UserID, complaint.Text, target)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+

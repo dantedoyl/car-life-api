@@ -20,4 +20,6 @@ type IUsersUsecase interface {
 	SelectCarByID(carID int64) (*models.CarCard, error)
 	GetEventsByUserStatus(userID int64, status string, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.EventCard, error)
 	UpdateUserInfo(user *models.User) (*models.User, error)
+	DeleteCarByID(carID int64) error
+	ComplainByID(target string, complaint models.Complaint) error
 }

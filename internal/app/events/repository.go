@@ -12,4 +12,6 @@ type IEventsRepository interface {
 	GetEventChatID(eventID int64, userID int64) (int64, error)
 	SetEventChatID(eventID int64, chatID int64) error
 	DeleteUserFromEvent(eventID int64, userID int64) error
+	DeleteEventByID(eventID int64) error
+	ComplainByID(complaint models.Complaint) error
 }

@@ -26,6 +26,8 @@ func (eph *EventsPostsHandler) Configure(r *mux.Router, mw *middleware.Middlewar
 	r.HandleFunc("/event_posts/{event_id:[0-9]+}/create", mw.CheckAuthMiddleware(eph.CreateEventPost)).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/event_posts/{event_id:[0-9]+}", mw.CheckAuthMiddleware(eph.GetEventsPostsByEventID)).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/events_posts/{post_id:[0-9]+}/upload", mw.CheckAuthMiddleware(eph.UploadAttachments)).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/event_posts/{post_id:[0-9]+}/delete", mw.CheckAuthMiddleware(eph.DeletePost)).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/event_posts/{post_id:[0-9]+}/complain", mw.CheckAuthMiddleware(eph.ComplainPost)).Methods(http.MethodPost, http.MethodOptions)
 
 }
 
@@ -153,7 +155,7 @@ func (eph *EventsPostsHandler) GetEventsPostsByEventID(w http.ResponseWriter, r 
 // @Failure      404  {object}  utils.Error
 // @Failure      500  {object}  utils.Error
 // @Router       /events_posts/{post_id}/upload [post]
-func (eh *EventsPostsHandler) UploadAttachments(w http.ResponseWriter, r *http.Request) {
+func (eph *EventsPostsHandler) UploadAttachments(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	vars := mux.Vars(r)
@@ -181,7 +183,7 @@ func (eh *EventsPostsHandler) UploadAttachments(w http.ResponseWriter, r *http.R
 	}
 
 	file := r.MultipartForm.File["file-upload"]
-	event, err := eh.eventsUcase.UploadAttachments(postID, file)
+	event, err := eph.eventsUcase.UploadAttachments(postID, file)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
@@ -198,4 +200,99 @@ func (eh *EventsPostsHandler) UploadAttachments(w http.ResponseWriter, r *http.R
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(body)
+}
+
+// DeletePost godoc
+// @Summary      delete post
+// @Description  Handler for deleting post
+// @Tags         EventsPosts
+// @Accept       json
+// @Produce      json
+// @Param        post_id path int64 true "Post ID"
+// @Success      200
+// @Failure      400  {object}  utils.Error
+// @Failure      401  {object}  utils.Error
+// @Failure      404  {object}  utils.Error
+// @Failure      500  {object}  utils.Error
+// @Router       /event_posts/{post_id}/delete [post]
+func (eph *EventsPostsHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	postID, _ := strconv.ParseUint(vars["post_id"], 10, 64)
+
+
+	userID, ok := r.Context().Value("userID").(uint64)
+	if !ok {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write(utils.JSONError(&utils.Error{Message: "you're unauthorized"}))
+		return
+	}
+
+	post, err := eph.eventsUcase.GetEventPostByPostID(postID)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	if post.User.VKID != userID {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(utils.JSONError(&utils.Error{Message: "user has inappropriate status"}))
+		return
+	}
+
+	err = eph.eventsUcase.DeletePostByID(int64(postID))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+// ComplainPost godoc
+// @Summary      complain post
+// @Description  Handler for complaining post
+// @Tags         EventsPosts
+// @Accept       json
+// @Produce      json
+// @Param        id path int64 true "Post ID"
+// @Param        body body models.ComplaintReq true "Event"
+// @Success      200
+// @Failure      400  {object}  utils.Error
+// @Failure      401  {object}  utils.Error
+// @Failure      404  {object}  utils.Error
+// @Failure      500  {object}  utils.Error
+// @Router       /event_posts/{post_id}/complain [post]
+func (eph *EventsPostsHandler) ComplainPost(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	clubID, _ := strconv.ParseUint(vars["post_id"], 10, 64)
+
+	userID, ok := r.Context().Value("userID").(uint64)
+	if !ok {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write(utils.JSONError(&utils.Error{Message: "you're unauthorized"}))
+		return
+	}
+
+	req := &models.ComplaintReq{}
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(utils.JSONError(&utils.Error{Message: "can't unmarshal data"}))
+		return
+	}
+
+	err = eph.eventsUcase.ComplainByID(models.Complaint{
+		UserID:   int64(userID),
+		Text:     req.Text,
+		TargetID: int64(clubID),
+	})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }

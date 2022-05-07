@@ -16,4 +16,6 @@ type IUsersRepository interface {
 	GetEventsByUserStatus(userID int64, status string, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.EventCard, error)
 	InsertCar(car *models.CarCard) (*models.CarCard, error)
 	Update(user *models.User) (*models.User, error)
+	DeleteCarByID(carID int64) error
+	ComplainByID(target string, complaint models.Complaint) error
 }

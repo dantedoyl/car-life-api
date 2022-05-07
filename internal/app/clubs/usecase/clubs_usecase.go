@@ -102,4 +102,10 @@ func (cu *ClubsUsecase)	DeleteUserFromClub(clubID int64, userID int64) error {
 	return cu.clubsRepo.DeleteUserFromClub(clubID, userID)
 }
 
+func (cu *ClubsUsecase)	DeleteClubByID(clubID int64) error {
+	return cu.clubsRepo.DeleteClubByID(clubID)
+}
 
+func (cu *ClubsUsecase)	ComplainByID(complaint models.Complaint) error {
+	return cu.clubsRepo.ComplainByID(complaint)
+}

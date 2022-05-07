@@ -45,3 +45,15 @@ func (epu *EventsPostsUsecase) UploadAttachments(postID uint64, fileHeader []*mu
 
 	return event, nil
 }
+
+func (epu *EventsPostsUsecase) GetEventPostByPostID (postID uint64) (*models.EventPost, error) {
+	return epu.eventsPostsRepo.GetEventPostByPostID(postID)
+}
+
+func (epu *EventsPostsUsecase) DeletePostByID (postID int64) error {
+	return epu.eventsPostsRepo.DeletePostByID(postID)
+}
+
+func (epu *EventsPostsUsecase) ComplainByID (complaint models.Complaint) error {
+	return epu.eventsPostsRepo.ComplainByID(complaint)
+}

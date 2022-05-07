@@ -85,3 +85,11 @@ func (eu *EventsUsecase) SetEventChatID(eventID int64, chatID int64) error {
 func (eu *EventsUsecase) DeleteUserFromEvent(eventID int64, chatID int64) error {
 	return eu.eventsRepo.DeleteUserFromEvent(eventID, chatID)
 }
+
+func (eu *EventsUsecase) DeleteEventByID(eventID int64) error {
+	return eu.eventsRepo.DeleteEventByID(eventID)
+}
+
+func (eu *EventsUsecase) ComplainByID(complaint models.Complaint) error {
+	return eu.eventsRepo.ComplainByID(complaint)
+}

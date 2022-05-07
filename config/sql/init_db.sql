@@ -123,6 +123,17 @@ create table if not exists events_posts_attachments
     post_id     bigint not null
 );
 
+CREATE TYPE target_type AS ENUM ('club', 'event', 'post', 'car', 'user');
+
+create table if not exists complaints
+(
+    id bigserial primary key,
+    target_type   target_type not null,
+    target_id bigint not null,
+    user_id bigint not null,
+    text text null
+);
+
 insert into mini_event_type (public_name, public_description)
 VALUES ('Помощь', 'Нужна помощь'),
        ('Мини-сходка', 'Организуй встречу с друзьями'),

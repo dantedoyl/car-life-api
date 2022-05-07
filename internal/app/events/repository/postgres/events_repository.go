@@ -26,7 +26,7 @@ func (er *EventsRepository) InsertEvent(event *models.Event) error {
                 RETURNING id`,
 		event.Name,
 		event.Club.ID,
-		event.CreatorID,
+		event.Creator.VKID,
 		event.Description,
 		event.EventDate,
 		event.Latitude,
@@ -38,7 +38,14 @@ func (er *EventsRepository) InsertEvent(event *models.Event) error {
 	_, err = er.dbConn.Exec(
 		`INSERT INTO users_events (event_id, user_id, status) VALUES ($1, $2, $3)
 				ON CONFLICT (user_id, event_id) DO UPDATE
-			SET status = $3`, event.ID, event.CreatorID, "admin")
+			SET status = $3`, event.ID, event.Creator.VKID, "admin")
+	if err != nil {
+		return err
+	}
+
+	err = er.dbConn.QueryRow(
+		`SELECT vk_id, name, surname, avatar from users
+				WHERE vk_id = $1`, event.Creator.VKID).Scan(&event.Creator.VKID, &event.Creator.Name, &event.Creator.Surname, &event.Creator.AvatarUrl)
 	if err != nil {
 		return err
 	}
@@ -50,7 +57,7 @@ func (er *EventsRepository) GetEventByID(id int64, userID uint64) (*models.Event
 	event := &models.Event{}
 	err := er.dbConn.QueryRow(
 		`SELECT  id, name, club_id, creator_id, description, event_date, latitude, longitude, avatar, participants_count, spectators_count from events
-				WHERE id = $1`, id).Scan(&event.ID, &event.Name, &event.Club.ID, &event.CreatorID, &event.Description, &event.EventDate,
+				WHERE id = $1`, id).Scan(&event.ID, &event.Name, &event.Club.ID, &event.Creator.VKID, &event.Description, &event.EventDate,
 		&event.Latitude, &event.Longitude, &event.AvatarUrl, &event.ParticipantsCount, &event.SpectatorsCount)
 	if err != nil {
 		return nil, err
@@ -59,6 +66,13 @@ func (er *EventsRepository) GetEventByID(id int64, userID uint64) (*models.Event
 	err = er.dbConn.QueryRow(
 		`SELECT  c.id, c.name, c.tags, c.participants_count, c.avatar from clubs as c
 				WHERE c.id = $1`, event.Club.ID).Scan(&event.Club.ID, &event.Club.Name, pq.Array(&event.Club.Tags), &event.Club.ParticipantsCount, &event.Club.AvatarUrl)
+	if err != nil {
+		return nil, err
+	}
+
+	err = er.dbConn.QueryRow(
+		`SELECT vk_id, name, surname, avatar from users
+				WHERE vk_id = $1`, event.Creator.VKID).Scan(&event.Creator.VKID, &event.Creator.Name, &event.Creator.Surname, &event.Creator.AvatarUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -264,5 +278,21 @@ func (er *EventsRepository) DeleteUserFromEvent(eventID int64, userID int64) err
 		return err
 	}
 
+	return nil
+}
+
+func (er *EventsRepository) DeleteEventByID(eventID int64) error {
+	_, err := er.dbConn.Exec(`DELETE FROM events WHERE id = $1`, eventID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (er *EventsRepository) ComplainByID(complaint models.Complaint) error {
+	_, err := er.dbConn.Exec(`INSERT INTO complaints(target_type, target_id, user_id, text) VALUES ('event', $1, $2, $3)`, complaint.TargetID, complaint.UserID, complaint.Text)
+	if err != nil {
+		return err
+	}
 	return nil
 }

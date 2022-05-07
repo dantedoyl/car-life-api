@@ -84,3 +84,13 @@ func CreateSession(userID uint64) *Session {
 		ExpiresAt: time.Now().Add(10 * time.Hour),
 	}
 }
+
+type Complaint struct {
+	UserID int64
+	Text string
+	TargetID int64
+}
+
+type ComplaintReq struct {
+	Text string
+}

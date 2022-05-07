@@ -20,4 +20,6 @@ type IClubsUsecase interface {
 	SetClubChatID(clubID int64, chatID int64) error
 	GetClubChatID(clubID int64, userID int64) (int64, error)
 	DeleteUserFromClub(clubID int64, userID int64) error
+	DeleteClubByID(clubID int64) error
+	ComplainByID(complaint models.Complaint) error
 }

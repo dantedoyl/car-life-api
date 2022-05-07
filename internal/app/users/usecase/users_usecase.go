@@ -147,3 +147,10 @@ func(uu *UsersUsecase)	SelectCarByID(carID int64) (*models.CarCard, error) {
 	return uu.usersRepo.SelectCarByID(uint64(carID))
 }
 
+func(uu *UsersUsecase)	DeleteCarByID(carID int64) error {
+	return uu.usersRepo.DeleteCarByID(carID)
+}
+
+func(uu *UsersUsecase)	ComplainByID(target string, complaint models.Complaint) error {
+	return uu.usersRepo.ComplainByID(target, complaint)
+}

@@ -7,4 +7,6 @@ type IEventsPostsRepository interface {
 	GetEventPostByPostID (postID uint64) (*models.EventPost, error)
 	GetEventsPostsByEventID(eventID uint64, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.EventPost, error)
 	InsertEventPostAttachments(postID uint64, attachments []string) error
+	DeletePostByID(postID int64) error
+	ComplainByID(complaint models.Complaint) error
 }

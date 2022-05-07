@@ -124,3 +124,19 @@ func (epr *EventsPostsRepository) GetEventPostByPostID(postID uint64) (*models.E
 
 	return post, nil
 }
+
+func (epr *EventsPostsRepository) DeletePostByID(postID int64) error {
+	_, err := epr.dbConn.Exec(`DELETE FROM events_posts WHERE id = $1`, postID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (epr *EventsPostsRepository) ComplainByID(complaint models.Complaint) error {
+	_, err := epr.dbConn.Exec(`INSERT INTO complaints(target_type, target_id, user_id, text) VALUES ('post', $1, $2, $3)`, complaint.TargetID, complaint.UserID, complaint.Text)
+	if err != nil {
+		return err
+	}
+	return nil
+}

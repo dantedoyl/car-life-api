@@ -39,6 +39,8 @@ func (ch *ClubsHandler) Configure(r *mux.Router, mw *middleware.Middleware) {
 	r.HandleFunc("/clubs/{id:[0-9]+}/cars", mw.CheckAuthMiddleware(ch.GetClubsCars)).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/clubs/{id:[0-9]+}/events", mw.CheckAuthMiddleware(ch.GetClubsEvents)).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/clubs/{id:[0-9]+}/chat_link", mw.CheckAuthMiddleware(ch.GetClubChatLink)).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc("/clubs/{id:[0-9]+}/delete", mw.CheckAuthMiddleware(ch.DeleteClub)).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/clubs/{id:[0-9]+}/complain", mw.CheckAuthMiddleware(ch.ComplainClub)).Methods(http.MethodPost, http.MethodOptions)
 }
 
 // CreateClub godoc
@@ -77,7 +79,9 @@ func (ch *ClubsHandler) CreateClub(w http.ResponseWriter, r *http.Request) {
 		Description: club.Description,
 		AvatarUrl:   club.AvatarUrl,
 		Tags:        club.Tags,
-		OwnerID:     userID,
+		Owner:       models.UserCard{
+			VKID:      userID,
+		},
 	}
 
 	err = ch.clubsUcase.CreateClub(clubsData)
@@ -559,7 +563,7 @@ func (ch *ClubsHandler) SetUserStatusByClubID(w http.ResponseWriter, r *http.Req
 		}
 
 		clubUrl := "https://vk.com/app8099557"
-		err = ch.vk.CreatMessage(int(club.OwnerID),
+		err = ch.vk.CreatMessage(int(club.Owner.VKID),
 			fmt.Sprintf("Привет! Новый пользователь хочет поучаствовать в %s: %s\n", club.Name, clubUrl),
 		)
 		if err != nil {
@@ -758,4 +762,99 @@ func (ch *ClubsHandler) GetClubChatLink(w http.ResponseWriter, r *http.Request) 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(body)
+}
+
+// DeleteClub godoc
+// @Summary      delete club
+// @Description  Handler for deleting club
+// @Tags         Clubs
+// @Accept       json
+// @Produce      json
+// @Param        id path int64 true "Club ID"
+// @Success      200
+// @Failure      400  {object}  utils.Error
+// @Failure      401  {object}  utils.Error
+// @Failure      404  {object}  utils.Error
+// @Failure      500  {object}  utils.Error
+// @Router       /clubs/{id}/delete [post]
+func (ch *ClubsHandler) DeleteClub(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	clubID, _ := strconv.ParseUint(vars["id"], 10, 64)
+
+	userID, ok := r.Context().Value("userID").(uint64)
+	if !ok {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write(utils.JSONError(&utils.Error{Message: "you're unauthorized"}))
+		return
+	}
+
+	club, err := ch.clubsUcase.GetClubByID(clubID, userID)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	if club.Owner.VKID != userID {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(utils.JSONError(&utils.Error{Message: "user has inappropriate status"}))
+		return
+	}
+
+	err = ch.clubsUcase.DeleteClubByID(int64(clubID))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+
+// ComplainClub godoc
+// @Summary      complain club
+// @Description  Handler for complaining club
+// @Tags         Clubs
+// @Accept       json
+// @Produce      json
+// @Param        id path int64 true "Club ID"
+// @Param        body body models.ComplaintReq true "Club"
+// @Success      200
+// @Failure      400  {object}  utils.Error
+// @Failure      401  {object}  utils.Error
+// @Failure      404  {object}  utils.Error
+// @Failure      500  {object}  utils.Error
+// @Router       /clubs/{id}/complain [post]
+func (ch *ClubsHandler) ComplainClub(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	clubID, _ := strconv.ParseUint(vars["id"], 10, 64)
+
+	userID, ok := r.Context().Value("userID").(uint64)
+	if !ok {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write(utils.JSONError(&utils.Error{Message: "you're unauthorized"}))
+		return
+	}
+
+	req := &models.ComplaintReq{}
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(utils.JSONError(&utils.Error{Message: "can't unmarshal data"}))
+		return
+	}
+
+	err = ch.clubsUcase.ComplainByID(models.Complaint{
+		UserID:   int64(userID),
+		Text:     req.Text,
+		TargetID: int64(clubID),
+	})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(utils.JSONError(&utils.Error{Message: err.Error()}))
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }

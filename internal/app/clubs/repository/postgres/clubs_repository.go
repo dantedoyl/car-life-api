@@ -41,7 +41,14 @@ func (cr *ClubsRepository) InsertClub(club *models.Club) error {
 	_, err = cr.dbConn.Exec(
 		`INSERT INTO users_clubs (club_id, user_id, status) VALUES ($1, $2, $3)
 				ON CONFLICT (user_id, club_id) DO UPDATE
-			SET status = $3`, club.ID, club.OwnerID, "admin")
+			SET status = $3`, club.ID, club.Owner.VKID, "admin")
+	if err != nil {
+		return err
+	}
+
+	err = cr.dbConn.QueryRow(
+		`SELECT vk_id, name, surname, avatar from users
+				WHERE vk_id = $1`, club.Owner.VKID).Scan(&club.Owner.VKID, &club.Owner.Name, &club.Owner.Surname, &club.Owner.AvatarUrl)
 	if err != nil {
 		return err
 	}
@@ -53,7 +60,14 @@ func (cr *ClubsRepository) GetClubByID(id int64, userID uint64) (*models.Club, e
 	club := &models.Club{}
 	err := cr.dbConn.QueryRow(
 		`SELECT  c.id, c.name, c.description, c.tags, c.events_count, c.participants_count, c.avatar, uc.user_id as owner_id, c.participants_count, c.subscribers_count from clubs as c inner join users_clubs as uc on uc.club_id = c.id
-				WHERE c.id = $1 and uc.status = 'admin'`, id).Scan(&club.ID, &club.Name, &club.Description, pq.Array(&club.Tags), &club.EventsCount, &club.ParticipantsCount, &club.AvatarUrl, &club.OwnerID, &club.ParticipantsCount, &club.SubscribersCount)
+				WHERE c.id = $1 and uc.status = 'admin'`, id).Scan(&club.ID, &club.Name, &club.Description, pq.Array(&club.Tags), &club.EventsCount, &club.ParticipantsCount, &club.AvatarUrl, &club.Owner.VKID, &club.ParticipantsCount, &club.SubscribersCount)
+	if err != nil {
+		return nil, err
+	}
+
+	err = cr.dbConn.QueryRow(
+		`SELECT vk_id, name, surname, avatar from users
+				WHERE vk_id = $1`, club.Owner.VKID).Scan(&club.Owner.VKID, &club.Owner.Name, &club.Owner.Surname, &club.Owner.AvatarUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -364,6 +378,22 @@ func (cr *ClubsRepository) DeleteUserFromClub(clubID int64, userID int64) error 
 		return nil
 	}
 	_, err = cr.dbConn.Exec(query, clubID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (cr *ClubsRepository) DeleteClubByID(clubID int64) error {
+	_, err := cr.dbConn.Exec(`DELETE FROM clubs WHERE id = $1`, clubID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (cr *ClubsRepository) ComplainByID(complaint models.Complaint) error {
+	_, err := cr.dbConn.Exec(`INSERT INTO complaints(target_type, target_id, user_id, text) VALUES ('club', $1, $2, $3)`, complaint.TargetID, complaint.UserID, complaint.Text)
 	if err != nil {
 		return err
 	}
