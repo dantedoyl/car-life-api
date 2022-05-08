@@ -11,10 +11,10 @@ import (
 	events_delivery "github.com/dantedoyl/car-life-api/internal/app/events/delivery/http"
 	events_repository "github.com/dantedoyl/car-life-api/internal/app/events/repository/postgres"
 	events_usecase "github.com/dantedoyl/car-life-api/internal/app/events/usecase"
-	events_posts_usecase "github.com/dantedoyl/car-life-api/internal/app/events_posts/usecase"
-	events_posts_repository "github.com/dantedoyl/car-life-api/internal/app/events_posts/repository/postgres"
-	"github.com/dantedoyl/car-life-api/internal/app/middleware"
 	events_posts_delivery "github.com/dantedoyl/car-life-api/internal/app/events_posts/delivery/http"
+	events_posts_repository "github.com/dantedoyl/car-life-api/internal/app/events_posts/repository/postgres"
+	events_posts_usecase "github.com/dantedoyl/car-life-api/internal/app/events_posts/usecase"
+	"github.com/dantedoyl/car-life-api/internal/app/middleware"
 	mini_events_delivery "github.com/dantedoyl/car-life-api/internal/app/mini_events/delivery/http"
 	mini_events_repository "github.com/dantedoyl/car-life-api/internal/app/mini_events/repository/postgres"
 	mini_events_usecase "github.com/dantedoyl/car-life-api/internal/app/mini_events/usecase"
@@ -53,9 +53,9 @@ func main() {
 	}
 
 	vkCl := vk.NewVKClient(
-			"0918a4f20918a4f20918a4f27909633217009180918a4f26b34f910640ea9466b2c60dd",
+		"0918a4f20918a4f20918a4f27909633217009180918a4f26b34f910640ea9466b2c60dd",
 		"1778a9046f1d83c8716dffe78116e0ce119cde5d96f7a2a8557299d0983bd349e91e13dea9cd920a2b5ed",
-		)
+	)
 
 	//________________________________
 	//session map
