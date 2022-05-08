@@ -106,7 +106,7 @@ func (uu *UsersUsecase) UpdateAvatar(carID uint64, fileHeader *multipart.FileHea
 		return nil, err
 	}
 
-	user, err := uu.usersRepo.SelectByID(car.OwnerID)
+	user, err := uu.usersRepo.SelectByID(car.Owner.VKID)
 	if err != nil {
 		return nil, err
 	}

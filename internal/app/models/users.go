@@ -40,7 +40,7 @@ type CarCard struct {
 	Model       string    `json:"model" binding:"required"`
 	Date        time.Time `json:"date" binding:"required"`
 	Description string    `json:"description" binding:"required"`
-	OwnerID     uint64    `json:"owner_id" binding:"required"`
+	Owner     	UserCard  `json:"owner" binding:"required"`
 	Body        string    `json:"body" binding:"required"`
 	Engine      string    `json:"engine" binding:"required"`
 	HorsePower  string    `json:"horse_power" binding:"required"`

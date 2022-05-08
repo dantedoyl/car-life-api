@@ -250,7 +250,7 @@ func (cr *ClubsRepository) GetClubsCars(club_id int64, idGt *uint64, idLte *uint
 
 	for rows.Next() {
 		car := &models.CarCard{}
-		err = rows.Scan(&car.ID, &car.OwnerID, &car.Brand, &car.Model, &car.Date, &car.Description, &car.AvatarUrl, &car.Body, &car.Engine, &car.HorsePower, &car.Name)
+		err = rows.Scan(&car.ID, &car.Owner.VKID, &car.Brand, &car.Model, &car.Date, &car.Description, &car.AvatarUrl, &car.Body, &car.Engine, &car.HorsePower, &car.Name)
 		if err != nil {
 			return nil, err
 		}

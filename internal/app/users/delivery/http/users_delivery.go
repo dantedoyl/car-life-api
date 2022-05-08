@@ -631,7 +631,9 @@ func (uh *UsersHandler) NewUserCar(w http.ResponseWriter, r *http.Request) {
 		Engine:      car.Engine,
 		HorsePower:  car.HorsePower,
 		Name:        car.Name,
-		OwnerID:     userID,
+		Owner:     	 models.UserCard{
+			VKID:      userID,
+		},
 	}
 
 	carData, err = uh.usersUcase.AddNewUserCar(carData)
@@ -719,7 +721,7 @@ func (uh *UsersHandler) DeleteCar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if car.OwnerID != userID {
+	if car.Owner.VKID != userID {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write(utils.JSONError(&utils.Error{Message: "user has inappropriate status"}))
 		return
