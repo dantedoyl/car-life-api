@@ -2921,7 +2921,7 @@ const docTemplate = `{
                 "id",
                 "model",
                 "name",
-                "owner_id"
+                "owner"
             ],
             "properties": {
                 "avatar_url": {
@@ -2954,8 +2954,8 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "owner_id": {
-                    "type": "integer"
+                "owner": {
+                    "$ref": "#/definitions/models.UserCard"
                 }
             }
         },
