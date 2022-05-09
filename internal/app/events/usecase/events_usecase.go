@@ -47,7 +47,7 @@ func (eu *EventsUsecase) UpdateAvatar(eventID int64, fileHeader *multipart.FileH
 		return nil, err
 	}
 
-	if oldAvatar == "/img/events/default.jpeg" {
+	if oldAvatar == "/img/events/default.webp" {
 		return event, nil
 	}
 
