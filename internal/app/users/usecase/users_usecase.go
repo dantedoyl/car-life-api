@@ -111,7 +111,7 @@ func (uu *UsersUsecase) UpdateAvatar(carID uint64, fileHeader *multipart.FileHea
 		return nil, err
 	}
 
-	if oldAvatar == "/img/cars/default.jpeg" {
+	if oldAvatar == "/img/cars/default.webp" {
 		return user, nil
 	}
 
@@ -127,8 +127,8 @@ func (uu *UsersUsecase) GetClubsByUserStatus(userID int64, status string, idGt *
 	return uu.usersRepo.GetClubsByUserStatus(userID, status, idGt, idLte, limit)
 }
 
-func (uu *UsersUsecase) SelectCarByUserID(userID int64, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.CarCard, error){
-return uu.usersRepo.SelectCarByUserID(userID, idGt, idLte, limit)
+func (uu *UsersUsecase) SelectCarByUserID(userID int64, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.CarCard, error) {
+	return uu.usersRepo.SelectCarByUserID(userID, idGt, idLte, limit)
 }
 
 func (uu *UsersUsecase) GetEventsByUserStatus(userID int64, status string, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.EventCard, error) {
@@ -143,14 +143,14 @@ func (uu *UsersUsecase) UpdateUserInfo(user *models.User) (*models.User, error) 
 	return uu.usersRepo.Update(user)
 }
 
-func(uu *UsersUsecase)	SelectCarByID(carID int64) (*models.CarCard, error) {
+func (uu *UsersUsecase) SelectCarByID(carID int64) (*models.CarCard, error) {
 	return uu.usersRepo.SelectCarByID(uint64(carID))
 }
 
-func(uu *UsersUsecase)	DeleteCarByID(carID int64) error {
+func (uu *UsersUsecase) DeleteCarByID(carID int64) error {
 	return uu.usersRepo.DeleteCarByID(carID)
 }
 
-func(uu *UsersUsecase)	ComplainByID(target string, complaint models.Complaint) error {
+func (uu *UsersUsecase) ComplainByID(target string, complaint models.Complaint) error {
 	return uu.usersRepo.ComplainByID(target, complaint)
 }
