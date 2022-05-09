@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS tags
 
 CREATE TABLE IF NOT EXISTS users
 (
-    vk_id       BIGINT PRIMARY key,
+    vk_id       BIGINT PRIMARY KEY,
     name        TEXT         NOT NULL,
     surname     TEXT         NOT NULL,
     avatar      VARCHAR(512) NOT NULL,
