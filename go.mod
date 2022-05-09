@@ -14,6 +14,7 @@ require (
 
 require (
 	github.com/golang/protobuf v1.3.1 // indirect
+	github.com/h2non/bimg v1.1.9 // indirect
 	github.com/klauspost/compress v1.14.2 // indirect
 	github.com/swaggo/files v0.0.0-20210815190702-a29dd2bc99b2 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect

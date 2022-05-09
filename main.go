@@ -86,9 +86,10 @@ func main() {
 	router := mux.NewRouter()
 
 	static := router.PathPrefix("/img").Subrouter()
-	static.Handle("/events/{key}", http.FileServer(http.Dir("."))).Methods(http.MethodGet)
 	static.Handle("/clubs/{key}", http.FileServer(http.Dir("."))).Methods(http.MethodGet)
+	static.Handle("/events/{key}", http.FileServer(http.Dir("."))).Methods(http.MethodGet)
 	static.Handle("/cars/{key}", http.FileServer(http.Dir("."))).Methods(http.MethodGet)
+	static.Handle("/events-posts/{key}", http.FileServer(http.Dir("."))).Methods(http.MethodGet)
 
 	api := router.PathPrefix("/api/v1").Subrouter()
 	api.Use(middleware.CorsControlMiddleware)
