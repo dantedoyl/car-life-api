@@ -239,7 +239,7 @@ func (ur *UsersRepository) GetClubsByUserStatus(userID int64, status string, idG
 	ind := 3
 	var values []interface{}
 	values = append(values, status, userID)
-	q := `SELECT c.id, c.name, c.tags, c.participants_count, c.avatar from users_clubs as uc inner join clubs as c on c.id = uc.club_id WHERE uc.status = $1 and uc.user_id = $2 `
+	q := `SELECT c.id, c.name, c.tags, c.participants_count, c.subscribers_count, c.avatar from users_clubs as uc inner join clubs as c on c.id = uc.club_id WHERE uc.status = $1 and uc.user_id = $2 `
 
 	if idGt != nil {
 		q += ` AND c.id > $` + strconv.Itoa(ind)
@@ -268,7 +268,7 @@ func (ur *UsersRepository) GetClubsByUserStatus(userID int64, status string, idG
 
 	for rows.Next() {
 		club := &models.ClubCard{}
-		err = rows.Scan(&club.ID, &club.Name, pq.Array(&club.Tags), &club.ParticipantsCount, &club.AvatarUrl)
+		err = rows.Scan(&club.ID, &club.Name, pq.Array(&club.Tags), &club.ParticipantsCount, &club.SubscribersCount, &club.AvatarUrl)
 		if err != nil {
 			return nil, err
 		}
