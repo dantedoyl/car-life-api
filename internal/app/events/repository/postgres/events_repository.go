@@ -264,9 +264,9 @@ func (er *EventsRepository) DeleteUserFromEvent(eventID int64, userID int64) err
 	var query string
 	switch status {
 	case "spectator":
-		query = `UPDATE events SET spectators_count = spectators_count + 1 WHERE id = $1`
+		query = `UPDATE events SET spectators_count = spectators_count - 1 WHERE id = $1`
 	case "participant":
-		query = `UPDATE events SET participants_count = participants_count + 1 WHERE id = $1`
+		query = `UPDATE events SET participants_count = participants_count - 1 WHERE id = $1`
 	case "participant_request":
 		return nil
 	}

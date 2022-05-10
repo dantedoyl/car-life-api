@@ -371,9 +371,9 @@ func (cr *ClubsRepository) DeleteUserFromClub(clubID int64, userID int64) error 
 	var query string
 	switch status {
 	case "subscriber":
-		query = `UPDATE clubs SET subscribers_count = subscribers_count + 1 WHERE id = $1`
+		query = `UPDATE clubs SET subscribers_count = subscribers_count - 1 WHERE id = $1`
 	case "participant":
-		query = `UPDATE clubs SET participants_count = participants_count + 1 WHERE id = $1`
+		query = `UPDATE clubs SET participants_count = participants_count - 1 WHERE id = $1`
 	case "participant_request":
 		return nil
 	}
