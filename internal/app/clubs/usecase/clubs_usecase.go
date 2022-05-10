@@ -47,7 +47,7 @@ func (cu *ClubsUsecase) UpdateAvatar(clubID int64, fileHeader *multipart.FileHea
 		return nil, err
 	}
 
-	if oldAvatar == "/img/clubs/default.jpeg" {
+	if oldAvatar == "/img/clubs/default.webp" {
 		return club, nil
 	}
 
@@ -67,7 +67,7 @@ func (cu *ClubsUsecase) GetClubsUserByStatus(club_id int64, status string, idGt 
 	return cu.clubsRepo.GetClubsUserByStatus(club_id, status, idGt, idLte, limit)
 }
 
-func (cu *ClubsUsecase) GetClubsCars(club_id int64, idGt *uint64, idLte *uint64, limit *uint64,) ([]*models.CarCard, error) {
+func (cu *ClubsUsecase) GetClubsCars(club_id int64, idGt *uint64, idLte *uint64, limit *uint64) ([]*models.CarCard, error) {
 	return cu.clubsRepo.GetClubsCars(club_id, idGt, idLte, limit)
 }
 
@@ -98,14 +98,14 @@ func (cu *ClubsUsecase) GetClubChatID(clubID int64, userID int64) (int64, error)
 	return cu.clubsRepo.GetClubChatID(clubID, userID)
 }
 
-func (cu *ClubsUsecase)	DeleteUserFromClub(clubID int64, userID int64) error {
+func (cu *ClubsUsecase) DeleteUserFromClub(clubID int64, userID int64) error {
 	return cu.clubsRepo.DeleteUserFromClub(clubID, userID)
 }
 
-func (cu *ClubsUsecase)	DeleteClubByID(clubID int64) error {
+func (cu *ClubsUsecase) DeleteClubByID(clubID int64) error {
 	return cu.clubsRepo.DeleteClubByID(clubID)
 }
 
-func (cu *ClubsUsecase)	ComplainByID(complaint models.Complaint) error {
+func (cu *ClubsUsecase) ComplainByID(complaint models.Complaint) error {
 	return cu.clubsRepo.ComplainByID(complaint)
 }

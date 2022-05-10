@@ -2,65 +2,60 @@ package filesystem
 
 import (
 	"io"
-	"math/rand"
 	"mime/multipart"
 	"os"
-	"path/filepath"
-	"strconv"
-	"time"
+	"strings"
+
+	"github.com/google/uuid"
+	"github.com/h2non/bimg"
 )
 
-func InsertPhoto(fileHeader *multipart.FileHeader, photoPath string) (string, error) {
+func InsertPhoto(fileHeader *multipart.FileHeader, dirname string) (string, error) {
 	file, err := fileHeader.Open()
 	if err != nil {
 		return "", err
 	}
 	defer file.Close()
 
-	str, err := os.Getwd()
+	buffer, err := io.ReadAll(file)
 	if err != nil {
 		return "", err
 	}
 
-	os.Chdir(photoPath)
+	filename := strings.Replace(uuid.New().String(), "-", "", -1) + ".webp"
+	filepath := dirname + filename
 
-	rand.Seed(time.Now().UTC().UnixNano())
-	photoID := rand.Uint64()
-	photoIDStr := strconv.FormatUint(photoID, 10)
-
-	extension := filepath.Ext(fileHeader.Filename)
-
-	newFile, err := os.OpenFile(photoIDStr+extension, os.O_WRONLY|os.O_CREATE, 0666)
+	converted, err := bimg.NewImage(buffer).Convert(bimg.WEBP)
 	if err != nil {
 		return "", err
 	}
-	defer newFile.Close()
 
-	os.Chdir(str)
-
-	_, err = io.Copy(newFile, file)
+	processed, err := bimg.NewImage(converted).Process(bimg.Options{Quality: 25})
 	if err != nil {
-		_ = os.Remove(photoIDStr + extension)
 		return "", err
 	}
 
-	photo := "/" + photoPath + photoIDStr + extension
-	return photo, nil
+	err = bimg.Write("./"+filepath, processed)
+	if err != nil {
+		return "", err
+	}
+
+	return "/" + filepath, nil
 }
 
-func InsertPhotos(filesHeaders []*multipart.FileHeader, photoPath string) ([]string, error) {
-	imgUrls := make(map[string][]string)
+func InsertPhotos(filesHeaders []*multipart.FileHeader, dirname string) ([]string, error) {
+	var imgUrls []string
 
-	for i := range filesHeaders {
-		url, err := InsertPhoto(filesHeaders[i], photoPath)
+	for _, fileHeader := range filesHeaders {
+		imgUrl, err := InsertPhoto(fileHeader, dirname)
 		if err != nil {
 			return nil, err
 		}
 
-		imgUrls["img"] = append(imgUrls["img"], url)
+		imgUrls = append(imgUrls, imgUrl)
 	}
 
-	return imgUrls["img"], nil
+	return imgUrls, nil
 }
 
 func RemovePhoto(imgUrl string) error {
@@ -68,8 +63,7 @@ func RemovePhoto(imgUrl string) error {
 		return nil
 	}
 
-	origWd, _ := os.Getwd()
-	err := os.Remove(origWd + imgUrl)
+	err := os.Remove("./" + imgUrl)
 	if err != nil {
 		return err
 	}
@@ -82,8 +76,8 @@ func RemovePhotos(imgUrls []string) error {
 		return nil
 	}
 
-	for _, photo := range imgUrls {
-		err := RemovePhoto(photo)
+	for _, imgUrl := range imgUrls {
+		err := RemovePhoto(imgUrl)
 		if err != nil {
 			return err
 		}
